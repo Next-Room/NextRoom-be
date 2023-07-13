@@ -1,9 +1,10 @@
 package com.todayescape.exceptions;
 
-import lombok.Builder;
-import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
+import lombok.Builder;
+import lombok.Getter;
 
 @Getter
 @Builder
@@ -13,9 +14,9 @@ public class ErrorResponse {
 
     public static ResponseEntity<ErrorResponse> toResponseEntity(HttpStatus status, String message) {
         return ResponseEntity
-                .status(status)
-                .body(ErrorResponse.builder()
-                        .code(status.value())
-                        .message(message).build());
+            .status(status)
+            .body(ErrorResponse.builder()
+                .code(status.value())
+                .message(message).build());
     }
 }

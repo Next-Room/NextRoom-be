@@ -1,6 +1,7 @@
 package com.todayescape.dto;
 
 import com.todayescape.exceptions.StatusCode;
+
 import lombok.Getter;
 
 @Getter
