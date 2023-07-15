@@ -1,4 +1,4 @@
-package com.todayescape.domain;
+package com.nextroom.oescape.domain;
 
 import java.util.ArrayList;
 import java.util.List;

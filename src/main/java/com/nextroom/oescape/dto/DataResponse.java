@@ -1,6 +1,6 @@
-package com.todayescape.dto;
+package com.nextroom.oescape.dto;
 
-import com.todayescape.exceptions.StatusCode;
+import com.nextroom.oescape.exceptions.StatusCode;
 
 import lombok.Getter;
 

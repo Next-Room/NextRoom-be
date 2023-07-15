@@ -1,4 +1,4 @@
-package com.todayescape.exceptions;
+package com.nextroom.oescape.exceptions;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
