@@ -14,16 +14,16 @@ public class SwaggerConfig implements WebMvcConfigurer {
     @Bean
     public OpenAPI api() {
         return new OpenAPI()
-                .info(this.apiInfo());
+            .info(this.apiInfo());
     }
 
     private Info apiInfo() {
         return new Info()
-                .title("O Escape Api Server")
-                .description("Nexters 23th 오늘의 방탈출 -NextRoom")
-                .version("1.0")
-                .contact(new Contact()
-                        .name("O Escape Server Github Repository")
-                        .url("https://github.com/Nexters/o-escape-be"));
+            .title("O Escape Api Server")
+            .description("Nexters 23th 오늘의 방탈출 -NextRoom")
+            .version("1.0")
+            .contact(new Contact()
+                .name("O Escape Server Github Repository")
+                .url("https://github.com/Nexters/o-escape-be"));
     }
 }

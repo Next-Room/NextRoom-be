@@ -12,8 +12,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Theme {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,8 +30,7 @@ public class Theme {
     @JoinColumn(name = "shop_id")
     private Shop shop;
     private String title;
-    private Long timeLimit;
-    private Long hintCount;
+    private Integer timeLimit;
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
     private List<Hint> hints = new ArrayList<>();
 }
