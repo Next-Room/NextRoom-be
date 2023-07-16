@@ -1,4 +1,4 @@
-package com.todayescape.config;
+package com.nextroom.oescape.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +24,6 @@ public class SwaggerConfig implements WebMvcConfigurer {
                 .version("1.0")
                 .contact(new Contact()
                         .name("O Escape Server Github Repository")
-                        .url("https://github.com/Nexters/today-escape-server"));
+                        .url("https://github.com/Nexters/o-escape-be"));
     }
 }

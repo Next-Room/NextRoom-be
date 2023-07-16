@@ -1,4 +1,4 @@
-package com.todayescape.exceptions;
+package com.nextroom.oescape.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
