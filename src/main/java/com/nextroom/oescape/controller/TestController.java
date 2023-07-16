@@ -12,16 +12,16 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 @Tag(name = "Test")
 public class TestController {
 
-	@Operation(
-		description = "Test endpoint",
-		summary = "Create Test",
-		responses = {
-			@ApiResponse(responseCode = "200", description = "Success"),
-			@ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token")
-		}
-	)
-	@PostMapping("/test")
-	public ResponseEntity<Void> exampleMethod() {
-		return ResponseEntity.ok().build();
-	}
+    @Operation(
+        description = "Test endpoint",
+        summary = "Create Test",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Success"),
+            @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token")
+        }
+    )
+    @PostMapping("/test")
+    public ResponseEntity<Void> exampleMethod() {
+        return ResponseEntity.ok().build();
+    }
 }

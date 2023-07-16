@@ -22,31 +22,31 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/theme")
 @RequiredArgsConstructor
 public class ThemeController {
-	private final ThemeService themeService;
+    private final ThemeService themeService;
 
-	@PostMapping
-	public ResponseEntity<BaseResponse> addTheme(
-		@RequestBody ThemeDto.AddThemeRequest request) {
-		themeService.addTheme(request);
-		return ResponseEntity.ok(new BaseResponse(OK));
-	}
+    @PostMapping
+    public ResponseEntity<BaseResponse> addTheme(
+        @RequestBody ThemeDto.AddThemeRequest request) {
+        themeService.addTheme(request);
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
 
-	@GetMapping
-	public ResponseEntity<BaseResponse> getThemeList() {
-		return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList()));
-	}
+    @GetMapping
+    public ResponseEntity<BaseResponse> getThemeList() {
+        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList()));
+    }
 
-	@PutMapping
-	public ResponseEntity<BaseResponse> editTheme(
-		@RequestBody ThemeDto.EditThemeRequest request) {
-		themeService.editTheme(request);
-		return ResponseEntity.ok(new BaseResponse(OK));
-	}
+    @PutMapping
+    public ResponseEntity<BaseResponse> editTheme(
+        @RequestBody ThemeDto.EditThemeRequest request) {
+        themeService.editTheme(request);
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
 
-	@DeleteMapping
-	public ResponseEntity<BaseResponse> removeTheme(
-		@RequestBody ThemeDto.RemoveRequest request) {
-		themeService.removeTheme(request);
-		return ResponseEntity.ok(new BaseResponse(OK));
-	}
+    @DeleteMapping
+    public ResponseEntity<BaseResponse> removeTheme(
+        @RequestBody ThemeDto.RemoveRequest request) {
+        themeService.removeTheme(request);
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
 }

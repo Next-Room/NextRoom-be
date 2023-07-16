@@ -12,11 +12,11 @@ import jakarta.persistence.OneToMany;
 
 @Entity
 public class Shop {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	private String code;
-	private String name;
-	@OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
-	private List<Theme> themes = new ArrayList<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String code;
+    private String name;
+    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    private List<Theme> themes = new ArrayList<>();
 }

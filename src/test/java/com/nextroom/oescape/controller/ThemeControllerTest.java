@@ -20,39 +20,39 @@ import com.nextroom.oescape.dto.ThemeDto;
 @ExtendWith(MockitoExtension.class)
 class ThemeControllerTest {
 
-	@InjectMocks
-	private ThemeController themeController;
+    @InjectMocks
+    private ThemeController themeController;
 
-	private MockMvc mockMvc;
-	private Gson gson;
+    private MockMvc mockMvc;
+    private Gson gson;
 
-	@BeforeEach
-	void init() {
-		gson = new Gson();
-		mockMvc = MockMvcBuilders.standaloneSetup(themeController).build();
-	}
+    @BeforeEach
+    void init() {
+        gson = new Gson();
+        mockMvc = MockMvcBuilders.standaloneSetup(themeController).build();
+    }
 
-	@Test
-	@DisplayName("테마 등록 실패_사용자 식별값 헤더에 없음")
-	void failAddTheme() throws Exception {
-		//given
-		String url = "/api/v1/theme";
+    @Test
+    @DisplayName("테마 등록 실패_사용자 식별값 헤더에 없음")
+    void failAddTheme() throws Exception {
+        //given
+        String url = "/api/v1/theme";
 
-		//when
-		ResultActions resultActions = mockMvc.perform(
-			MockMvcRequestBuilders.post(url)
-				.content(gson.toJson(addThemeRequest("테마 이름", 70)))
-				.contentType(MediaType.APPLICATION_JSON)
-		);
+        //when
+        ResultActions resultActions = mockMvc.perform(
+            MockMvcRequestBuilders.post(url)
+                .content(gson.toJson(addThemeRequest("테마 이름", 70)))
+                .contentType(MediaType.APPLICATION_JSON)
+        );
 
-		//then
-		resultActions.andExpect(status().isBadRequest());
-	}
+        //then
+        resultActions.andExpect(status().isBadRequest());
+    }
 
-	private ThemeDto.AddThemeRequest addThemeRequest(String title, int timeLimit) {
-		return ThemeDto.AddThemeRequest.builder()
-			.title(title)
-			.timeLimit(timeLimit)
-			.build();
-	}
+    private ThemeDto.AddThemeRequest addThemeRequest(String title, int timeLimit) {
+        return ThemeDto.AddThemeRequest.builder()
+            .title(title)
+            .timeLimit(timeLimit)
+            .build();
+    }
 }

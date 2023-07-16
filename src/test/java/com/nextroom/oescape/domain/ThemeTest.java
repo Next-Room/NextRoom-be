@@ -7,10 +7,10 @@ import org.junit.jupiter.api.Test;
 
 class ThemeTest {
 
-	@Test
-	@DisplayName("테마 생성")
-	void createTheme() {
-		Theme theme = new Theme();
-		assertNotNull(theme);
-	}
+    @Test
+    @DisplayName("테마 생성")
+    void createTheme() {
+        Theme theme = new Theme();
+        assertNotNull(theme);
+    }
 }

@@ -23,14 +23,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Theme {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "shop_id")
-	private Shop shop;
-	private String title;
-	private Integer timeLimit;
-	@OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
-	private List<Hint> hints = new ArrayList<>();
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "shop_id")
+    private Shop shop;
+    private String title;
+    private Integer timeLimit;
+    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
+    private List<Hint> hints = new ArrayList<>();
 }

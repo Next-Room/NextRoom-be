@@ -9,7 +9,7 @@ import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.domain.Theme;
 
 public interface ThemeRepository extends JpaRepository<Theme, Long> {
-	Optional<Theme> findByTitle(String title);
+    Optional<Theme> findByTitle(String title);
 
-	List<Theme> findAllByShop(Shop shop);
+    List<Theme> findAllByShop(Shop shop);
 }

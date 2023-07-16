@@ -9,14 +9,14 @@ import lombok.Getter;
 @Getter
 @Builder
 public class ErrorResponse {
-	private final int code;
-	private final String message;
+    private final int code;
+    private final String message;
 
-	public static ResponseEntity<ErrorResponse> toResponseEntity(HttpStatus status, String message) {
-		return ResponseEntity
-			.status(status)
-			.body(ErrorResponse.builder()
-				.code(status.value())
-				.message(message).build());
-	}
+    public static ResponseEntity<ErrorResponse> toResponseEntity(HttpStatus status, String message) {
+        return ResponseEntity
+            .status(status)
+            .body(ErrorResponse.builder()
+                .code(status.value())
+                .message(message).build());
+    }
 }

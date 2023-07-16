@@ -9,16 +9,16 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum StatusCode {
 
-	/**
-	 * 4xx Bad Request
-	 */
-	BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    /**
+     * 4xx Bad Request
+     */
+    BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
 
-	/**
-	 * 2xx OK
-	 */
-	OK(HttpStatus.OK, "성공");
+    /**
+     * 2xx OK
+     */
+    OK(HttpStatus.OK, "성공");
 
-	private final HttpStatus code;
-	private final String message;
+    private final HttpStatus code;
+    private final String message;
 }
