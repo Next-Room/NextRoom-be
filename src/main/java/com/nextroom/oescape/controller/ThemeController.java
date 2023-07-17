@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.dto.BaseResponse;
 import com.nextroom.oescape.dto.DataResponse;
 import com.nextroom.oescape.dto.ThemeDto;
@@ -27,26 +28,26 @@ public class ThemeController {
     @PostMapping
     public ResponseEntity<BaseResponse> addTheme(
         @RequestBody ThemeDto.AddThemeRequest request) {
-        themeService.addTheme(request);
+        themeService.addTheme(new Shop(), request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
     @GetMapping
     public ResponseEntity<BaseResponse> getThemeList() {
-        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList()));
+        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList(new Shop())));
     }
 
     @PutMapping
     public ResponseEntity<BaseResponse> editTheme(
         @RequestBody ThemeDto.EditThemeRequest request) {
-        themeService.editTheme(request);
+        themeService.editTheme(new Shop(), request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
     @DeleteMapping
     public ResponseEntity<BaseResponse> removeTheme(
         @RequestBody ThemeDto.RemoveRequest request) {
-        themeService.removeTheme(request);
+        themeService.removeTheme(new Shop(), request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 }
