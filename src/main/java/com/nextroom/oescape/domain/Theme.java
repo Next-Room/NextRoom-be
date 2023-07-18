@@ -3,6 +3,8 @@ package com.nextroom.oescape.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nextroom.oescape.dto.ThemeDto;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,4 +35,9 @@ public class Theme {
     private Integer timeLimit;
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
     private List<Hint> hints = new ArrayList<>();
+
+    public void update(ThemeDto.EditThemeRequest request) {
+        this.title = request.getTitle();
+        this.timeLimit = request.getTimeLimit();
+    }
 }

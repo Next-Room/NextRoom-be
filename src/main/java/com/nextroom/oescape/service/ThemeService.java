@@ -1,15 +1,17 @@
 package com.nextroom.oescape.service;
 
+import static com.nextroom.oescape.exceptions.StatusCode.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.domain.Theme;
 import com.nextroom.oescape.dto.ThemeDto;
 import com.nextroom.oescape.exceptions.CustomException;
-import com.nextroom.oescape.exceptions.StatusCode;
 import com.nextroom.oescape.repository.ThemeRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -19,10 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class ThemeService {
     private final ThemeRepository themeRepository;
 
-    public ThemeDto.AddThemeResponse addTheme(ThemeDto.AddThemeRequest request) {
-        Theme result = themeRepository.findByTitle(request.getTitle()).orElseThrow(
-            () -> new CustomException(StatusCode.BAD_REQUEST)
-        );
+    @Transactional
+    public ThemeDto.AddThemeResponse addTheme(Shop shop, ThemeDto.AddThemeRequest request) {
+        //TODO 회원 검증 로직
 
         Theme theme = Theme.builder()
             .title(request.getTitle())
@@ -38,10 +39,14 @@ public class ThemeService {
             .build();
     }
 
-    public List<ThemeDto.ThemeListResponse> getThemeList() {
+    @Transactional(readOnly = true)
+    public List<ThemeDto.ThemeListResponse> getThemeList(Shop shop) {
         //TODO 회원 검증 로직
 
-        List<Theme> themeList = themeRepository.findAllByShop(new Shop());
+        List<Theme> themeList = themeRepository.findAllByShop(shop);
+        if (themeList.size() == 0) {
+            throw new CustomException(THEME_NOT_FOUNT);
+        }
         List<ThemeDto.ThemeListResponse> themeListResponses = new ArrayList<>();
         for (Theme theme : themeList) {
             themeListResponses.add(ThemeDto.ThemeListResponse
@@ -54,22 +59,22 @@ public class ThemeService {
         return themeListResponses;
     }
 
-    public void editTheme(ThemeDto.EditThemeRequest request) {
-        //TODO 테마 사용자 조회
+    @Transactional
+    public void editTheme(Shop shop, ThemeDto.EditThemeRequest request) {
+        //TODO 회원 검증 로직
 
-        //TODO 테마 조회
-        Theme theme = themeRepository.findById(request.getId()).orElseThrow(
-            () -> new CustomException(StatusCode.BAD_REQUEST)
+        Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
+            () -> new CustomException(THEME_NOT_FOUNT)
         );
-
-        //TODO 테마 수정
+        theme.update(request);
     }
 
-    public void removeTheme(ThemeDto.RemoveRequest request) {
-        //TODO 테마 사용자 조회
+    public void removeTheme(Shop shop, ThemeDto.RemoveRequest request) {
+        //TODO 회원 검증 로직
 
-        //TODO 테마 조회
-
-        //TODO 테마 삭제
+        Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
+            () -> new CustomException(THEME_NOT_FOUNT)
+        );
+        themeRepository.delete(theme);
     }
 }

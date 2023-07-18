@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.domain.Theme;
 import com.nextroom.oescape.dto.ThemeDto;
 import com.nextroom.oescape.exceptions.CustomException;
@@ -39,6 +40,7 @@ class ThemeServiceTest {
 
         //when
         ThemeDto.AddThemeResponse result = themeService.addTheme(
+            new Shop(),
             ThemeDto.AddThemeRequest
                 .builder()
                 .title(title)
@@ -69,6 +71,7 @@ class ThemeServiceTest {
 
         //when
         CustomException result = assertThrows(CustomException.class, () -> themeService.addTheme(
+            new Shop(),
             ThemeDto.AddThemeRequest
                 .builder()
                 .title(title)
