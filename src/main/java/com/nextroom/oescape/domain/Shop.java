@@ -26,7 +26,7 @@ public class Shop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String adminCode;
-    private String name;
+    private String password;
     @Enumerated(EnumType.STRING)
     private Authority authority;
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)

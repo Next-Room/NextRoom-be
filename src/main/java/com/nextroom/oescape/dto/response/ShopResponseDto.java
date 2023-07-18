@@ -12,14 +12,12 @@ import lombok.Getter;
 @Getter
 public class ShopResponseDto {
     private String adminCode;
-    private String name;
     private List<Theme> themes;
 
     public static ShopResponseDto of(Shop shop) {
         return ShopResponseDto.builder()
-                .adminCode(shop.getAdminCode())
-                .name(shop.getName())
-                .themes(shop.getThemes())
-                .build();
+            .adminCode(shop.getAdminCode())
+            .themes(shop.getThemes())
+            .build();
     }
 }

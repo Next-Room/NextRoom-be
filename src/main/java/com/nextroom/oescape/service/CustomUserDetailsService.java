@@ -34,8 +34,8 @@ public class CustomUserDetailsService implements UserDetailsService {
         GrantedAuthority grantedAuthority = new SimpleGrantedAuthority(shop.getAuthority().toString());
 
         return new User(
-            shop.getAdminCode(),
-            shop.getAdminCode(),
+            String.valueOf(shop.getId()),
+            shop.getPassword(),
             Collections.singleton(grantedAuthority)
         );
     }

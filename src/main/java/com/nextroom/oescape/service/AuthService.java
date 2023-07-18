@@ -34,7 +34,7 @@ public class AuthService {
             throw new RuntimeException("The shop already exists.");
         }
 
-        Shop shop = shopRequestDto.toShop();
+        Shop shop = shopRequestDto.toShop(passwordEncoder);
         return ShopResponseDto.of(shopRepository.save(shop));
     }
 
@@ -47,21 +47,21 @@ public class AuthService {
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
         try {
             Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        System.out.println("hit3");
+            System.out.println("hit3");
 
-        // 3. 인증 정보를 기반으로 JWT 토큰 생성
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+            // 3. 인증 정보를 기반으로 JWT 토큰 생성
+            TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
 
-        // 4. RefreshToken 저장
-        RefreshToken refreshToken = RefreshToken.builder()
-            .key(authentication.getName())
-            .value(tokenDto.getRefreshToken())
-            .build();
+            // 4. RefreshToken 저장
+            RefreshToken refreshToken = RefreshToken.builder()
+                .key(authentication.getName())
+                .value(tokenDto.getRefreshToken())
+                .build();
 
-        refreshTokenRepository.save(refreshToken);
+            refreshTokenRepository.save(refreshToken);
 
-        // 5. 토큰 발급
-        return tokenDto;
+            // 5. 토큰 발급
+            return tokenDto;
         } catch (Exception e) {
             System.out.println(e.toString());
         }
