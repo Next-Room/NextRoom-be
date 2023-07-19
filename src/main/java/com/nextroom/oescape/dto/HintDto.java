@@ -16,4 +16,9 @@ public class HintDto {
         private final int progress;
     }
 
+    @Getter
+    public static class HintListResponse {
+
+    }
+
 }
