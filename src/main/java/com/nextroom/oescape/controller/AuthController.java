@@ -1,11 +1,16 @@
 package com.nextroom.oescape.controller;
 
+import static com.nextroom.oescape.exceptions.StatusCode.*;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nextroom.oescape.domain.Shop;
+import com.nextroom.oescape.dto.BaseResponse;
+import com.nextroom.oescape.dto.DataResponse;
 import com.nextroom.oescape.dto.response.TokenResponseDto;
 import com.nextroom.oescape.dto.request.ShopRequestDto;
 import com.nextroom.oescape.dto.request.TokenRequestDto;
@@ -14,7 +19,6 @@ import com.nextroom.oescape.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
-// TODO 1st: 인증/인가 정상 실행 확인
 // TODO 2nd: 응답 형식 우리 프로젝트 컨벤션에 맞게 설정
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -23,17 +27,17 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<ShopResponseDto> signup(@RequestBody ShopRequestDto shopRequestDto) {
-        return ResponseEntity.ok(authService.signup(shopRequestDto));
+    public ResponseEntity<BaseResponse> signup(@RequestBody ShopRequestDto shopRequestDto) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.signup(shopRequestDto)));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponseDto> login(@RequestBody ShopRequestDto shopRequestDto) {
-        return ResponseEntity.ok(authService.login(shopRequestDto));
+    public ResponseEntity<BaseResponse> login(@RequestBody ShopRequestDto shopRequestDto) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.login(shopRequestDto)));
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<TokenResponseDto> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
-        return ResponseEntity.ok(authService.reissue(tokenRequestDto));
+    public ResponseEntity<BaseResponse> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.reissue(tokenRequestDto)));
     }
 }
