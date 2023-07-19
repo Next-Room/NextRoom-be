@@ -23,11 +23,10 @@ public class ThemeService {
 
     @Transactional
     public ThemeDto.AddThemeResponse addTheme(Shop shop, ThemeDto.AddThemeRequest request) {
-        //TODO 회원 검증 로직
-
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
+            .shop(shop)
             .build();
 
         Theme savedTheme = themeRepository.save(theme);
@@ -41,8 +40,6 @@ public class ThemeService {
 
     @Transactional(readOnly = true)
     public List<ThemeDto.ThemeListResponse> getThemeList(Shop shop) {
-        //TODO 회원 검증 로직
-
         List<Theme> themeList = themeRepository.findAllByShop(shop);
         if (themeList.size() == 0) {
             throw new CustomException(THEME_NOT_FOUNT);
@@ -61,8 +58,6 @@ public class ThemeService {
 
     @Transactional
     public void editTheme(Shop shop, ThemeDto.EditThemeRequest request) {
-        //TODO 회원 검증 로직
-
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
             () -> new CustomException(THEME_NOT_FOUNT)
         );
@@ -70,8 +65,6 @@ public class ThemeService {
     }
 
     public void removeTheme(Shop shop, ThemeDto.RemoveRequest request) {
-        //TODO 회원 검증 로직
-
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
             () -> new CustomException(THEME_NOT_FOUNT)
         );

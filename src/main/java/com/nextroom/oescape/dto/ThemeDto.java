@@ -41,8 +41,8 @@ public class ThemeDto {
     }
 
     @Getter
-    @RequiredArgsConstructor
+    @NoArgsConstructor
     public static class RemoveRequest {
-        private final Long id;
+        private Long id;
     }
 }
