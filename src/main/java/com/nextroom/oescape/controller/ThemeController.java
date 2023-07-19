@@ -4,6 +4,7 @@ import static com.nextroom.oescape.exceptions.StatusCode.*;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,36 +28,31 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ThemeController {
     private final ThemeService themeService;
-    private final ShopService shopService;
 
     @PostMapping
     public ResponseEntity<BaseResponse> addTheme(
-        Authentication authentication,
+        @AuthenticationPrincipal Shop shop,
         @RequestBody ThemeDto.AddThemeRequest request) {
-        Shop shop = shopService.extractShopFromAuthentication(authentication);
         themeService.addTheme(shop, request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse> getThemeList(Authentication authentication) {
-        Shop shop = shopService.extractShopFromAuthentication(authentication);
+    public ResponseEntity<BaseResponse> getThemeList(@AuthenticationPrincipal Shop shop) {
         return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList(shop)));
     }
 
     @PutMapping
-    public ResponseEntity<BaseResponse> editTheme(Authentication authentication,
+    public ResponseEntity<BaseResponse> editTheme(@AuthenticationPrincipal Shop shop,
         @RequestBody ThemeDto.EditThemeRequest request) {
-        Shop shop = shopService.extractShopFromAuthentication(authentication);
         themeService.editTheme(shop, request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
     @DeleteMapping
     public ResponseEntity<BaseResponse> removeTheme(
-        Authentication authentication,
+        @AuthenticationPrincipal Shop shop,
         @RequestBody ThemeDto.RemoveRequest request) {
-        Shop shop = shopService.extractShopFromAuthentication(authentication);
         themeService.removeTheme(shop, request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
