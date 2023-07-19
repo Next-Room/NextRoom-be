@@ -1,8 +1,7 @@
-package com.nextroom.oescape.config;
+package com.nextroom.oescape.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -12,12 +11,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import com.nextroom.oescape.config.security.JwtAccessDeniedHandler;
-import com.nextroom.oescape.config.security.JwtAuthenticationEntryPoint;
-import com.nextroom.oescape.config.security.JwtSecurityConfig;
-import com.nextroom.oescape.config.security.TokenProvider;
+import com.nextroom.oescape.security.TokenProvider;
+import com.nextroom.oescape.security.jwt.JwtAccessDeniedHandler;
+import com.nextroom.oescape.security.jwt.JwtAuthenticationEntryPoint;
 
 import lombok.RequiredArgsConstructor;
 
@@ -65,7 +62,6 @@ public class SecurityConfig {
 
             .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
 
             // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
             .apply(new JwtSecurityConfig(tokenProvider));

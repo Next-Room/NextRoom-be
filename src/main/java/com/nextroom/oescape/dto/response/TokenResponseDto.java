@@ -1,11 +1,11 @@
-package com.nextroom.oescape.config.security;
+package com.nextroom.oescape.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;
 
 @Builder
 @Getter
-public class TokenDto {
+public class TokenResponseDto {
     private String grantType;
     private String accessToken;
     private long accessTokenExpiresIn;

@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 @Table(name = "refresh_token")
 @Entity
 public class RefreshToken {
-
     @Id
     @Column(name = "rt_key")
     private String key;

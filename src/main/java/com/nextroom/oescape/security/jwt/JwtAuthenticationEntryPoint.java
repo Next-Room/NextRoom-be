@@ -1,4 +1,4 @@
-package com.nextroom.oescape.config.security;
+package com.nextroom.oescape.security.jwt;
 
 import java.io.IOException;
 
