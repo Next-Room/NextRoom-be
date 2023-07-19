@@ -13,13 +13,15 @@ import com.nextroom.oescape.domain.Theme;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 public class AuthDto {
     @Getter
     @Builder
     public static class SignUpRequestDto {
         private final String adminCode;
-        private final String password;
+        @Setter
+        private String password;
 
         public Shop toShop(PasswordEncoder passwordEncoder) {
             return Shop.builder()
@@ -48,7 +50,8 @@ public class AuthDto {
     @Builder
     public static class LogInRequestDto {
         private final String adminCode;
-        private final String password;
+        @Setter
+        private String password;
 
         public UsernamePasswordAuthenticationToken toAuthentication() {
             return new UsernamePasswordAuthenticationToken(this.adminCode, this.password,

@@ -23,11 +23,13 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse> signUp(@RequestBody AuthDto.SignUpRequestDto request) {
+        request.setPassword(request.getAdminCode());
         return ResponseEntity.ok(new DataResponse<>(OK, authService.signUp(request)));
     }
 
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> logIn(@RequestBody AuthDto.LogInRequestDto request) {
+        request.setPassword(request.getAdminCode());
         return ResponseEntity.ok(new DataResponse<>(OK, authService.login(request)));
     }
 
