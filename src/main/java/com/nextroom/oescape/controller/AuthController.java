@@ -19,7 +19,6 @@ import com.nextroom.oescape.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
 
-// TODO 2nd: 응답 형식 우리 프로젝트 컨벤션에 맞게 설정
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor

@@ -42,14 +42,6 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
 
-            .authorizeHttpRequests(
-                authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/api/v1/auth/**", "/h2-console/**")
-                    .permitAll()
-                    .anyRequest()
-                    .authenticated()
-            )
-
             // exception handling
             .exceptionHandling(
                 httpSecurityExceptionHandlingConfigurer -> httpSecurityExceptionHandlingConfigurer
@@ -62,6 +54,16 @@ public class SecurityConfig {
 
             .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+            .authorizeHttpRequests(
+                authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
+                    .requestMatchers("/api/v1/auth/**", "/h2-console/**")
+                    .permitAll()
+                    .requestMatchers("/api/v1/theme/**")
+                    .hasAnyAuthority("ROLE_USER")
+                    .anyRequest()
+                    .authenticated()
+            )
 
             // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
             .apply(new JwtSecurityConfig(tokenProvider));

@@ -86,7 +86,8 @@ public class TokenProvider {
 
         UserDetails principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, principal.getPassword());
+        return new UsernamePasswordAuthenticationToken(principal.getUsername(), principal.getPassword(),
+            principal.getAuthorities());
     }
 
     public boolean validateToken(String token) {
