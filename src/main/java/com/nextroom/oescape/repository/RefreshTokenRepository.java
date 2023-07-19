@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.nextroom.oescape.domain.RefreshToken;
 
-@Repository
 public interface RefreshTokenRepository extends JpaRepository<RefreshToken, Long> {
     Optional<RefreshToken> findByKey(String key);
 }

@@ -8,13 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nextroom.oescape.domain.Shop;
+import com.nextroom.oescape.dto.AuthDto;
 import com.nextroom.oescape.dto.BaseResponse;
 import com.nextroom.oescape.dto.DataResponse;
-import com.nextroom.oescape.dto.response.TokenResponseDto;
-import com.nextroom.oescape.dto.request.ShopRequestDto;
-import com.nextroom.oescape.dto.request.TokenRequestDto;
-import com.nextroom.oescape.dto.response.ShopResponseDto;
 import com.nextroom.oescape.service.AuthService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,17 +22,17 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse> signup(@RequestBody ShopRequestDto shopRequestDto) {
-        return ResponseEntity.ok(new DataResponse<>(OK, authService.signup(shopRequestDto)));
+    public ResponseEntity<BaseResponse> signUp(@RequestBody AuthDto.SignUpRequestDto request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.signUp(request)));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse> login(@RequestBody ShopRequestDto shopRequestDto) {
-        return ResponseEntity.ok(new DataResponse<>(OK, authService.login(shopRequestDto)));
+    public ResponseEntity<BaseResponse> logIn(@RequestBody AuthDto.LogInRequestDto request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.login(request)));
     }
 
     @PostMapping("/reissue")
-    public ResponseEntity<BaseResponse> reissue(@RequestBody TokenRequestDto tokenRequestDto) {
-        return ResponseEntity.ok(new DataResponse<>(OK, authService.reissue(tokenRequestDto)));
+    public ResponseEntity<BaseResponse> reissue(@RequestBody AuthDto.ReissueRequestDto request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.reissue(request)));
     }
 }

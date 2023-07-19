@@ -3,7 +3,6 @@ package com.nextroom.oescape.controller;
 import static com.nextroom.oescape.exceptions.StatusCode.*;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,8 +16,6 @@ import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.dto.BaseResponse;
 import com.nextroom.oescape.dto.DataResponse;
 import com.nextroom.oescape.dto.ThemeDto;
-import com.nextroom.oescape.repository.ShopRepository;
-import com.nextroom.oescape.service.ShopService;
 import com.nextroom.oescape.service.ThemeService;
 
 import lombok.RequiredArgsConstructor;
@@ -52,7 +49,7 @@ public class ThemeController {
     @DeleteMapping
     public ResponseEntity<BaseResponse> removeTheme(
         @AuthenticationPrincipal Shop shop,
-        @RequestBody ThemeDto.RemoveRequest request) {
+        @RequestBody ThemeDto.RemoveThemeRequest request) {
         themeService.removeTheme(shop, request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }

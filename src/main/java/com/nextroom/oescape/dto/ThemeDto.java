@@ -18,14 +18,6 @@ public class ThemeDto {
 
     @Getter
     @Builder
-    public static class AddThemeResponse {
-        private final Long id;
-        private final String title;
-        private final Integer timeLimit;
-    }
-
-    @Getter
-    @Builder
     public static class ThemeListResponse {
         private final Long id;
         private final String title;
@@ -42,7 +34,7 @@ public class ThemeDto {
 
     @Getter
     @NoArgsConstructor
-    public static class RemoveRequest {
+    public static class RemoveThemeRequest {
         private Long id;
     }
 }

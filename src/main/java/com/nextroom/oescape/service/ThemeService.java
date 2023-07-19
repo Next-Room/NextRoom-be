@@ -22,20 +22,14 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ThemeDto.AddThemeResponse addTheme(Shop shop, ThemeDto.AddThemeRequest request) {
+    public void addTheme(Shop shop, ThemeDto.AddThemeRequest request) {
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
             .shop(shop)
             .build();
 
-        Theme savedTheme = themeRepository.save(theme);
-
-        return ThemeDto.AddThemeResponse.builder()
-            .id(savedTheme.getId())
-            .title(savedTheme.getTitle())
-            .timeLimit(savedTheme.getTimeLimit())
-            .build();
+        themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)
@@ -64,7 +58,7 @@ public class ThemeService {
         theme.update(request);
     }
 
-    public void removeTheme(Shop shop, ThemeDto.RemoveRequest request) {
+    public void removeTheme(Shop shop, ThemeDto.RemoveThemeRequest request) {
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
             () -> new CustomException(THEME_NOT_FOUNT)
         );

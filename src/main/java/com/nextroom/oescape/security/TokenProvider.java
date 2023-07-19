@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import com.nextroom.oescape.dto.response.TokenResponseDto;
+import com.nextroom.oescape.dto.TokenDto;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -42,7 +42,7 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenResponseDto generateTokenDto(Authentication authentication) {
+    public TokenDto generateTokenDto(Authentication authentication) {
         String authorities = authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.joining(","));
@@ -63,7 +63,7 @@ public class TokenProvider {
             .signWith(key, SignatureAlgorithm.HS512)
             .compact();
 
-        return TokenResponseDto.builder()
+        return TokenDto.builder()
             .grantType(BEARER_TYPE)
             .accessToken(accessToken)
             .accessTokenExpiresIn(accessTokenExpiresIn.getTime())
