@@ -17,31 +17,63 @@ import com.nextroom.oescape.dto.DataResponse;
 import com.nextroom.oescape.dto.HintDto;
 import com.nextroom.oescape.service.HintService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Hint")
 @RestController
 @RequestMapping("/api/v1/hint")
 @RequiredArgsConstructor
 public class HintController {
     private final HintService hintService;
 
+    @Operation(
+        summary = "힌트 등록",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
+        }
+    )
     @PostMapping
     public ResponseEntity<BaseResponse> addHint(@RequestBody HintDto.AddHintRequest request) {
         hintService.addHint(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
+    @Operation(
+        summary = "힌트 조회",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
+        }
+    )
     @GetMapping
     public ResponseEntity<BaseResponse> getHintList(@RequestParam("themeId") Long themeId) {
         return ResponseEntity.ok(new DataResponse<>(OK, hintService.getHintList(themeId)));
     }
 
+    @Operation(
+        summary = "힌트 수정",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
+        }
+    )
     @PutMapping
     public ResponseEntity<BaseResponse> editHint(@RequestBody HintDto.EditHintRequest request) {
         hintService.editHint(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
+    @Operation(
+        summary = "힌트 삭제",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
+        }
+    )
     @DeleteMapping
     public ResponseEntity<BaseResponse> removeHint(@RequestBody HintDto.RemoveHintRequest request) {
         hintService.removeHint(request);

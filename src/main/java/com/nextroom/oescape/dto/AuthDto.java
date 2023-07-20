@@ -1,7 +1,6 @@
 package com.nextroom.oescape.dto;
 
 import java.util.Collections;
-import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,15 +8,18 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.nextroom.oescape.domain.Authority;
 import com.nextroom.oescape.domain.Shop;
-import com.nextroom.oescape.domain.Theme;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class AuthDto {
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class SignUpRequestDto {
         private final String adminCode;
         @Setter
@@ -36,18 +38,12 @@ public class AuthDto {
     @Builder
     public static class SignUpResponseDto {
         private String adminCode;
-        private List<Theme> themes;
-
-        public static AuthDto.SignUpResponseDto of(Shop shop) {
-            return AuthDto.SignUpResponseDto.builder()
-                .adminCode(shop.getAdminCode())
-                .themes(shop.getThemes())
-                .build();
-        }
     }
 
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class LogInRequestDto {
         private final String adminCode;
         @Setter
