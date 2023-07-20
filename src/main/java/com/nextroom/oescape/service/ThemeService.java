@@ -22,30 +22,21 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
 
     @Transactional
-    public ThemeDto.AddThemeResponse addTheme(Shop shop, ThemeDto.AddThemeRequest request) {
-        //TODO 회원 검증 로직
-
+    public void addTheme(Shop shop, ThemeDto.AddThemeRequest request) {
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
+            .shop(shop)
             .build();
 
-        Theme savedTheme = themeRepository.save(theme);
-
-        return ThemeDto.AddThemeResponse.builder()
-            .id(savedTheme.getId())
-            .title(savedTheme.getTitle())
-            .timeLimit(savedTheme.getTimeLimit())
-            .build();
+        themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)
     public List<ThemeDto.ThemeListResponse> getThemeList(Shop shop) {
-        //TODO 회원 검증 로직
-
         List<Theme> themeList = themeRepository.findAllByShop(shop);
         if (themeList.size() == 0) {
-            throw new CustomException(THEME_NOT_FOUNT);
+            throw new CustomException(THEME_NOT_FOUND);
         }
         List<ThemeDto.ThemeListResponse> themeListResponses = new ArrayList<>();
         for (Theme theme : themeList) {
@@ -61,19 +52,15 @@ public class ThemeService {
 
     @Transactional
     public void editTheme(Shop shop, ThemeDto.EditThemeRequest request) {
-        //TODO 회원 검증 로직
-
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
-            () -> new CustomException(THEME_NOT_FOUNT)
+            () -> new CustomException(THEME_NOT_FOUND)
         );
         theme.update(request);
     }
 
-    public void removeTheme(Shop shop, ThemeDto.RemoveRequest request) {
-        //TODO 회원 검증 로직
-
+    public void removeTheme(Shop shop, ThemeDto.RemoveThemeRequest request) {
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
-            () -> new CustomException(THEME_NOT_FOUNT)
+            () -> new CustomException(THEME_NOT_FOUND)
         );
         themeRepository.delete(theme);
     }
