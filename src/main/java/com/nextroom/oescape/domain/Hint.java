@@ -1,5 +1,7 @@
 package com.nextroom.oescape.domain;
 
+import com.nextroom.oescape.dto.HintDto;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,4 +31,16 @@ public class Hint {
     private String contents;
     private String answer;
     private Integer progress;
+
+    public HintDto.HintListResponse toHintListResponse() {
+        return HintDto.HintListResponse
+            .builder()
+            .id(this.id)
+            .hintTitle(this.hintTitle)
+            .hintCode(this.hintCode)
+            .contents(this.contents)
+            .answer(this.answer)
+            .progress(this.progress)
+            .build();
+    }
 }

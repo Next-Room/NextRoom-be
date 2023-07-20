@@ -50,7 +50,13 @@ public class HintService {
     }
 
     @Transactional
-    public List<HintDto.HintListResponse> getHintList(Long themeId) {
-        return null;
+    public List<HintDto.HintListResponse> getHintList(Shop shop, Long themeId) {
+        validateTheme(shop, themeId);
+
+        Theme theme = themeRepository.findById(
+                themeId) // TODO optimize by making method get theme from shop
+            .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
+
+        return theme.getHints().stream().map(Hint::toHintListResponse).toList();
     }
 }
