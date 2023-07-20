@@ -33,6 +33,7 @@ public enum StatusCode {
      */
     NOT_FOUND(HttpStatus.NOT_FOUND, "리소스를 찾을 수 없습니다."),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 테마가 없습니다."),
+    HINT_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 힌트가 없습니다."),
 
     /**
      * 409 Conflict

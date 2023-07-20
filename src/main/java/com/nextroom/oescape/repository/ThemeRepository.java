@@ -14,4 +14,6 @@ public interface ThemeRepository extends JpaRepository<Theme, Long> {
     List<Theme> findAllByShop(Shop shop);
 
     Optional<Theme> findByIdAndShop(Long id, Shop shop);
+
+    boolean existsByIdAndShop(Long themeId, Shop shop);
 }
