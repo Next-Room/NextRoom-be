@@ -7,14 +7,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import com.nextroom.oescape.domain.RefreshToken;
+import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.dto.AuthDto;
 import com.nextroom.oescape.exceptions.CustomException;
 import com.nextroom.oescape.exceptions.StatusCode;
-import com.nextroom.oescape.security.TokenProvider;
-import com.nextroom.oescape.domain.RefreshToken;
-import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.repository.RefreshTokenRepository;
 import com.nextroom.oescape.repository.ShopRepository;
+import com.nextroom.oescape.security.TokenProvider;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,10 @@ public class AuthService {
             throw new CustomException(StatusCode.SHOP_ALREADY_EXIST);
         }
 
-        Shop shop = request.toShop(passwordEncoder);
-        return AuthDto.SignUpResponseDto.of(shopRepository.save(shop));
+        Shop shop = shopRepository.save(request.toShop(passwordEncoder));
+
+        return AuthDto.SignUpResponseDto.builder()
+            .adminCode(shop.getAdminCode()).build();
     }
 
     @Transactional
