@@ -36,7 +36,7 @@ public class ThemeService {
     public List<ThemeDto.ThemeListResponse> getThemeList(Shop shop) {
         List<Theme> themeList = themeRepository.findAllByShop(shop);
         if (themeList.size() == 0) {
-            throw new CustomException(THEME_NOT_FOUNT);
+            throw new CustomException(THEME_NOT_FOUND);
         }
         List<ThemeDto.ThemeListResponse> themeListResponses = new ArrayList<>();
         for (Theme theme : themeList) {
@@ -53,14 +53,14 @@ public class ThemeService {
     @Transactional
     public void editTheme(Shop shop, ThemeDto.EditThemeRequest request) {
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
-            () -> new CustomException(THEME_NOT_FOUNT)
+            () -> new CustomException(THEME_NOT_FOUND)
         );
         theme.update(request);
     }
 
     public void removeTheme(Shop shop, ThemeDto.RemoveThemeRequest request) {
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
-            () -> new CustomException(THEME_NOT_FOUNT)
+            () -> new CustomException(THEME_NOT_FOUND)
         );
         themeRepository.delete(theme);
     }

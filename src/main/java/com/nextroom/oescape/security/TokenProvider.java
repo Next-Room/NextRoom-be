@@ -16,6 +16,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
 import com.nextroom.oescape.dto.TokenDto;
+import com.nextroom.oescape.exceptions.CustomException;
+import com.nextroom.oescape.exceptions.StatusCode;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -76,7 +78,7 @@ public class TokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims.get(AUTHORITIES_KEY) == null) {
-            throw new RuntimeException("권한 정보가 없는 토큰입니다.");
+            throw new CustomException(StatusCode.TOKEN_UNAUTHORIZED);
         }
 
         Collection<? extends GrantedAuthority> authorities =

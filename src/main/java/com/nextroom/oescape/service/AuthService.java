@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.nextroom.oescape.dto.AuthDto;
+import com.nextroom.oescape.exceptions.CustomException;
+import com.nextroom.oescape.exceptions.StatusCode;
 import com.nextroom.oescape.security.TokenProvider;
 import com.nextroom.oescape.domain.RefreshToken;
 import com.nextroom.oescape.domain.Shop;
@@ -29,7 +31,7 @@ public class AuthService {
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
         if (shopRepository.existsByAdminCode(request.getAdminCode())) {
-            throw new RuntimeException("The shop already exists.");
+            throw new CustomException(StatusCode.SHOP_ALREADY_EXIST);
         }
 
         Shop shop = request.toShop(passwordEncoder);
@@ -57,16 +59,16 @@ public class AuthService {
     @Transactional
     public AuthDto.ReissueResponseDto reissue(AuthDto.ReissueRequestDto request) {
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token is invalid.");
+            throw new CustomException(StatusCode.INVALID_TOKEN);
         }
 
         Authentication authentication = tokenProvider.getAuthentication(request.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-            .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
+            .orElseThrow(() -> new CustomException(StatusCode.SHOP_IS_LOG_OUT));
 
         if (!refreshToken.getValue().equals(request.getRefreshToken())) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+            throw new CustomException(StatusCode.INVALID_TOKEN);
         }
 
         AuthDto.ReissueResponseDto response = tokenProvider.generateTokenDto(authentication).toReissueResponseDto();
