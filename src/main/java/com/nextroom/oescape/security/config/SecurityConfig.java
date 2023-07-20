@@ -37,7 +37,7 @@ public class SecurityConfig {
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web) -> web.ignoring()
-            .requestMatchers("/h2-console/**", "/favicon.ico");
+            .requestMatchers("/favicon.ico");
     }
 
     @Bean
@@ -60,7 +60,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(
                 authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/api/v1/auth/**", "/h2-console/**")
+                    .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**")
                     .permitAll()
                     .requestMatchers("/api/v1/theme/**")
                     .hasAnyAuthority("ROLE_USER")
