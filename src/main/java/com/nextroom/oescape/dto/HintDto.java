@@ -2,6 +2,7 @@ package com.nextroom.oescape.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 public class HintDto {
@@ -37,5 +38,11 @@ public class HintDto {
         private final String contents;
         private final String answer;
         private final Integer progress;
+    }
+
+    @Getter
+    @NoArgsConstructor
+    public static class RemoveHintRequest {
+        private Long id;
     }
 }

@@ -62,6 +62,13 @@ public class HintService {
         hint.update(request);
     }
 
+    public void removeHint(Shop shop, HintDto.RemoveHintRequest request) {
+        Hint hint = hintRepository.findById(request.getId()).orElseThrow(
+            () -> new CustomException(HINT_NOT_FOUND)
+        );
+        hintRepository.delete(hint);
+    }
+
     private void validateTheme(Shop shop, Long themeId) {
         if (!themeRepository.existsByIdAndShop(themeId, shop)) {
             throw new CustomException(THEME_NOT_FOUND);
