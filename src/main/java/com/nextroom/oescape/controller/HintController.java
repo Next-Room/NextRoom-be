@@ -52,7 +52,6 @@ public class HintController {
     public ResponseEntity<BaseResponse> removeHint(
         @AuthenticationPrincipal Shop shop,
         @RequestBody HintDto.RemoveHintRequest request) {
-        System.out.println(shop);
         hintService.removeHint(shop, request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
