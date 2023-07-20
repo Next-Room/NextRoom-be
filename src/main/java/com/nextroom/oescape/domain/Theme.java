@@ -34,6 +34,7 @@ public class Theme {
     private String title;
     private Integer timeLimit;
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Hint> hints = new ArrayList<>();
 
     public void update(ThemeDto.EditThemeRequest request) {

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,5 +38,12 @@ public class HintController {
     public ResponseEntity<BaseResponse> getHintList(@AuthenticationPrincipal Shop shop,
         @RequestParam("themeId") Long themeId) {
         return ResponseEntity.ok(new DataResponse<>(OK, hintService.getHintList(shop, themeId)));
+    }
+
+    @PutMapping
+    public ResponseEntity<BaseResponse> editHint(@AuthenticationPrincipal Shop shop,
+        @RequestBody HintDto.EditHintRequest request) {
+        hintService.editHint(shop, request);
+        return ResponseEntity.ok(new BaseResponse(OK));
     }
 }

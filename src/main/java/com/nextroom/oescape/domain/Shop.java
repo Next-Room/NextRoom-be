@@ -30,5 +30,6 @@ public class Shop {
     @Enumerated(EnumType.STRING)
     private Authority authority;
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
+    @Builder.Default
     private List<Theme> themes = new ArrayList<>();
 }

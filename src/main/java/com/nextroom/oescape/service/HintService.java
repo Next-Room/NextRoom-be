@@ -43,13 +43,7 @@ public class HintService {
         hintRepository.save(hint);
     }
 
-    private void validateTheme(Shop shop, Long themeId) {
-        if (!themeRepository.existsByIdAndShop(themeId, shop)) {
-            throw new CustomException(THEME_NOT_FOUND);
-        }
-    }
-
-    @Transactional
+    @Transactional(readOnly = true)
     public List<HintDto.HintListResponse> getHintList(Shop shop, Long themeId) {
         validateTheme(shop, themeId);
 
@@ -58,5 +52,31 @@ public class HintService {
             .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
 
         return theme.getHints().stream().map(Hint::toHintListResponse).toList();
+    }
+
+    @Transactional
+    public void editHint(Shop shop, HintDto.EditHintRequest request) {
+        Hint hint = hintRepository.findById(request.getId()).orElseThrow(
+            () -> new CustomException(HINT_NOT_FOUND)
+        );
+        hint.update(request);
+    }
+
+    private void validateTheme(Shop shop, Long themeId) {
+        if (!themeRepository.existsByIdAndShop(themeId, shop)) {
+            throw new CustomException(THEME_NOT_FOUND);
+        }
+    }
+
+    private void validateHint(Shop shop, Long hintId) {
+        Boolean validity = false;
+        for (Theme theme : shop.getThemes()) {
+            if (hintRepository.existsById(hintId)) {
+                validity = true;
+            }
+        }
+        if (!validity) {
+            throw new CustomException(HINT_NOT_FOUND);
+        }
     }
 }
