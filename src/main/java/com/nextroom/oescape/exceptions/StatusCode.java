@@ -27,6 +27,7 @@ public enum StatusCode {
      */
     INVALID_TOKEN(HttpStatus.FORBIDDEN, "토큰의 유저 정보가 일치하지 않습니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.FORBIDDEN, "Refresh token 이 유효하지 않습니다."),
+    NOT_PERMITTED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     /**
      * 404 Not Found
@@ -34,6 +35,8 @@ public enum StatusCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "리소스를 찾을 수 없습니다."),
     THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 테마가 없습니다."),
     HINT_NOT_FOUND(HttpStatus.NOT_FOUND, "등록된 힌트가 없습니다."),
+    TARGET_THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
+    TARGET_HINT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 힌트입니다."),
 
     /**
      * 409 Conflict
