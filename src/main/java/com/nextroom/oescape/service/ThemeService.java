@@ -4,6 +4,7 @@ import static com.nextroom.oescape.exceptions.StatusCode.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,7 +13,9 @@ import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.domain.Theme;
 import com.nextroom.oescape.dto.ThemeDto;
 import com.nextroom.oescape.exceptions.CustomException;
+import com.nextroom.oescape.repository.ShopRepository;
 import com.nextroom.oescape.repository.ThemeRepository;
+import com.nextroom.oescape.security.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,9 +23,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ThemeService {
     private final ThemeRepository themeRepository;
+    private final ShopRepository shopRepository;
 
     @Transactional
-    public void addTheme(Shop shop, ThemeDto.AddThemeRequest request) {
+    public void addTheme(ThemeDto.AddThemeRequest request) {
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
+            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
+
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
@@ -33,7 +40,9 @@ public class ThemeService {
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeDto.ThemeListResponse> getThemeList(Shop shop) {
+    public List<ThemeDto.ThemeListResponse> getThemeList() {
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
+            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
         List<Theme> themeList = themeRepository.findAllByShop(shop);
         if (themeList.size() == 0) {
             throw new CustomException(THEME_NOT_FOUND);
@@ -51,14 +60,20 @@ public class ThemeService {
     }
 
     @Transactional
-    public void editTheme(Shop shop, ThemeDto.EditThemeRequest request) {
+    public void editTheme(ThemeDto.EditThemeRequest request) {
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
+            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
+
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
             () -> new CustomException(THEME_NOT_FOUND)
         );
         theme.update(request);
     }
 
-    public void removeTheme(Shop shop, ThemeDto.RemoveThemeRequest request) {
+    public void removeTheme(ThemeDto.RemoveThemeRequest request) {
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
+            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
+
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
             () -> new CustomException(THEME_NOT_FOUND)
         );

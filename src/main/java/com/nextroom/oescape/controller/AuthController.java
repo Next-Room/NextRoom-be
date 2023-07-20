@@ -48,6 +48,7 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> logIn(@RequestBody AuthDto.LogInRequestDto request) {
         request.setPassword(request.getAdminCode());
+
         return ResponseEntity.ok(new DataResponse<>(OK, authService.login(request)));
     }
 
