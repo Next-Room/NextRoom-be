@@ -9,6 +9,7 @@ public class HintDto {
 
     @Getter
     @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class AddHintRequest {
         private final Long themeId;
         private final String hintTitle;
