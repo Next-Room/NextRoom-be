@@ -39,7 +39,7 @@ public class HintService {
             .progress(request.getProgress())
             .build();
 
-        if (!Objects.equals(theme.getShop().getAdminCode(), SecurityUtil.getRequestedShopAdminCode())) {
+        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
             throw new CustomException(NOT_PERMITTED);
         }
 
@@ -52,7 +52,7 @@ public class HintService {
                 themeId) // TODO optimize by making method get theme from shop
             .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
 
-        if (!Objects.equals(theme.getShop().getAdminCode(), SecurityUtil.getRequestedShopAdminCode())) {
+        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
             throw new CustomException(NOT_PERMITTED);
         }
 
@@ -65,7 +65,7 @@ public class HintService {
             () -> new CustomException(HINT_NOT_FOUND)
         );
 
-        if (!Objects.equals(hint.getTheme().getShop().getAdminCode(), SecurityUtil.getRequestedShopAdminCode())) {
+        if (!Objects.equals(hint.getTheme().getShop().getId(), SecurityUtil.getRequestedShopId())) {
             throw new CustomException(TARGET_HINT_NOT_FOUND);
         }
 
@@ -77,7 +77,7 @@ public class HintService {
             () -> new CustomException(HINT_NOT_FOUND)
         );
 
-        if (!Objects.equals(hint.getTheme().getShop().getAdminCode(), SecurityUtil.getRequestedShopAdminCode())) {
+        if (!Objects.equals(hint.getTheme().getShop().getId(), SecurityUtil.getRequestedShopId())) {
             throw new CustomException(TARGET_HINT_NOT_FOUND);
         }
 

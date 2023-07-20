@@ -3,7 +3,6 @@ package com.nextroom.oescape.security;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.exceptions.CustomException;
 import com.nextroom.oescape.exceptions.StatusCode;
 
@@ -25,8 +24,8 @@ public class SecurityUtil {
         return Long.parseLong(authentication.getName());
     }
 
-    public static String getRequestedShopAdminCode() {
+    public static Long getRequestedShopId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getPrincipal().toString();
+        return Long.parseLong(authentication.getPrincipal().toString());
     }
 }

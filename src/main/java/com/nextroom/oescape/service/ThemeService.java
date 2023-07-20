@@ -27,7 +27,7 @@ public class ThemeService {
 
     @Transactional
     public void addTheme(ThemeDto.AddThemeRequest request) {
-        Shop shop = shopRepository.findByAdminCode(SecurityUtil.getRequestedShopAdminCode())
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
             .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
 
         Theme theme = Theme.builder()
@@ -36,13 +36,12 @@ public class ThemeService {
             .shop(shop)
             .build();
 
-
         themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)
     public List<ThemeDto.ThemeListResponse> getThemeList() {
-        Shop shop = shopRepository.findByAdminCode(SecurityUtil.getRequestedShopAdminCode())
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
             .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
         List<Theme> themeList = themeRepository.findAllByShop(shop);
         if (themeList.size() == 0) {
@@ -62,7 +61,7 @@ public class ThemeService {
 
     @Transactional
     public void editTheme(ThemeDto.EditThemeRequest request) {
-        Shop shop = shopRepository.findByAdminCode(SecurityUtil.getRequestedShopAdminCode())
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
             .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
 
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
@@ -72,7 +71,7 @@ public class ThemeService {
     }
 
     public void removeTheme(ThemeDto.RemoveThemeRequest request) {
-        Shop shop = shopRepository.findByAdminCode(SecurityUtil.getRequestedShopAdminCode())
+        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
             .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
 
         Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
