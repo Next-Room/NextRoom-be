@@ -70,10 +70,10 @@ public class SecurityConfig {
 
             .cors(
                 httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource())
+                    .disable()
             )
-                    // .disable()
-                    .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
-                        HeadersConfigurer.FrameOptionsConfig::disable))
+            .headers(httpSecurityHeadersConfigurer -> httpSecurityHeadersConfigurer.frameOptions(
+                HeadersConfigurer.FrameOptionsConfig::disable))
 
             // JwtFilter 를 addFilterBefore 로 등록했던 JwtSecurityConfig 클래스를 적용
             .apply(new JwtSecurityConfig(tokenProvider));
