@@ -63,10 +63,10 @@ public class SecurityConfig {
                 authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**")
                     .permitAll()
-                    .requestMatchers("/api/v1/theme/**")
-                    .hasAnyAuthority("ROLE_USER")
                     .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**")
                     .permitAll() // Android 인증 면제
+                    .requestMatchers("/api/v1/theme/**")
+                    .hasAnyAuthority("ROLE_USER")
                     .anyRequest()
                     .authenticated()
             )
