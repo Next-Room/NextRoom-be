@@ -2,6 +2,7 @@ package com.nextroom.oescape.security.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -64,6 +65,8 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers("/api/v1/theme/**")
                     .hasAnyAuthority("ROLE_USER")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**")
+                    .permitAll() // Android 인증 면제
                     .anyRequest()
                     .authenticated()
             )
@@ -85,6 +88,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
+        configuration.addAllowedOrigin("*:3000");
         configuration.addAllowedOrigin("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
