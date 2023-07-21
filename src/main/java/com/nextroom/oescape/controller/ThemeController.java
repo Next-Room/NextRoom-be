@@ -3,14 +3,13 @@ package com.nextroom.oescape.controller;
 import static com.nextroom.oescape.exceptions.StatusCode.*;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nextroom.oescape.dto.BaseResponse;
@@ -51,7 +50,11 @@ public class ThemeController {
         }
     )
     @GetMapping
-    public ResponseEntity<BaseResponse> getThemeList() {
+    public ResponseEntity<BaseResponse> getThemeList(
+        @RequestParam(value = "adminCode", required = false) String adminCode) {
+        if (adminCode != null) {
+            return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeListByAdminCode(adminCode)));
+        }
         return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList()));
     }
 
@@ -77,9 +80,6 @@ public class ThemeController {
     )
     @DeleteMapping
     public ResponseEntity<BaseResponse> removeTheme(@RequestBody ThemeDto.RemoveThemeRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
-
         themeService.removeTheme(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
