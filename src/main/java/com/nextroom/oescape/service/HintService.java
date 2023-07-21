@@ -59,6 +59,12 @@ public class HintService {
         return theme.getHints().stream().map(Hint::toHintListResponse).toList();
     }
 
+    public Object getHintListByThemeId(Long themeId) {
+        Theme theme = themeRepository.getReferenceById(themeId);
+
+        return theme.getHints().stream().map(Hint::toHintListResponse).toList();
+    }
+
     @Transactional
     public void editHint(HintDto.EditHintRequest request) {
         Hint hint = hintRepository.findById(request.getId()).orElseThrow(

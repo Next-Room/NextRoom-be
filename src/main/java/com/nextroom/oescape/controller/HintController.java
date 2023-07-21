@@ -3,6 +3,7 @@ package com.nextroom.oescape.controller;
 import static com.nextroom.oescape.exceptions.StatusCode.*;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nextroom.oescape.dto.BaseResponse;
 import com.nextroom.oescape.dto.DataResponse;
 import com.nextroom.oescape.dto.HintDto;
+import com.nextroom.oescape.security.SecurityUtil;
 import com.nextroom.oescape.service.HintService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,6 +53,9 @@ public class HintController {
     )
     @GetMapping
     public ResponseEntity<BaseResponse> getHintList(@RequestParam("themeId") Long themeId) {
+        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() == "anonymousUser") {
+            return ResponseEntity.ok(new DataResponse<>(OK, hintService.getHintListByThemeId(themeId)));
+        }
         return ResponseEntity.ok(new DataResponse<>(OK, hintService.getHintList(themeId)));
     }
 
