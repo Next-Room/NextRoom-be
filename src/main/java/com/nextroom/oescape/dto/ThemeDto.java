@@ -26,6 +26,7 @@ public class ThemeDto {
 
     @Getter
     @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class EditThemeRequest {
         private final Long id;
         private final String title;
