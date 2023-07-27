@@ -88,7 +88,7 @@ public class HintService {
         );
 
         if (!Objects.equals(hint.getTheme().getShop().getId(), SecurityUtil.getRequestedShopId())) {
-            throw new CustomException(TARGET_HINT_NOT_FOUND);
+            throw new CustomException(NOT_PERMITTED);
         }
 
         hintRepository.delete(hint);
