@@ -3,12 +3,14 @@ package com.nextroom.oescape.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 public class HintDto {
+    private static final String HINT_CODE_REGEX = "[0-9]{4}";
 
     @Getter
     @RequiredArgsConstructor
@@ -19,6 +21,7 @@ public class HintDto {
         @NotBlank(message = "힌트 제목을 입력해 주세요.")
         private final String hintTitle;
         @NotBlank(message = "힌트 코드를 입력해 주세요.")
+        @Pattern(regexp = HINT_CODE_REGEX, message = "힌트 코드는 4자리 숫자(0~9)만 허용됩니다.")
         private final String hintCode;
         @NotBlank(message = "힌트 내용을 입력해 주세요.")
         private final String contents;
@@ -44,6 +47,7 @@ public class HintDto {
         private final Long id;
         @NotBlank(message = "힌트 제목을 입력해 주세요.")
         private final String hintTitle;
+        @Pattern(regexp = HINT_CODE_REGEX, message = "힌트 코드는 4자리 숫자(0~9)만 허용됩니다.")
         @NotBlank(message = "힌트 코드를 입력해 주세요.")
         private final String hintCode;
         @NotBlank(message = "힌트 내용을 입력해 주세요.")
