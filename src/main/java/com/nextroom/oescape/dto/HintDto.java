@@ -27,13 +27,9 @@ public class HintDto {
     @Getter
     @Builder
     public static class HintListResponse {
-        @NotBlank(message = "힌트 ID를 입력해 주세요.")
         private final Long id;
-        @NotBlank(message = "힌트 제목을 입력해 주세요.")
         private final String hintTitle;
-        @NotBlank(message = "힌트 코드를 입력해 주세요.")
         private final String hintCode;
-        @NotBlank(message = "힌트 내용을 입력해 주세요.")
         private final String contents;
         private final String answer;
         private final Integer progress;
@@ -42,9 +38,13 @@ public class HintDto {
     @Getter
     @Builder
     public static class EditHintRequest {
+        @NotBlank(message = "힌트 ID를 입력해 주세요.")
         private final Long id;
+        @NotBlank(message = "힌트 제목을 입력해 주세요.")
         private final String hintTitle;
+        @NotBlank(message = "힌트 코드를 입력해 주세요.")
         private final String hintCode;
+        @NotBlank(message = "힌트 내용을 입력해 주세요.")
         private final String contents;
         private final String answer;
         private final Integer progress;
