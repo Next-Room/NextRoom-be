@@ -1,5 +1,7 @@
 package com.nextroom.oescape.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 public class HintDto {
     private static final String HINT_CODE_REGEX = "[0-9]{4}";
+    private static final String PROGRESS_REGEX = "(?:[0-9]|[1-9][0-9]|100)";
 
     @Getter
     @RequiredArgsConstructor
@@ -26,6 +29,8 @@ public class HintDto {
         @NotBlank(message = "힌트 내용을 입력해 주세요.")
         private final String contents;
         private final String answer;
+        @Min(value = 0, message = "진행률은 0 이상이어야 합니다.")
+        @Max(value = 100, message = "진행률은 100 이하여야 합니다.")
         private final int progress;
     }
 
@@ -53,6 +58,8 @@ public class HintDto {
         @NotBlank(message = "힌트 내용을 입력해 주세요.")
         private final String contents;
         private final String answer;
+        @Min(value = 0, message = "진행률은 0 이상이어야 합니다.")
+        @Max(value = 100, message = "진행률은 100 이하여야 합니다.")
         private final Integer progress;
     }
 
