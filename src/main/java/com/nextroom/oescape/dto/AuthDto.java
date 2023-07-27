@@ -9,6 +9,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.nextroom.oescape.domain.Authority;
 import com.nextroom.oescape.domain.Shop;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -16,11 +18,15 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 public class AuthDto {
+    private static final String ADMIN_CODE_REGEX = "[0-9]{5}";
+
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
     public static class SignUpRequestDto {
+        @NotBlank(message = "관리자 코드는 필수 입력 사항입니다.")
+        @Pattern(regexp = ADMIN_CODE_REGEX, message = "관리자 코드는 5자리 숫자(0~9)만 허용됩니다.")
         private final String adminCode;
         @Setter
         private String password;
@@ -45,6 +51,8 @@ public class AuthDto {
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
     public static class LogInRequestDto {
+        @NotBlank(message = "관리자 코드가 비어 있습니다.")
+        @Pattern(regexp = ADMIN_CODE_REGEX, message = "관리자 코드는 5자리 숫자입니다.")
         private final String adminCode;
         @Setter
         private String password;

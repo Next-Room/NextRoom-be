@@ -16,6 +16,7 @@ import com.nextroom.oescape.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Auth")
@@ -33,7 +34,7 @@ public class AuthController {
         }
     )
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse> signUp(@RequestBody AuthDto.SignUpRequestDto request) {
+    public ResponseEntity<BaseResponse> signUp(@RequestBody @Valid AuthDto.SignUpRequestDto request) {
         request.setPassword(request.getAdminCode());
         return ResponseEntity.ok(new DataResponse<>(OK, authService.signUp(request)));
     }
@@ -46,7 +47,7 @@ public class AuthController {
         }
     )
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse> logIn(@RequestBody AuthDto.LogInRequestDto request) {
+    public ResponseEntity<BaseResponse> logIn(@RequestBody @Valid AuthDto.LogInRequestDto request) {
         request.setPassword(request.getAdminCode());
 
         return ResponseEntity.ok(new DataResponse<>(OK, authService.login(request)));
