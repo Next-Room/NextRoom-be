@@ -35,7 +35,10 @@ public class HintController {
         summary = "힌트 등록",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
+            @ApiResponse(responseCode = "400", description = "BAD_REQUEST"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
+            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND"),
+            @ApiResponse(responseCode = "409", description = "HINT_CODE_CONFLICT"),
         }
     )
     @PostMapping
@@ -48,6 +51,7 @@ public class HintController {
         summary = "힌트 조회",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
             @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
         }
     )
@@ -63,6 +67,7 @@ public class HintController {
         summary = "힌트 수정",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
             @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
         }
     )
@@ -76,6 +81,7 @@ public class HintController {
         summary = "힌트 삭제",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
             @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
         }
     )
