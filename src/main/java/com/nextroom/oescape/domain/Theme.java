@@ -6,6 +6,7 @@ import java.util.List;
 import com.nextroom.oescape.dto.ThemeDto;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,9 +30,11 @@ public class Theme {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shop_id")
+    @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
+    @Column(nullable = false)
     private String title;
+    @Column
     private Integer timeLimit;
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
     @Builder.Default
