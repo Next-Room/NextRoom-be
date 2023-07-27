@@ -20,6 +20,7 @@ import com.nextroom.oescape.service.ThemeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Theme")
@@ -40,7 +41,7 @@ public class ThemeController {
         }
     )
     @PostMapping
-    public ResponseEntity<BaseResponse> addTheme(@RequestBody ThemeDto.AddThemeRequest request) {
+    public ResponseEntity<BaseResponse> addTheme(@RequestBody @Valid ThemeDto.AddThemeRequest request) {
         themeService.addTheme(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
@@ -72,7 +73,7 @@ public class ThemeController {
         }
     )
     @PutMapping
-    public ResponseEntity<BaseResponse> editTheme(@RequestBody ThemeDto.EditThemeRequest request) {
+    public ResponseEntity<BaseResponse> editTheme(@RequestBody @Valid ThemeDto.EditThemeRequest request) {
         themeService.editTheme(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
@@ -88,7 +89,7 @@ public class ThemeController {
         }
     )
     @DeleteMapping
-    public ResponseEntity<BaseResponse> removeTheme(@RequestBody ThemeDto.RemoveThemeRequest request) {
+    public ResponseEntity<BaseResponse> removeTheme(@RequestBody @Valid ThemeDto.RemoveThemeRequest request) {
         themeService.removeTheme(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
