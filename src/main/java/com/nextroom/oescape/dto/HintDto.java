@@ -1,6 +1,8 @@
 package com.nextroom.oescape.dto;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +14,7 @@ public class HintDto {
     @RequiredArgsConstructor
     @NoArgsConstructor(force = true)
     public static class AddHintRequest {
-        @NotBlank(message = "테마 ID를 입력해 주세요.")
+        @NotNull(message = "테마 ID를 입력해 주세요.")
         private final Long themeId;
         @NotBlank(message = "힌트 제목을 입력해 주세요.")
         private final String hintTitle;
@@ -38,7 +40,7 @@ public class HintDto {
     @Getter
     @Builder
     public static class EditHintRequest {
-        @NotBlank(message = "힌트 ID를 입력해 주세요.")
+        @NotNull(message = "힌트 ID를 입력해 주세요.")
         private final Long id;
         @NotBlank(message = "힌트 제목을 입력해 주세요.")
         private final String hintTitle;
@@ -53,7 +55,7 @@ public class HintDto {
     @Getter
     @NoArgsConstructor
     public static class RemoveHintRequest {
-        @NotBlank(message = "힌트 ID를 입력해 주세요.")
+        @NotNull(message = "힌트 ID를 입력해 주세요.")
         private Long id;
     }
 }
