@@ -43,6 +43,10 @@ public class HintService {
             throw new CustomException(NOT_PERMITTED);
         }
 
+        if (hintRepository.existsByThemeAndHintCode(theme, hint.getHintCode())) {
+            throw new CustomException(HINT_CODE_CONFLICT);
+        }
+
         hintRepository.save(hint);
     }
 
