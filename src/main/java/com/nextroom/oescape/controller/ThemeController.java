@@ -20,6 +20,7 @@ import com.nextroom.oescape.service.ThemeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Theme")
@@ -33,11 +34,14 @@ public class ThemeController {
         summary = "테마 등록",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "404", description = "THEME_NOT_FOUND")
+            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
+            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND"),
+            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND")
         }
     )
     @PostMapping
-    public ResponseEntity<BaseResponse> addTheme(@RequestBody ThemeDto.AddThemeRequest request) {
+    public ResponseEntity<BaseResponse> addTheme(@RequestBody @Valid ThemeDto.AddThemeRequest request) {
         themeService.addTheme(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
@@ -46,27 +50,30 @@ public class ThemeController {
         summary = "테마 조회",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "404", description = "THEME_NOT_FOUND")
+            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
+            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND"),
+            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND")
         }
     )
     @GetMapping
     public ResponseEntity<BaseResponse> getThemeList(
         @RequestParam(value = "adminCode", required = false) String adminCode) {
-        if (adminCode != null) {
-            return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeListByAdminCode(adminCode)));
-        }
-        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList()));
+        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList(adminCode)));
     }
 
     @Operation(
         summary = "테마 수정",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "404", description = "THEME_NOT_FOUND")
+            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
+            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND"),
+            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND")
         }
     )
     @PutMapping
-    public ResponseEntity<BaseResponse> editTheme(@RequestBody ThemeDto.EditThemeRequest request) {
+    public ResponseEntity<BaseResponse> editTheme(@RequestBody @Valid ThemeDto.EditThemeRequest request) {
         themeService.editTheme(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
@@ -75,11 +82,14 @@ public class ThemeController {
         summary = "테마 삭제",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "404", description = "THEME_NOT_FOUND")
+            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
+            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND"),
+            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND")
         }
     )
     @DeleteMapping
-    public ResponseEntity<BaseResponse> removeTheme(@RequestBody ThemeDto.RemoveThemeRequest request) {
+    public ResponseEntity<BaseResponse> removeTheme(@RequestBody @Valid ThemeDto.RemoveThemeRequest request) {
         themeService.removeTheme(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }

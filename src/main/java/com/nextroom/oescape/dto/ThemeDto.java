@@ -1,5 +1,7 @@
 package com.nextroom.oescape.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +14,7 @@ public class ThemeDto {
     @RequiredArgsConstructor
     @NoArgsConstructor(force = true)
     public static class AddThemeRequest {
+        @NotBlank(message = "테마 이름을 입력해 주세요.")
         private final String title;
         private final Integer timeLimit;
     }
@@ -26,8 +29,11 @@ public class ThemeDto {
 
     @Getter
     @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class EditThemeRequest {
+        @Positive(message = "THEME ID를 입력해 주세요.")
         private final Long id;
+        @NotBlank(message = "테마 이름을 입력해 주세요.")
         private final String title;
         private final Integer timeLimit;
     }
@@ -35,6 +41,7 @@ public class ThemeDto {
     @Getter
     @NoArgsConstructor
     public static class RemoveThemeRequest {
+        @Positive(message = "THEME ID를 입력해 주세요.")
         private Long id;
     }
 }

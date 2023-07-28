@@ -2,8 +2,8 @@ package com.nextroom.oescape.service;
 
 import static com.nextroom.oescape.exceptions.StatusCode.*;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,75 +24,61 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ShopRepository shopRepository;
 
+    private Shop validateShop() {
+        return shopRepository.findById(SecurityUtil.getRequestedShopId())
+            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
+    }
+
+    private Shop validateAdminCode(String adminCode) {
+        return shopRepository.findByAdminCode(adminCode)
+            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
+    }
+
+    private Theme validateTheme(Long themeId) {
+        return themeRepository.findById(themeId)
+            .orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
+    }
+
+    private Theme validateThemeIdAndShop(Long themeId) {
+        Theme theme = validateTheme(themeId);
+        if (!theme.getShop().equals(validateShop())) {
+            throw new CustomException(NOT_PERMITTED);
+        }
+        return theme;
+    }
+
     @Transactional
     public void addTheme(ThemeDto.AddThemeRequest request) {
-        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
-            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
-
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
-            .shop(shop)
+            .shop(validateShop())
             .build();
 
         themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeDto.ThemeListResponse> getThemeList() {
-        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
-            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
+    public List<ThemeDto.ThemeListResponse> getThemeList(String adminCode) {
+        Shop shop = (adminCode == null) ? validateShop() : validateAdminCode(adminCode);
         List<Theme> themeList = themeRepository.findAllByShop(shop);
-        if (themeList.size() == 0) {
-            throw new CustomException(THEME_NOT_FOUND);
-        }
-        List<ThemeDto.ThemeListResponse> themeListResponses = new ArrayList<>();
-        for (Theme theme : themeList) {
-            themeListResponses.add(ThemeDto.ThemeListResponse
-                .builder()
+        return themeList.stream()
+            .map(theme -> ThemeDto.ThemeListResponse.builder()
                 .id(theme.getId())
                 .title(theme.getTitle())
                 .timeLimit(theme.getTimeLimit())
-                .build());
-        }
-        return themeListResponses;
+                .build())
+            .collect(Collectors.toList());
     }
 
     @Transactional
     public void editTheme(ThemeDto.EditThemeRequest request) {
-        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
-            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
-
-        Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
-            () -> new CustomException(THEME_NOT_FOUND)
-        );
+        Theme theme = validateThemeIdAndShop(request.getId());
         theme.update(request);
     }
 
     public void removeTheme(ThemeDto.RemoveThemeRequest request) {
-        Shop shop = shopRepository.findById(SecurityUtil.getRequestedShopId())
-            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
-
-        Theme theme = themeRepository.findByIdAndShop(request.getId(), shop).orElseThrow(
-            () -> new CustomException(THEME_NOT_FOUND)
-        );
+        Theme theme = validateThemeIdAndShop(request.getId());
         themeRepository.delete(theme);
-    }
-
-    public List<ThemeDto.ThemeListResponse> getThemeListByAdminCode(String adminCode) {
-        Shop shop = shopRepository.findByAdminCode(adminCode)
-            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
-
-        List<Theme> themeList = themeRepository.findAllByShop(shop);
-        List<ThemeDto.ThemeListResponse> themeListResponses = new ArrayList<>();
-        for (Theme theme : themeList) {
-            themeListResponses.add(ThemeDto.ThemeListResponse
-                .builder()
-                .id(theme.getId())
-                .title(theme.getTitle())
-                .timeLimit(theme.getTimeLimit())
-                .build());
-        }
-        return themeListResponses;
     }
 }
