@@ -37,6 +37,8 @@ public class Theme extends Timestamped {
     private String title;
     @Column
     private Integer timeLimit;
+    @Column
+    private Integer hintLimit;
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Hint> hints = new ArrayList<>();
@@ -44,5 +46,6 @@ public class Theme extends Timestamped {
     public void update(ThemeDto.EditThemeRequest request) {
         this.title = request.getTitle();
         this.timeLimit = request.getTimeLimit();
+        this.hintLimit = request.getHintLimit();
     }
 }

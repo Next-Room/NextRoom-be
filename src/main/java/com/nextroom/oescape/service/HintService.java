@@ -34,7 +34,6 @@ public class HintService {
             .theme(theme)
             .hintTitle(request.getHintTitle())
             .hintCode(request.getHintCode())
-            .hintLimit(request.getHintLimit())
             .contents(request.getContents())
             .answer(request.getAnswer())
             .progress(request.getProgress())

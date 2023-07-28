@@ -29,7 +29,6 @@ public class Hint extends Timestamped {
     private Theme theme;
     private String hintTitle;
     private String hintCode;
-    private String hintLimit;
     private String contents;
     private String answer;
     private Integer progress;
@@ -40,7 +39,6 @@ public class Hint extends Timestamped {
             .id(this.id)
             .hintTitle(this.hintTitle)
             .hintCode(this.hintCode)
-            .hintLimit(this.hintLimit)
             .contents(this.contents)
             .answer(this.answer)
             .progress(this.progress)
@@ -52,7 +50,6 @@ public class Hint extends Timestamped {
     public void update(HintDto.EditHintRequest request) {
         this.hintTitle = request.getHintTitle();
         this.hintCode = request.getHintCode();
-        this.hintLimit = request.getHintTitle();
         this.contents = request.getContents();
         this.answer = request.getAnswer();
         this.progress = request.getProgress();

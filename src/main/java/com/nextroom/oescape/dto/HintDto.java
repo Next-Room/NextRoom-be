@@ -14,7 +14,6 @@ public class HintDto {
         private final Long themeId;
         private final String hintTitle;
         private final String hintCode;
-        private final String hintLimit;
         private final String contents;
         private final String answer;
         private final int progress;
@@ -26,7 +25,6 @@ public class HintDto {
         private final Long id;
         private final String hintTitle;
         private final String hintCode;
-        private final String hintLimit;
         private final String contents;
         private final String answer;
         private final Integer progress;
@@ -35,12 +33,12 @@ public class HintDto {
     }
 
     @Getter
-    @Builder
+    @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class EditHintRequest {
         private final Long id;
         private final String hintTitle;
         private final String hintCode;
-        private final String hintLimit;
         private final String contents;
         private final String answer;
         private final Integer progress;

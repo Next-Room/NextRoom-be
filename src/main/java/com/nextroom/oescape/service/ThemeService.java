@@ -53,6 +53,7 @@ public class ThemeService {
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
+            .hintLimit(request.getHintLimit())
             .shop(validateShop())
             .build();
 
@@ -68,6 +69,7 @@ public class ThemeService {
                 .id(theme.getId())
                 .title(theme.getTitle())
                 .timeLimit(theme.getTimeLimit())
+                .hintLimit(theme.getHintLimit())
                 .createdAt(dateTimeFormatter(theme.getCreatedAt()))
                 .modifiedAt(dateTimeFormatter(theme.getModifiedAt()))
                 .build())

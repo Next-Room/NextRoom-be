@@ -17,6 +17,7 @@ public class ThemeDto {
         @NotBlank(message = "테마 이름을 입력해 주세요.")
         private final String title;
         private final Integer timeLimit;
+        private final Integer hintLimit;
     }
 
     @Getter
@@ -25,6 +26,7 @@ public class ThemeDto {
         private final Long id;
         private final String title;
         private final Integer timeLimit;
+        private final Integer hintLimit;
         private final String createdAt;
         private final String modifiedAt;
     }
@@ -38,6 +40,7 @@ public class ThemeDto {
         @NotBlank(message = "테마 이름을 입력해 주세요.")
         private final String title;
         private final Integer timeLimit;
+        private final Integer hintLimit;
     }
 
     @Getter
