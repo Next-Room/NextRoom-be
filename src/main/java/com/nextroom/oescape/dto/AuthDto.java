@@ -30,11 +30,13 @@ public class AuthDto {
         private final String adminCode;
         @Setter
         private String password;
+        private String name;
 
         public Shop toShop(PasswordEncoder passwordEncoder) {
             return Shop.builder()
                 .adminCode(this.adminCode)
                 .password(passwordEncoder.encode(this.password))
+                .name(this.name)
                 .authority(Authority.ROLE_USER)
                 .build();
         }

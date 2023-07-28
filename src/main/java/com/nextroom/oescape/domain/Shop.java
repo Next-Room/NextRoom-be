@@ -27,6 +27,7 @@ public class Shop {
     private Long id;
     private String adminCode;
     private String password;
+    private String name;
     @Enumerated(EnumType.STRING)
     private Authority authority;
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
