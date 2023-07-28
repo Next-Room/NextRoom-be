@@ -3,6 +3,8 @@ package com.nextroom.oescape.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.nextroom.oescape.util.Timestamped;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -21,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Shop {
+public class Shop extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

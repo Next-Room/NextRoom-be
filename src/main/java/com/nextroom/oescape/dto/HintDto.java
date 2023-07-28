@@ -30,6 +30,8 @@ public class HintDto {
         private final String contents;
         private final String answer;
         private final Integer progress;
+        private final String createdAt;
+        private final String modifiedAt;
     }
 
     @Getter

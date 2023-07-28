@@ -25,6 +25,8 @@ public class ThemeDto {
         private final Long id;
         private final String title;
         private final Integer timeLimit;
+        private final String createdAt;
+        private final String modifiedAt;
     }
 
     @Getter

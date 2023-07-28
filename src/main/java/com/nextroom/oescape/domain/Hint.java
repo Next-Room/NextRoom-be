@@ -1,6 +1,7 @@
 package com.nextroom.oescape.domain;
 
 import com.nextroom.oescape.dto.HintDto;
+import com.nextroom.oescape.util.Timestamped;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class Hint {
+public class Hint extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -43,6 +44,8 @@ public class Hint {
             .contents(this.contents)
             .answer(this.answer)
             .progress(this.progress)
+            .createdAt(dateTimeFormatter(this.getCreatedAt()))
+            .modifiedAt(dateTimeFormatter(this.getModifiedAt()))
             .build();
     }
 

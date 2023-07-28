@@ -1,6 +1,7 @@
 package com.nextroom.oescape.service;
 
 import static com.nextroom.oescape.exceptions.StatusCode.*;
+import static com.nextroom.oescape.util.Timestamped.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -67,6 +68,8 @@ public class ThemeService {
                 .id(theme.getId())
                 .title(theme.getTitle())
                 .timeLimit(theme.getTimeLimit())
+                .createdAt(dateTimeFormatter(theme.getCreatedAt()))
+                .modifiedAt(dateTimeFormatter(theme.getModifiedAt()))
                 .build())
             .collect(Collectors.toList());
     }
