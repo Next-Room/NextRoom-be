@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.nextroom.oescape.dto.ThemeDto;
+import com.nextroom.oescape.util.Timestamped;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Theme {
+public class Theme extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -36,6 +37,8 @@ public class Theme {
     private String title;
     @Column
     private Integer timeLimit;
+    @Column
+    private Integer hintLimit;
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Hint> hints = new ArrayList<>();
@@ -43,5 +46,6 @@ public class Theme {
     public void update(ThemeDto.EditThemeRequest request) {
         this.title = request.getTitle();
         this.timeLimit = request.getTimeLimit();
+        this.hintLimit = request.getHintLimit();
     }
 }

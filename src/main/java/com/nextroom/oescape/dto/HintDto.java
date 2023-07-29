@@ -21,8 +21,6 @@ public class HintDto {
     public static class AddHintRequest {
         @NotNull(message = "테마 ID를 입력해 주세요.")
         private final Long themeId;
-        @NotBlank(message = "힌트 제목을 입력해 주세요.")
-        private final String hintTitle;
         @NotBlank(message = "힌트 코드를 입력해 주세요.")
         @Pattern(regexp = HINT_CODE_REGEX, message = "힌트 코드는 4자리 숫자(0~9)만 허용됩니다.")
         private final String hintCode;
@@ -38,20 +36,20 @@ public class HintDto {
     @Builder
     public static class HintListResponse {
         private final Long id;
-        private final String hintTitle;
         private final String hintCode;
         private final String contents;
         private final String answer;
         private final Integer progress;
+        private final String createdAt;
+        private final String modifiedAt;
     }
 
     @Getter
-    @Builder
+    @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class EditHintRequest {
         @NotNull(message = "힌트 ID를 입력해 주세요.")
         private final Long id;
-        @NotBlank(message = "힌트 제목을 입력해 주세요.")
-        private final String hintTitle;
         @Pattern(regexp = HINT_CODE_REGEX, message = "힌트 코드는 4자리 숫자(0~9)만 허용됩니다.")
         @NotBlank(message = "힌트 코드를 입력해 주세요.")
         private final String hintCode;

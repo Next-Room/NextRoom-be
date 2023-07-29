@@ -30,11 +30,14 @@ public class AuthDto {
         private final String adminCode;
         @Setter
         private String password;
+        @NotBlank(message = "업체명을 입력해 주세요.")
+        private String name;
 
         public Shop toShop(PasswordEncoder passwordEncoder) {
             return Shop.builder()
                 .adminCode(this.adminCode)
                 .password(passwordEncoder.encode(this.password))
+                .name(this.name)
                 .authority(Authority.ROLE_USER)
                 .build();
         }
@@ -44,6 +47,9 @@ public class AuthDto {
     @Builder
     public static class SignUpResponseDto {
         private String adminCode;
+        private String name;
+        private String createdAt;
+        private String modifiedAt;
     }
 
     @Getter

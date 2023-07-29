@@ -1,5 +1,7 @@
 package com.nextroom.oescape.service;
 
+import static com.nextroom.oescape.util.Timestamped.*;
+
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -38,7 +40,10 @@ public class AuthService {
         Shop shop = shopRepository.save(request.toShop(passwordEncoder));
 
         return AuthDto.SignUpResponseDto.builder()
-            .adminCode(shop.getAdminCode()).build();
+            .adminCode(shop.getAdminCode())
+            .name(shop.getName())
+            .createdAt(dateTimeFormatter(shop.getCreatedAt()))
+            .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
     }
 
     @Transactional
