@@ -34,6 +34,10 @@ public class HintService {
             throw new CustomException(HINT_CODE_CONFLICT);
         }
 
+        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
+            throw new CustomException(NOT_PERMITTED);
+        }
+
         Hint hint = Hint.builder()
             .theme(theme)
             .hintTitle(request.getHintTitle())
@@ -42,10 +46,6 @@ public class HintService {
             .answer(request.getAnswer())
             .progress(request.getProgress())
             .build();
-
-        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
 
         hintRepository.save(hint);
     }
