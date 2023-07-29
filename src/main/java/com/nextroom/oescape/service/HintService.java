@@ -30,6 +30,14 @@ public class HintService {
                 request.getThemeId()) // TODO optimize by making method get theme from shop
             .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
 
+        if (hintRepository.existsByThemeAndHintCode(theme, request.getHintCode())) {
+            throw new CustomException(HINT_CODE_CONFLICT);
+        }
+
+        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
+            throw new CustomException(NOT_PERMITTED);
+        }
+
         Hint hint = Hint.builder()
             .theme(theme)
             .hintCode(request.getHintCode())
@@ -37,10 +45,6 @@ public class HintService {
             .answer(request.getAnswer())
             .progress(request.getProgress())
             .build();
-
-        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
 
         hintRepository.save(hint);
     }
@@ -67,11 +71,11 @@ public class HintService {
     @Transactional
     public void editHint(HintDto.EditHintRequest request) {
         Hint hint = hintRepository.findById(request.getId()).orElseThrow(
-            () -> new CustomException(HINT_NOT_FOUND)
+            () -> new CustomException(TARGET_HINT_NOT_FOUND)
         );
 
         if (!Objects.equals(hint.getTheme().getShop().getId(), SecurityUtil.getRequestedShopId())) {
-            throw new CustomException(TARGET_HINT_NOT_FOUND);
+            throw new CustomException(NOT_PERMITTED);
         }
 
         hint.update(request);
@@ -83,7 +87,7 @@ public class HintService {
         );
 
         if (!Objects.equals(hint.getTheme().getShop().getId(), SecurityUtil.getRequestedShopId())) {
-            throw new CustomException(TARGET_HINT_NOT_FOUND);
+            throw new CustomException(NOT_PERMITTED);
         }
 
         hintRepository.delete(hint);

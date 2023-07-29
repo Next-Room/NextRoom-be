@@ -43,6 +43,7 @@ public enum StatusCode {
      * 409 Conflict
      */
     CONFLICT(HttpStatus.CONFLICT, "중복된 리소스 입니다."),
+    HINT_CODE_CONFLICT(HttpStatus.CONFLICT, "테마 내 같은 힌트코드를 가진 힌트가 존재합니다."),
 
     /**
      * 2xx OK

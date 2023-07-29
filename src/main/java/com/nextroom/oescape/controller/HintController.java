@@ -16,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.nextroom.oescape.dto.BaseResponse;
 import com.nextroom.oescape.dto.DataResponse;
 import com.nextroom.oescape.dto.HintDto;
-import com.nextroom.oescape.security.SecurityUtil;
 import com.nextroom.oescape.service.HintService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Hint")
@@ -35,11 +35,14 @@ public class HintController {
         summary = "힌트 등록",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
+            @ApiResponse(responseCode = "400", description = "BAD_REQUEST"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
+            @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND"),
+            @ApiResponse(responseCode = "409", description = "HINT_CODE_CONFLICT"),
         }
     )
     @PostMapping
-    public ResponseEntity<BaseResponse> addHint(@RequestBody HintDto.AddHintRequest request) {
+    public ResponseEntity<BaseResponse> addHint(@RequestBody @Valid HintDto.AddHintRequest request) {
         hintService.addHint(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
@@ -48,6 +51,7 @@ public class HintController {
         summary = "힌트 조회",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
             @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
         }
     )
@@ -63,11 +67,12 @@ public class HintController {
         summary = "힌트 수정",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
             @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
         }
     )
     @PutMapping
-    public ResponseEntity<BaseResponse> editHint(@RequestBody HintDto.EditHintRequest request) {
+    public ResponseEntity<BaseResponse> editHint(@RequestBody @Valid HintDto.EditHintRequest request) {
         hintService.editHint(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
@@ -76,11 +81,12 @@ public class HintController {
         summary = "힌트 삭제",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
             @ApiResponse(responseCode = "404", description = "HINT_NOT_FOUND")
         }
     )
     @DeleteMapping
-    public ResponseEntity<BaseResponse> removeHint(@RequestBody HintDto.RemoveHintRequest request) {
+    public ResponseEntity<BaseResponse> removeHint(@RequestBody @Valid HintDto.RemoveHintRequest request) {
         hintService.removeHint(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
