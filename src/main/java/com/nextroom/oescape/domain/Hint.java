@@ -27,7 +27,6 @@ public class Hint extends Timestamped {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "theme_id")
     private Theme theme;
-    private String hintTitle;
     private String hintCode;
     private String contents;
     private String answer;
@@ -37,7 +36,6 @@ public class Hint extends Timestamped {
         return HintDto.HintListResponse
             .builder()
             .id(this.id)
-            .hintTitle(this.hintTitle)
             .hintCode(this.hintCode)
             .contents(this.contents)
             .answer(this.answer)
@@ -48,7 +46,6 @@ public class Hint extends Timestamped {
     }
 
     public void update(HintDto.EditHintRequest request) {
-        this.hintTitle = request.getHintTitle();
         this.hintCode = request.getHintCode();
         this.contents = request.getContents();
         this.answer = request.getAnswer();

@@ -12,7 +12,6 @@ public class HintDto {
     @NoArgsConstructor(force = true)
     public static class AddHintRequest {
         private final Long themeId;
-        private final String hintTitle;
         private final String hintCode;
         private final String contents;
         private final String answer;
@@ -23,7 +22,6 @@ public class HintDto {
     @Builder
     public static class HintListResponse {
         private final Long id;
-        private final String hintTitle;
         private final String hintCode;
         private final String contents;
         private final String answer;
@@ -37,7 +35,6 @@ public class HintDto {
     @NoArgsConstructor(force = true)
     public static class EditHintRequest {
         private final Long id;
-        private final String hintTitle;
         private final String hintCode;
         private final String contents;
         private final String answer;

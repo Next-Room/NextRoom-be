@@ -32,7 +32,6 @@ public class HintService {
 
         Hint hint = Hint.builder()
             .theme(theme)
-            .hintTitle(request.getHintTitle())
             .hintCode(request.getHintCode())
             .contents(request.getContents())
             .answer(request.getAnswer())
