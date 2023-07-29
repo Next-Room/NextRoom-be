@@ -30,6 +30,10 @@ public class HintService {
                 request.getThemeId()) // TODO optimize by making method get theme from shop
             .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
 
+        if (hintRepository.existsByThemeAndHintCode(theme, request.getHintCode())) {
+            throw new CustomException(HINT_CODE_CONFLICT);
+        }
+
         Hint hint = Hint.builder()
             .theme(theme)
             .hintTitle(request.getHintTitle())
@@ -41,10 +45,6 @@ public class HintService {
 
         if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
             throw new CustomException(NOT_PERMITTED);
-        }
-
-        if (hintRepository.existsByThemeAndHintCode(theme, hint.getHintCode())) {
-            throw new CustomException(HINT_CODE_CONFLICT);
         }
 
         hintRepository.save(hint);
