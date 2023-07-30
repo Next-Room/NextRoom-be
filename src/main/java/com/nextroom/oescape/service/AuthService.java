@@ -5,7 +5,6 @@ import static com.nextroom.oescape.util.Timestamped.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,21 +50,17 @@ public class AuthService {
 
         UsernamePasswordAuthenticationToken authenticationToken = request.toAuthentication();
 
-        try {
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            AuthDto.LogInResponseDto response = tokenProvider.generateTokenDto(authentication).toLogInResponseDto();
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        AuthDto.LogInResponseDto response = tokenProvider.generateTokenDto(authentication).toLogInResponseDto();
 
-            RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName())
-                .value(response.getRefreshToken())
-                .build();
+        RefreshToken refreshToken = RefreshToken.builder()
+            .key(authentication.getName())
+            .value(response.getRefreshToken())
+            .build();
 
-            refreshTokenRepository.save(refreshToken);
+        refreshTokenRepository.save(refreshToken);
 
-            return response;
-        } catch (AuthenticationException e) {
-            throw new CustomException(StatusCode.TARGET_SHOP_NOT_FOUND);
-        }
+        return response;
     }
 
     @Transactional

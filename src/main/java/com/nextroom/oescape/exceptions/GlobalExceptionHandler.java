@@ -5,6 +5,7 @@ import java.util.Objects;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -55,6 +56,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = {IllegalArgumentException.class})
     protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+    }
+
+    @ExceptionHandler(value = {AuthenticationException.class})
+    protected ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
+        return ErrorResponse.toResponseEntity(HttpStatus.NOT_FOUND, "존재하지 않는 업체입니다.");
     }
 
 }
