@@ -9,6 +9,10 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.MalformedJwtException;
+import io.jsonwebtoken.UnsupportedJwtException;
+
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -27,4 +31,30 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, e.getMessage());
     }
+
+    @ExceptionHandler(value = {io.jsonwebtoken.security.SecurityException.class})
+    protected ResponseEntity<ErrorResponse> handleSecurityException(io.jsonwebtoken.security.SecurityException e) {
+        return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 JWT 서명입니다.");
+    }
+
+    @ExceptionHandler(value = {MalformedJwtException.class})
+    protected ResponseEntity<ErrorResponse> handleMalformedJwtException(MalformedJwtException e) {
+        return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "잘못된 JWT 서명입니다.");
+    }
+
+    @ExceptionHandler(value = {ExpiredJwtException.class})
+    protected ResponseEntity<ErrorResponse> handleExpiredJwtException(ExpiredJwtException e) {
+        return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "만료된 JWT 토큰입니다.");
+    }
+
+    @ExceptionHandler(value = {UnsupportedJwtException.class})
+    protected ResponseEntity<ErrorResponse> handleUnsupportedJwtException(UnsupportedJwtException e) {
+        return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "지원되지 않는 JWT 토큰입니다.");
+    }
+
+    @ExceptionHandler(value = {IllegalArgumentException.class})
+    protected ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "JWT 토큰이 잘못되었습니다.");
+    }
+
 }
