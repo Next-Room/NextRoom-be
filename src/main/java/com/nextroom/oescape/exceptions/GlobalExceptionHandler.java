@@ -60,7 +60,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = {AuthenticationException.class})
     protected ResponseEntity<ErrorResponse> handleAuthenticationException(AuthenticationException e) {
-        return ErrorResponse.toResponseEntity(HttpStatus.NOT_FOUND, "존재하지 않는 업체입니다.");
+        return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, "관리자 코드 또는 패스워드가 잘못되었습니다.");
     }
 
 }
