@@ -6,6 +6,7 @@ import java.util.List;
 import com.nextroom.oescape.util.Timestamped;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,6 +27,7 @@ import lombok.NoArgsConstructor;
 public class Shop extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "shop_id", nullable = false)
     private Long id;
     private String adminCode;
     private String password;

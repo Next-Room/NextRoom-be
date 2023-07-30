@@ -29,6 +29,7 @@ import lombok.NoArgsConstructor;
 public class Theme extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "theme_id", nullable = false)
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
