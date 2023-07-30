@@ -66,7 +66,7 @@ public class AuthService {
     @Transactional
     public AuthDto.ReissueResponseDto reissue(AuthDto.ReissueRequestDto request) {
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
-            throw new CustomException(StatusCode.INVALID_TOKEN);
+            throw new CustomException(StatusCode.INVALID_REFRESH_TOKEN);
         }
 
         Authentication authentication = tokenProvider.getAuthentication(request.getAccessToken());
@@ -75,7 +75,7 @@ public class AuthService {
             .orElseThrow(() -> new CustomException(StatusCode.SHOP_IS_LOG_OUT));
 
         if (!refreshToken.getValue().equals(request.getRefreshToken())) {
-            throw new CustomException(StatusCode.INVALID_TOKEN);
+            throw new CustomException(StatusCode.INVALID_REFRESH_TOKEN);
         }
 
         AuthDto.ReissueResponseDto response = tokenProvider.generateTokenDto(authentication).toReissueResponseDto();
