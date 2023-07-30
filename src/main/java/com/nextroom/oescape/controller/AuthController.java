@@ -35,7 +35,6 @@ public class AuthController {
     )
     @PostMapping("/signup")
     public ResponseEntity<BaseResponse> signUp(@RequestBody @Valid AuthDto.SignUpRequestDto request) {
-        request.setPassword(request.getAdminCode());
         return ResponseEntity.ok(new DataResponse<>(OK, authService.signUp(request)));
     }
 
@@ -48,8 +47,6 @@ public class AuthController {
     )
     @PostMapping("/login")
     public ResponseEntity<BaseResponse> logIn(@RequestBody @Valid AuthDto.LogInRequestDto request) {
-        request.setPassword(request.getAdminCode());
-
         return ResponseEntity.ok(new DataResponse<>(OK, authService.login(request)));
     }
 
