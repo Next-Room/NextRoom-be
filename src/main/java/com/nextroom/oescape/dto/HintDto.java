@@ -1,9 +1,10 @@
 package com.nextroom.oescape.dto;
 
+import com.nextroom.oescape.domain.Hint;
+
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Builder;
@@ -33,7 +34,6 @@ public class HintDto {
     }
 
     @Getter
-    @Builder
     public static class HintListResponse {
         private final Long id;
         private final String hintCode;
@@ -42,6 +42,16 @@ public class HintDto {
         private final Integer progress;
         private final String createdAt;
         private final String modifiedAt;
+
+        public HintListResponse(Hint hint) {
+            this.id = hint.getId();
+            this.hintCode = hint.getHintCode();
+            this.contents = hint.getContents();
+            this.answer = hint.getAnswer();
+            this.progress = hint.getProgress();
+            this.createdAt = Hint.dateTimeFormatter(hint.getCreatedAt());
+            this.modifiedAt = Hint.dateTimeFormatter(hint.getModifiedAt());
+        }
     }
 
     @Getter
