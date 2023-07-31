@@ -1,6 +1,7 @@
 package com.nextroom.oescape.dto;
 
 import com.nextroom.oescape.domain.Hint;
+import com.nextroom.oescape.util.Timestamped;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -49,8 +50,8 @@ public class HintDto {
             this.contents = hint.getContents();
             this.answer = hint.getAnswer();
             this.progress = hint.getProgress();
-            this.createdAt = Hint.dateTimeFormatter(hint.getCreatedAt());
-            this.modifiedAt = Hint.dateTimeFormatter(hint.getModifiedAt());
+            this.createdAt = Timestamped.dateTimeFormatter(hint.getCreatedAt());
+            this.modifiedAt = Timestamped.dateTimeFormatter(hint.getModifiedAt());
         }
     }
 
