@@ -31,15 +31,17 @@ public class Theme extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "theme_id", nullable = false)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
+
     @Column(nullable = false)
     private String title;
-    @Column
+
     private Integer timeLimit;
-    @Column
     private Integer hintLimit;
+
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Hint> hints = new ArrayList<>();

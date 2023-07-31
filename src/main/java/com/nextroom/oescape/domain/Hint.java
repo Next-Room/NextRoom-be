@@ -26,10 +26,14 @@ public class Hint extends Timestamped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "hint_id", nullable = false)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "theme_id")
+    @JoinColumn(name = "theme_id", nullable = false)
     private Theme theme;
+
+    @Column(nullable = false, length = 4)
     private String hintCode;
+
     private String contents;
     private String answer;
     private Integer progress;
