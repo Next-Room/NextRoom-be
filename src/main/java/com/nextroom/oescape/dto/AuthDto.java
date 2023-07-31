@@ -10,6 +10,7 @@ import com.nextroom.oescape.domain.Authority;
 import com.nextroom.oescape.domain.Shop;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,11 @@ import lombok.Setter;
 
 public class AuthDto {
     private static final String ADMIN_CODE_REGEX = "[0-9]{5}";
+    private static final String PASSWORD_CONDITION_MIN_LENGTH_REGEX = ".{8,}";
+    private static final String PASSWORD_CONDITION_LOWER_CASE_REGEX = ".*[a-z].*";
+    private static final String PASSWORD_CONDITION_UPPER_CASE_REGEX = ".*[A-Z].*";
+    private static final String PASSWORD_CONDITION_NUMBER_REGEX = ".*[0-9].*";
+    private static final String PASSWORD_CONDITION_SPECIAL_CHARACTER_REGEX = ".*[!@#$%^&*()].*";
 
     @Getter
     @Builder
@@ -29,6 +35,12 @@ public class AuthDto {
         @Pattern(regexp = ADMIN_CODE_REGEX, message = "관리자 코드는 5자리 숫자(0~9)만 허용됩니다.")
         private final String adminCode;
         @Setter
+        @NotEmpty(message = "비밀번호를 입력해 주세요.")
+        @Pattern(regexp = PASSWORD_CONDITION_MIN_LENGTH_REGEX, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
+        @Pattern(regexp = PASSWORD_CONDITION_LOWER_CASE_REGEX, message = "비밀번호에 영문 소문자를 최소 1개 이상 포함해야 합니다.")
+        @Pattern(regexp = PASSWORD_CONDITION_UPPER_CASE_REGEX, message = "비밀번호에 영문 대문자를 최소 1개 이상 포함해야 합니다.")
+        @Pattern(regexp = PASSWORD_CONDITION_NUMBER_REGEX, message = "비밀번호에 숫자(0-9)를 최소 1개 이상 포함해야 합니다.")
+        @Pattern(regexp = PASSWORD_CONDITION_SPECIAL_CHARACTER_REGEX, message = "비밀번호에 특수문자(!, @, #, $, %, ^, &, *, (, ))를 최소 1개 이상 포함해야 합니다.")
         private String password;
         @NotBlank(message = "업체명을 입력해 주세요.")
         private String name;
@@ -61,6 +73,7 @@ public class AuthDto {
         @Pattern(regexp = ADMIN_CODE_REGEX, message = "관리자 코드는 5자리 숫자입니다.")
         private final String adminCode;
         @Setter
+        @NotEmpty(message = "비밀번호를 입력해 주세요.")
         private String password;
 
         public UsernamePasswordAuthenticationToken toAuthentication() {
