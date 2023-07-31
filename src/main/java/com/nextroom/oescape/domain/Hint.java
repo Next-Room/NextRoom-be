@@ -34,19 +34,6 @@ public class Hint extends Timestamped {
     private String answer;
     private Integer progress;
 
-    public HintDto.HintListResponse toHintListResponse() {
-        return HintDto.HintListResponse
-            .builder()
-            .id(this.id)
-            .hintCode(this.hintCode)
-            .contents(this.contents)
-            .answer(this.answer)
-            .progress(this.progress)
-            .createdAt(dateTimeFormatter(this.getCreatedAt()))
-            .modifiedAt(dateTimeFormatter(this.getModifiedAt()))
-            .build();
-    }
-
     public void update(HintDto.EditHintRequest request) {
         this.hintCode = request.getHintCode();
         this.contents = request.getContents();
