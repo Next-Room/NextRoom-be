@@ -65,14 +65,7 @@ public class ThemeService {
         Shop shop = (adminCode == null) ? validateShop() : validateAdminCode(adminCode);
         List<Theme> themeList = themeRepository.findAllByShop(shop);
         return themeList.stream()
-            .map(theme -> ThemeDto.ThemeListResponse.builder()
-                .id(theme.getId())
-                .title(theme.getTitle())
-                .timeLimit(theme.getTimeLimit())
-                .hintLimit(theme.getHintLimit())
-                .createdAt(dateTimeFormatter(theme.getCreatedAt()))
-                .modifiedAt(dateTimeFormatter(theme.getModifiedAt()))
-                .build())
+            .map(ThemeDto.ThemeListResponse::new)
             .collect(Collectors.toList());
     }
 

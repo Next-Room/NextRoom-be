@@ -1,5 +1,8 @@
 package com.nextroom.oescape.dto;
 
+import com.nextroom.oescape.domain.Theme;
+import com.nextroom.oescape.util.Timestamped;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.Builder;
@@ -21,7 +24,6 @@ public class ThemeDto {
     }
 
     @Getter
-    @Builder
     public static class ThemeListResponse {
         private final Long id;
         private final String title;
@@ -29,6 +31,15 @@ public class ThemeDto {
         private final Integer hintLimit;
         private final String createdAt;
         private final String modifiedAt;
+
+        public ThemeListResponse(Theme theme) {
+            this.id = theme.getId();
+            this.title = theme.getTitle();
+            this.timeLimit = theme.getTimeLimit();
+            this.hintLimit = theme.getHintLimit();
+            this.createdAt = Timestamped.dateTimeFormatter(theme.getCreatedAt());
+            this.modifiedAt = Timestamped.dateTimeFormatter(theme.getModifiedAt());
+        }
     }
 
     @Getter
