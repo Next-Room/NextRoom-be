@@ -11,15 +11,14 @@ public class TokenDto {
     private long accessTokenExpiresIn;
     private String refreshToken;
 
-    public AuthDto.LogInResponseDto toLogInResponseDto() {
-        return new AuthDto.LogInResponseDto.LogInResponseDtoBuilder()
+    public TokenDto toTokenResponseDto() {
+        return new TokenDto.TokenDtoBuilder()
             .grantType(this.grantType)
             .accessToken(this.accessToken)
             .accessTokenExpiresIn(this.accessTokenExpiresIn)
             .refreshToken(this.refreshToken)
             .build();
     }
-
 
     public AuthDto.ReissueResponseDto toReissueResponseDto() {
         return new AuthDto.ReissueResponseDto.ReissueResponseDtoBuilder()

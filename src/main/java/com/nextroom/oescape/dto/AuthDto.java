@@ -86,10 +86,21 @@ public class AuthDto {
     @Getter
     @Builder
     public static class LogInResponseDto {
+        private String shopName;
         private String grantType;
         private String accessToken;
         private long accessTokenExpiresIn;
         private String refreshToken;
+
+        public static AuthDto.LogInResponseDto toLogInResponseDto(String shopName, TokenDto tokenDto) {
+            return new LogInResponseDtoBuilder()
+                .shopName(shopName)
+                .grantType(tokenDto.getGrantType())
+                .accessToken(tokenDto.getAccessToken())
+                .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
+                .refreshToken(tokenDto.getRefreshToken())
+                .build();
+        }
     }
 
     @Getter
