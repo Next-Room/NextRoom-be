@@ -17,6 +17,7 @@ public enum StatusCode {
     SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "업체가 이미 존재합니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 토큰입니다."),
     UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "지원하지 않는 토큰 형식입니다."),
+    INVALID_TOKEN_SIGNATURE(HttpStatus.BAD_REQUEST, "잘못된 토큰 서명입니다."),
 
     /**
      * 401 Unauthorized
