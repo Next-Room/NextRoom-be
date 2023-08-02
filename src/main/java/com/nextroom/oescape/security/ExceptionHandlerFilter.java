@@ -1,5 +1,7 @@
 package com.nextroom.oescape.security;
 
+import static com.nextroom.oescape.exceptions.StatusCode.*;
+
 import java.io.IOException;
 
 import org.springframework.http.MediaType;
@@ -9,6 +11,7 @@ import com.fasterxml.jackson.core.json.JsonWriteFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nextroom.oescape.exceptions.CustomException;
 import com.nextroom.oescape.exceptions.ErrorResponse;
+import com.nextroom.oescape.exceptions.StatusCode;
 import com.nextroom.oescape.exceptions.StatusCode;
 
 import io.jsonwebtoken.ExpiredJwtException;
@@ -30,13 +33,13 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            setErrorResponse(response, StatusCode.INVALID_TOKEN_SIGNATURE);
+            setErrorResponse(response, INVALID_TOKEN_SIGNATURE);
         } catch (ExpiredJwtException e) {
-            setErrorResponse(response, StatusCode.TOKEN_EXPIRED);
+            setErrorResponse(response, TOKEN_EXPIRED);
         } catch (UnsupportedJwtException e) {
-            setErrorResponse(response, StatusCode.UNSUPPORTED_TOKEN);
+            setErrorResponse(response, UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException | JwtException e) {
-            setErrorResponse(response, StatusCode.INVALID_TOKEN);
+            setErrorResponse(response, INVALID_TOKEN);
         } catch (CustomException e) {
             setErrorResponse(response, e.getStatusCode());
         }

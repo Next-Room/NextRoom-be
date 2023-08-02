@@ -1,5 +1,7 @@
 package com.nextroom.oescape.security;
 
+import static com.nextroom.oescape.exceptions.StatusCode.*;
+
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
@@ -17,7 +19,6 @@ import org.springframework.stereotype.Component;
 
 import com.nextroom.oescape.dto.TokenDto;
 import com.nextroom.oescape.exceptions.CustomException;
-import com.nextroom.oescape.exceptions.StatusCode;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -76,7 +77,7 @@ public class TokenProvider {
         Claims claims = parseClaims(accessToken);
 
         if (claims.get(AUTHORITIES_KEY) == null) {
-            throw new CustomException(StatusCode.TOKEN_UNAUTHORIZED);
+            throw new CustomException(TOKEN_UNAUTHORIZED);
         }
 
         Collection<? extends GrantedAuthority> authorities =
