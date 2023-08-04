@@ -1,11 +1,11 @@
 package com.nextroom.oescape.service;
 
+import static com.nextroom.oescape.exceptions.StatusCode.*;
 import static com.nextroom.oescape.util.Timestamped.*;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,7 +15,6 @@ import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.dto.AuthDto;
 import com.nextroom.oescape.dto.TokenDto;
 import com.nextroom.oescape.exceptions.CustomException;
-import com.nextroom.oescape.exceptions.StatusCode;
 import com.nextroom.oescape.repository.RefreshTokenRepository;
 import com.nextroom.oescape.repository.ShopRepository;
 import com.nextroom.oescape.security.TokenProvider;
@@ -35,7 +34,7 @@ public class AuthService {
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
         if (shopRepository.existsByAdminCode(request.getAdminCode())) {
-            throw new CustomException(StatusCode.SHOP_ALREADY_EXIST);
+            throw new CustomException(SHOP_ALREADY_EXIST);
         }
 
         Shop shop = shopRepository.save(request.toShop(passwordEncoder));
@@ -52,39 +51,35 @@ public class AuthService {
 
         UsernamePasswordAuthenticationToken authenticationToken = request.toAuthentication();
 
-        try {
-            Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-            TokenDto token = tokenProvider.generateTokenDto(authentication).toTokenResponseDto();
-            String shopName = shopRepository.findByAdminCode(request.getAdminCode())
-                .orElseThrow(() -> new CustomException(StatusCode.TARGET_SHOP_NOT_FOUND)).getName();
-            AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shopName, token);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        TokenDto token = tokenProvider.generateTokenDto(authentication).toTokenResponseDto();
+        String shopName = shopRepository.findByAdminCode(request.getAdminCode())
+            .orElseThrow(() -> new CustomException(StatusCode.TARGET_SHOP_NOT_FOUND)).getName();
+        AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shopName, token);
+      
+        RefreshToken refreshToken = RefreshToken.builder()
+            .key(authentication.getName())
+            .value(response.getRefreshToken())
+            .build();
 
-            RefreshToken refreshToken = RefreshToken.builder()
-                .key(authentication.getName())
-                .value(token.getRefreshToken())
-                .build();
+        refreshTokenRepository.save(refreshToken);
 
-            refreshTokenRepository.save(refreshToken);
-
-            return response;
-        } catch (AuthenticationException e) {
-            throw new CustomException(StatusCode.TARGET_SHOP_NOT_FOUND);
-        }
+        return response;
     }
 
     @Transactional
     public AuthDto.ReissueResponseDto reissue(AuthDto.ReissueRequestDto request) {
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
-            throw new CustomException(StatusCode.INVALID_TOKEN);
+            throw new CustomException(INVALID_REFRESH_TOKEN);
         }
 
         Authentication authentication = tokenProvider.getAuthentication(request.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-            .orElseThrow(() -> new CustomException(StatusCode.SHOP_IS_LOG_OUT));
+            .orElseThrow(() -> new CustomException(SHOP_IS_LOG_OUT));
 
         if (!refreshToken.getValue().equals(request.getRefreshToken())) {
-            throw new CustomException(StatusCode.INVALID_TOKEN);
+            throw new CustomException(INVALID_REFRESH_TOKEN);
         }
 
         AuthDto.ReissueResponseDto response = tokenProvider.generateTokenDto(authentication).toReissueResponseDto();

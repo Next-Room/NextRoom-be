@@ -12,10 +12,12 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import com.nextroom.oescape.security.ExceptionHandlerFilter;
 import com.nextroom.oescape.security.TokenProvider;
 import com.nextroom.oescape.security.jwt.JwtAccessDeniedHandler;
 import com.nextroom.oescape.security.jwt.JwtAuthenticationEntryPoint;
@@ -44,6 +46,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
+
             .csrf(AbstractHttpConfigurer::disable)
 
             // exception handling

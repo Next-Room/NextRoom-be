@@ -27,4 +27,5 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, e.getMessage());
     }
+
 }
