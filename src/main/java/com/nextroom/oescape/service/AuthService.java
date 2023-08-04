@@ -54,7 +54,7 @@ public class AuthService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         TokenDto token = tokenProvider.generateTokenDto(authentication).toTokenResponseDto();
         String shopName = shopRepository.findByAdminCode(request.getAdminCode())
-            .orElseThrow(() -> new CustomException(StatusCode.TARGET_SHOP_NOT_FOUND)).getName();
+            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND)).getName();
         AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shopName, token);
       
         RefreshToken refreshToken = RefreshToken.builder()
