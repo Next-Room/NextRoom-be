@@ -7,4 +7,6 @@ import com.nextroom.oescape.domain.Theme;
 
 public interface HintRepository extends JpaRepository<Hint, Long> {
     boolean existsByThemeAndHintCode(Theme theme, String hintCode);
+
+    Object findAllByThemeId(Long themeId);
 }
