@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.nextroom.oescape.domain.RefreshToken;
 import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.dto.AuthDto;
+import com.nextroom.oescape.dto.TokenDto;
 import com.nextroom.oescape.exceptions.CustomException;
 import com.nextroom.oescape.repository.RefreshTokenRepository;
 import com.nextroom.oescape.repository.ShopRepository;
@@ -51,8 +52,11 @@ public class AuthService {
         UsernamePasswordAuthenticationToken authenticationToken = request.toAuthentication();
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        AuthDto.LogInResponseDto response = tokenProvider.generateTokenDto(authentication).toLogInResponseDto();
-
+        TokenDto token = tokenProvider.generateTokenDto(authentication).toTokenResponseDto();
+        String shopName = shopRepository.findByAdminCode(request.getAdminCode())
+            .orElseThrow(() -> new CustomException(StatusCode.TARGET_SHOP_NOT_FOUND)).getName();
+        AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shopName, token);
+      
         RefreshToken refreshToken = RefreshToken.builder()
             .key(authentication.getName())
             .value(response.getRefreshToken())

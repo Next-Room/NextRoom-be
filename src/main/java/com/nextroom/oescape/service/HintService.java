@@ -59,13 +59,13 @@ public class HintService {
             throw new CustomException(NOT_PERMITTED);
         }
 
-        return theme.getHints().stream().map(Hint::toHintListResponse).toList();
+        return theme.getHints().stream().map(HintDto.HintListResponse::new).toList();
     }
 
     public Object getHintListByThemeId(Long themeId) {
         Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
 
-        return theme.getHints().stream().map(Hint::toHintListResponse).toList();
+        return theme.getHints().stream().map(HintDto.HintListResponse::new).toList();
     }
 
     @Transactional
