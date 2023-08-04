@@ -7,13 +7,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithMockUser;
 
 import com.nextroom.oescape.domain.Hint;
+import com.nextroom.oescape.domain.Theme;
 import com.nextroom.oescape.dto.HintDto;
 import com.nextroom.oescape.repository.HintRepository;
 import com.nextroom.oescape.repository.ThemeRepository;
@@ -30,7 +33,34 @@ public class HintServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
+    @BeforeEach
+    public void setUp() {
+
+        Theme theme = Theme.builder()
+            .id(1L)
+            .title("theme for test")
+            .build();
+
+        themeRepository.save(theme);
+
+        hintRepository.save(Hint.builder()
+            .id(1L)
+            .theme(theme)
+            .hintCode("1234")
+            .answer("answer1")
+            .contents("contents1")
+            .build());
+
+        hintRepository.save(Hint.builder()
+            .id(2L)
+            .theme(theme)
+            .hintCode("2334")
+            .contents("contents2")
+            .build());
+    }
+
     @Test
+    @WithMockUser
     @DisplayName("힌트 추가 / 성공")
     public void testAddHint() {
         HintDto.AddHintRequest request = new HintDto.AddHintRequest();
@@ -42,6 +72,7 @@ public class HintServiceTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("힌트 조회 / 성공")
     public void testGetHintList() {
         Long themeId = 1L;
@@ -54,6 +85,7 @@ public class HintServiceTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("힌트 수정 / 성공")
     public void testEditHint() {
         HintDto.EditHintRequest request = new HintDto.EditHintRequest();
@@ -70,6 +102,7 @@ public class HintServiceTest {
     }
 
     @Test
+    @WithMockUser
     @DisplayName("힌트 삭제 / 성공")
     public void testRemoveHint() {
         HintDto.RemoveHintRequest request = new HintDto.RemoveHintRequest();
