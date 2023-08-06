@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,12 +13,15 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
 
-import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.domain.Theme;
+import com.nextroom.oescape.dto.AuthDto;
 import com.nextroom.oescape.dto.ThemeDto;
 import com.nextroom.oescape.exceptions.CustomException;
 import com.nextroom.oescape.exceptions.StatusCode;
+import com.nextroom.oescape.repository.ShopRepository;
 import com.nextroom.oescape.repository.ThemeRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -27,11 +31,29 @@ class ThemeServiceTest {
     private ThemeService themeService;
     @Mock
     private ThemeRepository themeRepository;
+    @Mock
+    private ShopRepository shopRepository;
+    @Mock
+    private AuthService authService;
 
     private final String title = "테마 이름";
     private final Integer timeLimit = 70;
+    private final Integer hintLimit = 10;
+
+    @BeforeEach
+    @WithMockUser
+    public void setUp() {
+        AuthDto.SignUpRequestDto request = AuthDto.SignUpRequestDto.builder()
+            .adminCode("11111")
+            .password("nextroom1234!")
+            .name("테스트지점")
+            .build();
+
+        authService.signUp(request);
+    }
 
     @Test
+    @WithUserDetails("11111")
     @DisplayName("테마 등록 성공")
     void addTheme() {
         //given
@@ -39,17 +61,19 @@ class ThemeServiceTest {
         Mockito.doReturn(theme()).when(themeRepository).save(any(Theme.class));
 
         //when
-        ThemeDto.AddThemeResponse result = themeService.addTheme(
-            new Shop(),
+        final Theme result = themeService.addTheme(
             ThemeDto.AddThemeRequest
                 .builder()
                 .title(title)
                 .timeLimit(timeLimit)
+                .hintLimit(hintLimit)
                 .build());
 
         //then
+        assertThat(result.getId()).isNotNull();
         assertThat(result.getTitle()).isEqualTo(title);
         assertThat(result.getTimeLimit()).isEqualTo(timeLimit);
+        assertThat(result.getHintLimit()).isEqualTo(hintLimit);
 
         //verify
         verify(themeRepository, times(1)).findByTitle(title);
@@ -60,6 +84,7 @@ class ThemeServiceTest {
         return Theme.builder()
             .title(title)
             .timeLimit(timeLimit)
+            .hintLimit(hintLimit)
             .build();
     }
 
@@ -71,11 +96,11 @@ class ThemeServiceTest {
 
         //when
         CustomException result = assertThrows(CustomException.class, () -> themeService.addTheme(
-            new Shop(),
             ThemeDto.AddThemeRequest
                 .builder()
                 .title(title)
                 .timeLimit(timeLimit)
+                .hintLimit(hintLimit)
                 .build()));
 
         //then

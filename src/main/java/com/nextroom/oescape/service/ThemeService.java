@@ -1,7 +1,6 @@
 package com.nextroom.oescape.service;
 
 import static com.nextroom.oescape.exceptions.StatusCode.*;
-import static com.nextroom.oescape.util.Timestamped.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -49,7 +48,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void addTheme(ThemeDto.AddThemeRequest request) {
+    public Theme addTheme(ThemeDto.AddThemeRequest request) {
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
@@ -57,7 +56,7 @@ public class ThemeService {
             .shop(validateShop())
             .build();
 
-        themeRepository.save(theme);
+        return themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)
