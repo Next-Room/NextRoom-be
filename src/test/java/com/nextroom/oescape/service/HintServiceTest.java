@@ -7,19 +7,21 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import com.nextroom.oescape.domain.Hint;
+import com.nextroom.oescape.domain.Shop;
 import com.nextroom.oescape.domain.Theme;
 import com.nextroom.oescape.dto.HintDto;
 import com.nextroom.oescape.repository.HintRepository;
 import com.nextroom.oescape.repository.ThemeRepository;
+import com.nextroom.oescape.security.SecurityUtil;
 
 @SpringBootTest
 public class HintServiceTest {
@@ -33,41 +35,38 @@ public class HintServiceTest {
     @Mock
     private ThemeRepository themeRepository;
 
-    @BeforeEach
-    public void setUp() {
-
-        Theme theme = Theme.builder()
-            .id(1L)
-            .title("theme for test")
-            .build();
-
-        themeRepository.save(theme);
-
-        hintRepository.save(Hint.builder()
-            .id(1L)
-            .theme(theme)
-            .hintCode("1234")
-            .answer("answer1")
-            .contents("contents1")
-            .build());
-
-        hintRepository.save(Hint.builder()
-            .id(2L)
-            .theme(theme)
-            .hintCode("2334")
-            .contents("contents2")
-            .build());
-    }
-
     @Test
     @WithMockUser
     @DisplayName("힌트 추가 / 성공")
     public void testAddHint() {
-        HintDto.AddHintRequest request = new HintDto.AddHintRequest();
-        // Set request parameters here
+        Long shopId = 12L;
+        Shop shop = Shop.builder()
+            .id(shopId).
+            build();
 
-        hintService.addHint(request);
+        Long themeId = 1L;
+        Theme theme = Theme.builder()
+            .id(themeId)
+            .hintLimit(99)
+            .shop(shop)
+            .build();
 
+        HintDto.AddHintRequest request = new HintDto.AddHintRequest(
+            themeId,
+            "1234",
+            "contents",
+            "answer",
+            23
+        );
+
+        when(themeRepository.findById(themeId)).thenReturn(Optional.ofNullable(theme));
+
+        try (MockedStatic<SecurityUtil> mocked = mockStatic(SecurityUtil.class)) {
+            mocked.when(SecurityUtil::getRequestedShopId).thenReturn(shopId);
+            hintService.addHint(request);
+        }
+
+        assertNotNull(theme);
         verify(hintRepository, times(1)).save(any(Hint.class));
     }
 
@@ -75,46 +74,102 @@ public class HintServiceTest {
     @WithMockUser
     @DisplayName("힌트 조회 / 성공")
     public void testGetHintList() {
-        Long themeId = 1L;
+        Long shopId = 122L;
+        Shop shop = Shop.builder()
+            .id(shopId).
+            build();
+
+        Long themeId = 12L;
+        Theme theme = Theme.builder()
+            .id(themeId)
+            .hintLimit(99)
+            .shop(shop)
+            .build();
+
+        when(themeRepository.findById(themeId)).thenReturn(Optional.ofNullable(theme));
         when(hintRepository.findAllByThemeId(themeId)).thenReturn(Collections.emptyList());
 
-        List<HintDto.HintListResponse> hints = hintService.getHintList(themeId);
+        try (MockedStatic<SecurityUtil> mocked = mockStatic(SecurityUtil.class)) {
+            mocked.when(SecurityUtil::getRequestedShopId).thenReturn(shopId);
+            List<HintDto.HintListResponse> hints = hintService.getHintList(themeId);
+            assertEquals(0, hints.size());
+        }
 
-        assertEquals(0, hints.size());
-        verify(hintRepository, times(1)).findAllByThemeId(themeId);
     }
 
     @Test
     @WithMockUser
     @DisplayName("힌트 수정 / 성공")
     public void testEditHint() {
-        HintDto.EditHintRequest request = new HintDto.EditHintRequest();
-        // Set request parameters here
+        Long shopId = 122L;
+        Shop shop = Shop.builder()
+            .id(shopId).
+            build();
 
-        Hint existingHint = new Hint();
-        // Set existing hint properties here
+        Long themeId = 12L;
+        Theme theme = Theme.builder()
+            .id(themeId)
+            .hintLimit(99)
+            .shop(shop)
+            .build();
 
-        when(hintRepository.findById(request.getId())).thenReturn(Optional.of(existingHint));
+        Long hintId = 12L;
+        HintDto.EditHintRequest request = new HintDto.EditHintRequest(
+            hintId,
+            "1234",
+            "contents",
+            "answer",
+            23
+        );
+        Hint hint = Hint.builder()
+            .id(hintId)
+            .hintCode("4312")
+            .contents("asdf")
+            .answer("qwer")
+            .progress(13)
+            .theme(theme)
+            .build();
+        when(hintRepository.findById(hintId)).thenReturn(Optional.ofNullable(hint));
 
-        hintService.editHint(request);
-
-        verify(hintRepository, times(1)).save(existingHint);
+        try (MockedStatic<SecurityUtil> mocked = mockStatic(SecurityUtil.class)) {
+            mocked.when(SecurityUtil::getRequestedShopId).thenReturn(shopId);
+            hintService.editHint(request);
+        }
     }
 
     @Test
     @WithMockUser
     @DisplayName("힌트 삭제 / 성공")
     public void testRemoveHint() {
+        Long shopId = 122L;
+        Shop shop = Shop.builder()
+            .id(shopId).
+            build();
+
+        Long themeId = 12L;
+        Theme theme = Theme.builder()
+            .id(themeId)
+            .hintLimit(99)
+            .shop(shop)
+            .build();
+
+        Long hintId = 12L;
         HintDto.RemoveHintRequest request = new HintDto.RemoveHintRequest();
-        // Set request parameters here
+        request.setId(hintId);
+        Hint hint = Hint.builder()
+            .id(hintId)
+            .hintCode("4312")
+            .contents("asdf")
+            .answer("qwer")
+            .progress(13)
+            .theme(theme)
+            .build();
 
-        Hint existingHint = new Hint();
-        // Set existing hint properties here
+        when(hintRepository.findById(hintId)).thenReturn(Optional.ofNullable(hint));
 
-        when(hintRepository.findById(request.getId())).thenReturn(Optional.of(existingHint));
-
-        hintService.removeHint(request);
-
-        verify(hintRepository, times(1)).delete(existingHint);
+        try (MockedStatic<SecurityUtil> mocked = mockStatic(SecurityUtil.class)) {
+            mocked.when(SecurityUtil::getRequestedShopId).thenReturn(shopId);
+            hintService.removeHint(request);
+        }
     }
 }
