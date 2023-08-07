@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nextroom.oescape.exceptions.CustomException;
 import com.nextroom.oescape.exceptions.ErrorResponse;
 import com.nextroom.oescape.exceptions.StatusCode;
-import com.nextroom.oescape.exceptions.StatusCode;
 
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
@@ -50,6 +49,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         objectMapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(statusCode.getCode().value());
+
         try {
             response.getWriter().write(objectMapper.writeValueAsString(
                     ErrorResponse.builder()
