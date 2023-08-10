@@ -14,6 +14,7 @@ public enum StatusCode {
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     AUTH_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
+    LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "ID 또는 패스워드가 일치하지 않습니다."),
     SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "업체가 이미 존재합니다."),
     INVALID_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 토큰입니다."),
     UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "지원하지 않는 토큰 형식입니다."),
