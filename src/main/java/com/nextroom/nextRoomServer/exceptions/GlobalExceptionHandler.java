@@ -1,10 +1,13 @@
 package com.nextroom.nextRoomServer.exceptions;
 
+import static com.nextroom.oescape.exceptions.StatusCode.*;
+
 import java.util.Objects;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -28,4 +31,8 @@ public class GlobalExceptionHandler {
         return ErrorResponse.toResponseEntity(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+    @ExceptionHandler(value = {BadCredentialsException.class})
+    protected ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException e) {
+        return ErrorResponse.toResponseEntity(LOGIN_BAD_REQUEST.getCode(), LOGIN_BAD_REQUEST.getMessage());
+    }
 }
