@@ -49,6 +49,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         objectMapper.getFactory().configure(JsonWriteFeature.ESCAPE_NON_ASCII.mappedFeature(), true);
 
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+        response.setStatus(statusCode.getCode().value());
+
         try {
             response.getWriter().write(objectMapper.writeValueAsString(
                     ErrorResponse.builder()
