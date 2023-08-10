@@ -1,6 +1,6 @@
 package com.nextroom.nextRoomServer.exceptions;
 
-import static com.nextroom.oescape.exceptions.StatusCode.*;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 import java.util.Objects;
 
