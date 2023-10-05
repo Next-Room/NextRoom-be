@@ -150,20 +150,6 @@ Branch Rule
 
 <details>
 <summary>
-Exception
-</summary>
-<div markdown="1">
-    
-[Spring Exception Handling](https://bcp0109.tistory.com/303)
-    
-</br>
-
-**Spring 전역으로 공통 Exception 처리**
-
-</details> 
-    
-<details>
-<summary>
 Response
 </summary>
 <div markdown="1">
