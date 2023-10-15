@@ -1,8 +1,10 @@
-# 🚪 넥스트룸
+b# 🚪 넥스트룸
 
 ![Alt text](images/main.png?version%253D1696469455530)
 
 > 손쉽게 관리하는 방탈출 힌트폰 매니징 서비스, 넥스트룸입니다!
+
+</br>
 
 ## 🛠 Core Stack
 
@@ -12,13 +14,19 @@
 - ORM : `Spring Data JPA`
 - Infra : `AWS`, `NCP`
 
+</br>
+
 ## 🗺️ Service Architecture
 
 ![Alt text](images/Service_Architecture.png)
 
+</br>
+
 ## 🔐 Spring Security + JWT Authentication
 
 ![Alt text](images/security_SD.png)
+
+</br>
 
 ## 👨‍💻 Convention
 
