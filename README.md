@@ -12,6 +12,14 @@
 - ORM : `Spring Data JPA`
 - Infra : `AWS`, `NCP`
 
+## 🗺️ Service Architecture
+
+![Alt text](images/Service_Architecture.png)
+
+## 🔐 Spring Security + JWT Authentication
+
+![Alt text](images/security_SD.png)
+
 ## 👨‍💻 Convention
 
 ---
