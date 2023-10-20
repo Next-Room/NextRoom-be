@@ -61,4 +61,11 @@ public class AuthController {
     public ResponseEntity<BaseResponse> reissue(@RequestBody AuthDto.ReissueRequestDto request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.reissue(request)));
     }
+    
+
+    @PostMapping("/rtdntest")
+    public void reissue(@RequestBody Object message) {
+        System.out.println(message);
+
+    }
 }
