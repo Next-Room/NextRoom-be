@@ -22,6 +22,7 @@ import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
+import com.nextroom.nextRoomServer.security.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,28 +41,31 @@ public class SubscriptionService {
             .googleId("test")
             .status(SUBSCRIPTION)
             .plan(MINI)
-            .subscribedAt(LocalDateTime.now().plusDays(30))
-            .expiryDate(LocalDate.now())
+            .subscribedAt(LocalDateTime.now())
+            .expiryDate(LocalDate.now().plusDays(30))
             .build();
         subscriptionRepository.save(entity);
     }
 
-    public SubscriptionDto.SubscriptionInfoResponse getSubscriptionInfo(
-        SubscriptionDto.SubscriptionInfoRequest request) {
-        Subscription subscription = subscriptionRepository.findByShopId(request.getId()).orElseThrow(
+    public SubscriptionDto.SubscriptionInfoResponse getSubscriptionInfo() {
+        Long shopId = SecurityUtil.getRequestedShopId();
+        Subscription subscription = subscriptionRepository.findByShopId(shopId).orElseThrow(
             () -> new CustomException(TARGET_SHOP_NOT_FOUND));
 
         return new SubscriptionDto.SubscriptionInfoResponse(subscription);
     }
 
-    public SubscriptionDto.UserStatusResponse getUserStatus(SubscriptionDto.UserStatusRequest request) {
-        Subscription subscription = subscriptionRepository.findByShopId(request.getId()).orElseThrow(
+    public SubscriptionDto.UserStatusResponse getUserStatus() {
+        Long shopId = SecurityUtil.getRequestedShopId();
+        Subscription subscription = subscriptionRepository.findByShopId(shopId).orElseThrow(
             () -> new CustomException(TARGET_SHOP_NOT_FOUND));
 
         return new SubscriptionDto.UserStatusResponse(subscription);
     }
 
     public Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> getSubscriptionPlan() {
+        Long shopId = SecurityUtil.getRequestedShopId();
+        subscriptionRepository.findByShopId(shopId).orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
         Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> enumValues = new LinkedHashMap<>();
         enumValues.put("SubscriptionPlan", toEnumValues(SubscriptionPlan.class));
 

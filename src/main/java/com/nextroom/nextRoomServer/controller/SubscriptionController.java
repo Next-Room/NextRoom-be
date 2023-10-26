@@ -63,9 +63,8 @@ public class SubscriptionController {
         }
     )
     @GetMapping("/mypage")
-    public ResponseEntity<BaseResponse> getSubscriptionInfo(
-        @RequestBody SubscriptionDto.SubscriptionInfoRequest request) {
-        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getSubscriptionInfo(request)));
+    public ResponseEntity<BaseResponse> getSubscriptionInfo() {
+        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getSubscriptionInfo()));
     }
 
     @Operation(
@@ -78,9 +77,8 @@ public class SubscriptionController {
         }
     )
     @GetMapping("/status")
-    public ResponseEntity<BaseResponse> getUserStatus(
-        @RequestBody SubscriptionDto.UserStatusRequest request) {
-        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getUserStatus(request)));
+    public ResponseEntity<BaseResponse> getUserStatus() {
+        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getUserStatus()));
     }
 
     @Operation(

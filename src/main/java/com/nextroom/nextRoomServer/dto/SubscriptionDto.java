@@ -65,11 +65,6 @@ public class SubscriptionDto {
     }
 
     @Getter
-    public static class SubscriptionInfoRequest {
-        private Long id;
-    }
-
-    @Getter
     public static class SubscriptionInfoResponse {
         private final Long id;
         private final SubscriptionPlan subStatus;
@@ -86,11 +81,6 @@ public class SubscriptionDto {
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
             this.modifiedAt = Timestamped.dateTimeFormatter(subscription.getModifiedAt());
         }
-    }
-
-    @Getter
-    public static class UserStatusRequest {
-        private Long id;
     }
 
     @Getter
