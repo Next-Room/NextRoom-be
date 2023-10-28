@@ -14,6 +14,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,4 +46,7 @@ public class Shop extends Timestamped {
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Theme> themes = new ArrayList<>();
+
+    @OneToOne(mappedBy = "shop", cascade = CascadeType.DETACH)
+    private Subscription subscription;
 }
