@@ -69,17 +69,13 @@ public class SubscriptionDto {
         private final Long id;
         private final SubscriptionPlan subStatus;
         private final String expiryDate;
-        private final String subscribedAt;
         private final String createdAt;
-        private final String modifiedAt;
 
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.subStatus = subscription.getPlan();
             this.expiryDate = subscription.getExpiryDate().toString();
-            this.subscribedAt = Timestamped.dateTimeFormatter(subscription.getSubscribedAt());
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
-            this.modifiedAt = Timestamped.dateTimeFormatter(subscription.getModifiedAt());
         }
     }
 
@@ -88,17 +84,13 @@ public class SubscriptionDto {
         private final Long id;
         private final UserStatus userStatus;
         private final String expiryDate;
-        private final String subscribedAt;
         private final String createdAt;
-        private final String modifiedAt;
 
         public UserStatusResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.userStatus = subscription.getStatus();
             this.expiryDate = subscription.getExpiryDate().toString();
-            this.subscribedAt = Timestamped.dateTimeFormatter(subscription.getSubscribedAt());
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
-            this.modifiedAt = Timestamped.dateTimeFormatter(subscription.getModifiedAt());
         }
     }
 

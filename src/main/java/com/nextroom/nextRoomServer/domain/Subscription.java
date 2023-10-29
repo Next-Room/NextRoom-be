@@ -1,7 +1,6 @@
 package com.nextroom.nextRoomServer.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
@@ -43,6 +42,5 @@ public class Subscription extends Timestamped {
     private UserStatus status;
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan plan;
-    private LocalDateTime subscribedAt;
     private LocalDate expiryDate;
 }
