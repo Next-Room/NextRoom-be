@@ -5,7 +5,6 @@ import static com.nextroom.nextRoomServer.enums.UserStatus.*;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -41,7 +40,6 @@ public class SubscriptionService {
             .googleId("test")
             .status(SUBSCRIPTION)
             .plan(MINI)
-            .subscribedAt(LocalDateTime.now())
             .expiryDate(LocalDate.now().plusDays(30))
             .build();
         subscriptionRepository.save(entity);
@@ -64,8 +62,6 @@ public class SubscriptionService {
     }
 
     public Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> getSubscriptionPlan() {
-        Long shopId = SecurityUtil.getRequestedShopId();
-        subscriptionRepository.findByShopId(shopId).orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
         Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> enumValues = new LinkedHashMap<>();
         enumValues.put("SubscriptionPlan", toEnumValues(SubscriptionPlan.class));
 
