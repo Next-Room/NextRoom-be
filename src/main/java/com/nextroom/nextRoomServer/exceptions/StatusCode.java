@@ -24,7 +24,6 @@ public enum StatusCode {
      * 401 Unauthorized
      */
     TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한 정보가 잘못된 토큰입니다."),
-    TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     SHOP_IS_LOG_OUT(HttpStatus.UNAUTHORIZED, "로그아웃 된 사용자입니다."),
 
     /**
@@ -42,6 +41,11 @@ public enum StatusCode {
     TARGET_THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
     TARGET_HINT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 힌트입니다."),
     TARGET_SHOP_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 업체입니다."),
+
+    /**
+     * 407 Proxy Authentication Required
+     */
+    TOKEN_EXPIRED(HttpStatus.PROXY_AUTHENTICATION_REQUIRED, "만료된 토큰입니다."),
 
     /**
      * 409 Conflict
