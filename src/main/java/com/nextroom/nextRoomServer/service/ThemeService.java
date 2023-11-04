@@ -3,6 +3,7 @@ package com.nextroom.nextRoomServer.service;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -24,24 +25,19 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ShopRepository shopRepository;
 
-    private Shop validateShop() {
+    private Shop getShop() {
         return shopRepository.findById(SecurityUtil.getRequestedShopId())
-            .orElseThrow(() -> new CustomException(TOKEN_UNAUTHORIZED));
-    }
-
-    private Shop validateAdminCode(String adminCode) {
-        return shopRepository.findByAdminCode(adminCode)
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
     }
 
-    private Theme validateTheme(Long themeId) {
+    private Theme getTheme(Long themeId) {
         return themeRepository.findById(themeId)
             .orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
     }
 
-    private Theme validateThemeIdAndShop(Long themeId) {
-        Theme theme = validateTheme(themeId);
-        if (!theme.getShop().equals(validateShop())) {
+    private Theme getThemeByThemeIdAndShop(Long themeId) {
+        Theme theme = getTheme(themeId);
+        if (!Objects.equals(theme.getShop(), getShop())) {
             throw new CustomException(NOT_PERMITTED);
         }
         return theme;
@@ -53,16 +49,15 @@ public class ThemeService {
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
             .hintLimit(request.getHintLimit())
-            .shop(validateShop())
+            .shop(getShop())
             .build();
 
         themeRepository.save(theme);
     }
 
     @Transactional(readOnly = true)
-    public List<ThemeDto.ThemeListResponse> getThemeList(String adminCode) {
-        Shop shop = (adminCode == null) ? validateShop() : validateAdminCode(adminCode);
-        List<Theme> themeList = themeRepository.findAllByShop(shop);
+    public List<ThemeDto.ThemeListResponse> getThemeList() {
+        List<Theme> themeList = themeRepository.findAllByShop(getShop());
         return themeList.stream()
             .map(ThemeDto.ThemeListResponse::new)
             .collect(Collectors.toList());
@@ -70,12 +65,12 @@ public class ThemeService {
 
     @Transactional
     public void editTheme(ThemeDto.EditThemeRequest request) {
-        Theme theme = validateThemeIdAndShop(request.getId());
+        Theme theme = getThemeByThemeIdAndShop(request.getId());
         theme.update(request);
     }
 
     public void removeTheme(ThemeDto.RemoveThemeRequest request) {
-        Theme theme = validateThemeIdAndShop(request.getId());
+        Theme theme = getThemeByThemeIdAndShop(request.getId());
         themeRepository.delete(theme);
     }
 }

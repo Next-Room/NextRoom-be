@@ -3,7 +3,6 @@ package com.nextroom.nextRoomServer.controller;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,9 +56,6 @@ public class HintController {
     )
     @GetMapping
     public ResponseEntity<BaseResponse> getHintList(@RequestParam("themeId") Long themeId) {
-        if (SecurityContextHolder.getContext().getAuthentication().getPrincipal() == "anonymousUser") {
-            return ResponseEntity.ok(new DataResponse<>(OK, hintService.getHintListByThemeId(themeId)));
-        }
         return ResponseEntity.ok(new DataResponse<>(OK, hintService.getHintList(themeId)));
     }
 
