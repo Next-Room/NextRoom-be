@@ -15,7 +15,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.androidpublisher.model.SubscriptionPurchase;
 import com.nextroom.nextRoomServer.dto.BaseResponse;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
-import com.nextroom.nextRoomServer.service.PaymentService;
 import com.nextroom.nextRoomServer.util.AndroidPublisherClient;
 import com.nextroom.nextRoomServer.util.Base64Decoder;
 
@@ -27,8 +26,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
 public class PaymentController {
-    private final PaymentService paymentService;
-
     @PostMapping
     public ResponseEntity<BaseResponse> updatePayment(
         // @RequestBody Object message

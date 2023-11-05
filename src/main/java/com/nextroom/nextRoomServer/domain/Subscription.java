@@ -1,20 +1,21 @@
 package com.nextroom.nextRoomServer.domain;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
-import com.nextroom.nextRoomServer.enums.SubscriptionStatus;
+import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,13 +32,15 @@ public class Subscription extends Timestamped {
     @Column(name = "subscription_id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
     private String googleId;
-    private SubscriptionStatus status;
+
+    @Enumerated(EnumType.STRING)
+    private UserStatus status;
+    @Enumerated(EnumType.STRING)
     private SubscriptionPlan plan;
-    private LocalDateTime subscribedAt;
     private LocalDate expiryDate;
 }
