@@ -65,7 +65,7 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(
                 authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**")
+                    .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**")
                     .permitAll() // Android 인증 면제
