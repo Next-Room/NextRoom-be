@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nextroom.nextRoomServer.dto.BaseResponse;
@@ -57,9 +56,8 @@ public class ThemeController {
         }
     )
     @GetMapping
-    public ResponseEntity<BaseResponse> getThemeList(
-        @RequestParam(value = "adminCode", required = false) String adminCode) {
-        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList(adminCode)));
+    public ResponseEntity<BaseResponse> getThemeList() {
+        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList()));
     }
 
     @Operation(
