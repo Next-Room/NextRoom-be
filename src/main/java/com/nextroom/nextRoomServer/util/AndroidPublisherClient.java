@@ -13,7 +13,7 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.androidpublisher.AndroidPublisher;
-import com.google.api.services.androidpublisher.model.SubscriptionPurchase;
+import com.google.api.services.androidpublisher.model.SubscriptionPurchaseV2;
 
 public class AndroidPublisherClient {
 
@@ -51,10 +51,11 @@ public class AndroidPublisherClient {
         androidPublisher = initializeAndroidPublisher();
     }
 
-    public SubscriptionPurchase getSubscriptionPurchase(String subscriptionId, String purchaseToken) throws
+    public SubscriptionPurchaseV2 getSubscriptionPurchase(String subscriptionId, String purchaseToken) throws
         IOException {
-        return androidPublisher.purchases().subscriptions()
-            .get(PACKAGE_NAME, subscriptionId, purchaseToken)
-            .execute();
+        return androidPublisher
+            .purchases()
+            .subscriptionsv2()
+            .get(PACKAGE_NAME, purchaseToken).execute();
     }
 }
