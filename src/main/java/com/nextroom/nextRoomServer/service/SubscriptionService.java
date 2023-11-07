@@ -4,24 +4,31 @@ import static com.nextroom.nextRoomServer.enums.SubscriptionPlan.*;
 import static com.nextroom.nextRoomServer.enums.UserStatus.*;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.google.api.services.androidpublisher.model.SubscriptionPurchaseV2;
 import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
 import com.nextroom.nextRoomServer.enums.EnumModel;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
+import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
+import com.nextroom.nextRoomServer.util.AndroidPublisherClient;
 
 import lombok.RequiredArgsConstructor;
 
@@ -30,6 +37,15 @@ import lombok.RequiredArgsConstructor;
 public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final ShopRepository shopRepository;
+    private AndroidPublisherClient androidPublisherClient;
+
+    {
+        try {
+            androidPublisherClient = new AndroidPublisherClient();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public void test() {
         Shop shop = shopRepository.findByAdminCode("12321").orElseThrow(
@@ -73,5 +89,28 @@ public class SubscriptionService {
             .stream(e.getEnumConstants())
             .map(SubscriptionDto.SubscriptionPlanResponse::new)
             .collect(Collectors.toList());
+    }
+
+    public void purchaseSubscription(String purchaseToken) throws IOException {
+        Long shopId = SecurityUtil.getRequestedShopId();
+        SubscriptionPurchaseV2 purchase = androidPublisherClient.getSubscriptionPurchase(purchaseToken);
+
+        Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new CustomException(TARGET_HINT_NOT_FOUND));
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
+        LocalDate expiryDate = zonedDateTime.toLocalDate();
+
+        String planId = purchase.getLineItems().get(0).getOfferDetails().getBasePlanId();
+
+        Subscription subscription = Subscription.builder()
+            .shop(shop)
+            .status(SUBSCRIPTION)
+            .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(planId))
+            .expiryDate(expiryDate)
+            .purchaseToken(purchaseToken)
+            .build();
+
+        subscriptionRepository.save(subscription);
     }
 }

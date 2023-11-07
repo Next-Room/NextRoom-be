@@ -11,6 +11,7 @@ import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 public class SubscriptionDto {
     @Getter
@@ -86,5 +87,11 @@ public class SubscriptionDto {
             this.originPrice = enumModel.getOriginPrice();
             this.sellPrice = enumModel.getSellPrice();
         }
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class PurchaseSubscription {
+        private final String purchaseToken;
     }
 }

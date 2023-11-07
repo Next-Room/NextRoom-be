@@ -8,4 +8,6 @@ public interface EnumModel {
     Integer getOriginPrice();
 
     Integer getSellPrice();
+
+    String getPlanId();
 }

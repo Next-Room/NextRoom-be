@@ -2,6 +2,7 @@ package com.nextroom.nextRoomServer.controller;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,10 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.services.androidpublisher.model.SubscriptionPurchase;
 import com.nextroom.nextRoomServer.dto.BaseResponse;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
-import com.nextroom.nextRoomServer.util.AndroidPublisherClient;
+import com.nextroom.nextRoomServer.service.SubscriptionService;
 import com.nextroom.nextRoomServer.util.Base64Decoder;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,9 +26,19 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
 public class PaymentController {
-    @PostMapping
+
+    private final SubscriptionService subscriptionService;
+
+    @PostMapping("/purchase")
+    public ResponseEntity<BaseResponse> purchaseSubscription(
+        @RequestBody SubscriptionDto.PurchaseSubscription requestBody
+    ) throws IOException {
+        subscriptionService.purchaseSubscription(requestBody.getPurchaseToken());
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
+
+    @PostMapping("renew")
     public ResponseEntity<BaseResponse> updatePayment(
-        // @RequestBody Object message
         @RequestBody SubscriptionDto.UpdateSubscription messageDto
     ) throws
         Exception {

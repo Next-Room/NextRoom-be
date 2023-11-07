@@ -51,7 +51,7 @@ public class AndroidPublisherClient {
         androidPublisher = initializeAndroidPublisher();
     }
 
-    public SubscriptionPurchaseV2 getSubscriptionPurchase(String subscriptionId, String purchaseToken) throws
+    public SubscriptionPurchaseV2 getSubscriptionPurchase(String purchaseToken) throws
         IOException {
         return androidPublisher
             .purchases()

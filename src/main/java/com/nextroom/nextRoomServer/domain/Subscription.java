@@ -2,6 +2,8 @@ package com.nextroom.nextRoomServer.domain;
 
 import java.time.LocalDate;
 
+import org.checkerframework.common.aliasing.qual.Unique;
+
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
@@ -43,4 +45,6 @@ public class Subscription extends Timestamped {
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan plan;
     private LocalDate expiryDate;
+    @Unique
+    private String purchaseToken;
 }
