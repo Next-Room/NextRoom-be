@@ -47,4 +47,12 @@ public class Subscription extends Timestamped {
     private LocalDate expiryDate;
     @Unique
     private String purchaseToken;
+
+    public void renew(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void expire() {
+        this.status = UserStatus.EXPIRATION;
+    }
 }

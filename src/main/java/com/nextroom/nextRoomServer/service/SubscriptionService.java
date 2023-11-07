@@ -12,7 +12,6 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -23,7 +22,6 @@ import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
 import com.nextroom.nextRoomServer.enums.EnumModel;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
-import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
@@ -93,9 +91,9 @@ public class SubscriptionService {
 
     public void purchaseSubscription(String purchaseToken) throws IOException {
         Long shopId = SecurityUtil.getRequestedShopId();
-        SubscriptionPurchaseV2 purchase = androidPublisherClient.getSubscriptionPurchase(purchaseToken);
-
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new CustomException(TARGET_HINT_NOT_FOUND));
+
+        SubscriptionPurchaseV2 purchase = androidPublisherClient.getSubscriptionPurchase(purchaseToken);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
@@ -112,5 +110,24 @@ public class SubscriptionService {
             .build();
 
         subscriptionRepository.save(subscription);
+    }
+
+    public void renew(String purchaseToken) throws IOException {
+        Subscription subscription = subscriptionRepository.findByPurchaseToken(purchaseToken)
+            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
+
+        SubscriptionPurchaseV2 purchase = androidPublisherClient.getSubscriptionPurchase(purchaseToken);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
+        LocalDate expiryDate = zonedDateTime.toLocalDate();
+
+        subscription.renew(expiryDate);
+    }
+
+    public void expire(String purchaseToken) {
+        Subscription subscription = subscriptionRepository.findByPurchaseToken(purchaseToken)
+            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
+        subscription.expire();
     }
 }

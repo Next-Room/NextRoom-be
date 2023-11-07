@@ -1,9 +1,5 @@
 package com.nextroom.nextRoomServer.dto;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.google.gson.JsonIOException;
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.enums.EnumModel;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
@@ -15,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 public class SubscriptionDto {
     @Getter
-    public static class UpdateSubscription {
+    public static class updateSubscription {
         private MessageData message;
         private String subscription;
     }
