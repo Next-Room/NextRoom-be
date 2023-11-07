@@ -3,7 +3,9 @@ package com.nextroom.nextRoomServer.enums;
 public interface EnumModel {
     String getKey();
 
-    Integer getId();
+    String getId();
+
+    String getPlan();
 
     String getDescription();
 
