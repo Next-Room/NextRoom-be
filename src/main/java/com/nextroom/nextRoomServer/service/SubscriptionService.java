@@ -6,9 +6,7 @@ import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -61,11 +59,8 @@ public class SubscriptionService {
         return new SubscriptionDto.UserStatusResponse(subscription);
     }
 
-    public Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> getSubscriptionPlan() {
-        Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> enumValues = new LinkedHashMap<>();
-        enumValues.put("SubscriptionPlan", toEnumValues(SubscriptionPlan.class));
-
-        return enumValues;
+    public List<SubscriptionDto.SubscriptionPlanResponse> getSubscriptionPlan() {
+        return toEnumValues(SubscriptionPlan.class);
     }
 
     private List<SubscriptionDto.SubscriptionPlanResponse> toEnumValues(Class<? extends EnumModel> e) {

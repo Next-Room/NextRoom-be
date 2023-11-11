@@ -1,9 +1,5 @@
 package com.nextroom.nextRoomServer.dto;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.google.gson.JsonIOException;
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.enums.EnumModel;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
@@ -75,13 +71,15 @@ public class SubscriptionDto {
 
     @Getter
     public static class SubscriptionPlanResponse {
+        private final String id;
         private final String plan;
         private final String description;
         private final Integer originPrice;
         private final Integer sellPrice;
 
         public SubscriptionPlanResponse(EnumModel enumModel) {
-            this.plan = enumModel.getKey();
+            this.id = enumModel.getId();
+            this.plan = enumModel.getPlan();
             this.description = enumModel.getDescription();
             this.originPrice = enumModel.getOriginPrice();
             this.sellPrice = enumModel.getSellPrice();
