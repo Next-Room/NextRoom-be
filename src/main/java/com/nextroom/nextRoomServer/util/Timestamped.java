@@ -1,5 +1,6 @@
 package com.nextroom.nextRoomServer.util;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -26,6 +27,10 @@ public class Timestamped {
 
     public static String dateTimeFormatter(LocalDateTime localDateTime) {
         return localDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+    }
+
+    public static LocalDate getToday() {
+        return LocalDate.now();
     }
 
 }
