@@ -72,6 +72,7 @@ public class SubscriptionService {
 
         if (status == FREE && expiryDate.isBefore(Timestamped.getToday())) {
             subscription.updateStatus(HOLD, expiryDate.plusYears(1), null);
+            return;
         }
 
         if (status == HOLD && expiryDate.isBefore(Timestamped.getToday())) {
