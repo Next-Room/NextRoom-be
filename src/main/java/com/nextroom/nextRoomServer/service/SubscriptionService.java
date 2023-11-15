@@ -51,7 +51,6 @@ public class SubscriptionService {
 
         Subscription entity = Subscription.builder()
             .shop(shop)
-            .googleId("test")
             .status(SUBSCRIPTION)
             .plan(MINI)
             .expiryDate(LocalDate.now().plusDays(30))

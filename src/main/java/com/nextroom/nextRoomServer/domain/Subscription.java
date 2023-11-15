@@ -38,8 +38,6 @@ public class Subscription extends Timestamped {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    private String googleId;
-
     @Enumerated(EnumType.STRING)
     private UserStatus status;
     @Enumerated(EnumType.STRING)
