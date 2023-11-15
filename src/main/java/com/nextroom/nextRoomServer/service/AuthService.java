@@ -1,5 +1,7 @@
 package com.nextroom.nextRoomServer.service;
 
+import static com.nextroom.nextRoomServer.enums.SubscriptionPlan.*;
+import static com.nextroom.nextRoomServer.enums.UserStatus.*;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 import static com.nextroom.nextRoomServer.util.Timestamped.*;
 
@@ -12,12 +14,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import com.nextroom.nextRoomServer.domain.RefreshToken;
 import com.nextroom.nextRoomServer.domain.Shop;
+import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.AuthDto;
 import com.nextroom.nextRoomServer.dto.TokenDto;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.RefreshTokenRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
+import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.TokenProvider;
+import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +35,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
@@ -38,12 +44,23 @@ public class AuthService {
         }
 
         Shop shop = shopRepository.save(request.toShop(passwordEncoder));
+        createSubscription(shop);
 
         return AuthDto.SignUpResponseDto.builder()
             .adminCode(shop.getAdminCode())
             .name(shop.getName())
             .createdAt(dateTimeFormatter(shop.getCreatedAt()))
             .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
+    }
+
+    private void createSubscription(Shop shop) {
+        Subscription subscription = Subscription.builder()
+            .shop(shop)
+            .status(FREE)
+            .plan(MINI)
+            .expiryDate(Timestamped.getToday().plusDays(30))
+            .build();
+        subscriptionRepository.save(subscription);
     }
 
     @Transactional
@@ -56,7 +73,7 @@ public class AuthService {
         String shopName = shopRepository.findByAdminCode(request.getAdminCode())
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND)).getName();
         AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shopName, token);
-      
+
         RefreshToken refreshToken = RefreshToken.builder()
             .key(authentication.getName())
             .value(response.getRefreshToken())

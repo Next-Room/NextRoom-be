@@ -43,4 +43,10 @@ public class Subscription extends Timestamped {
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan plan;
     private LocalDate expiryDate;
+
+    public void updateStatus(UserStatus userStatus, LocalDate expiryDate, SubscriptionPlan plan) {
+        this.status = userStatus;
+        this.expiryDate = expiryDate;
+        this.plan = plan;
+    }
 }
