@@ -15,6 +15,7 @@ public enum StatusCode {
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "관리자 코드 또는 패스워드가 일치하지 않습니다."),
     SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "업체가 이미 존재합니다."),
+    THEME_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "테마 생성 최대 개수를 초과하였습니다."),
 
     /**
      * 401 Unauthorized

@@ -10,10 +10,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nextroom.nextRoomServer.domain.Shop;
+import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.domain.Theme;
 import com.nextroom.nextRoomServer.dto.ThemeDto;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
+import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.repository.ThemeRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
 
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ShopRepository shopRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     private Shop getShop() {
         return shopRepository.findById(SecurityUtil.getRequestedShopId())
@@ -37,7 +40,7 @@ public class ThemeService {
 
     private Theme getThemeByThemeIdAndShop(Long themeId) {
         Theme theme = getTheme(themeId);
-        if (!Objects.equals(theme.getShop(), getShop())) {
+        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
             throw new CustomException(NOT_PERMITTED);
         }
         return theme;
@@ -45,6 +48,8 @@ public class ThemeService {
 
     @Transactional
     public void addTheme(ThemeDto.AddThemeRequest request) {
+        checkThemeLimitCount();
+
         Theme theme = Theme.builder()
             .title(request.getTitle())
             .timeLimit(request.getTimeLimit())
@@ -55,9 +60,26 @@ public class ThemeService {
         themeRepository.save(theme);
     }
 
+    private Integer getThemeLimitCount() {
+        Subscription subscription = subscriptionRepository.findByShopId(SecurityUtil.getRequestedShopId()).orElseThrow(
+            () -> new CustomException(TARGET_SHOP_NOT_FOUND));
+
+        return subscription.getPlan().getThemeLimitCount();
+    }
+
+    private Integer getThemeCount() {
+        return themeRepository.countByShopId(SecurityUtil.getRequestedShopId());
+    }
+
+    private void checkThemeLimitCount() {
+        if (getThemeLimitCount() <= getThemeCount()) {
+            throw new CustomException(THEME_COUNT_EXCEEDED);
+        }
+    }
+
     @Transactional(readOnly = true)
     public List<ThemeDto.ThemeListResponse> getThemeList() {
-        List<Theme> themeList = themeRepository.findAllByShop(getShop());
+        List<Theme> themeList = themeRepository.findAllByShopId(SecurityUtil.getRequestedShopId());
         return themeList.stream()
             .map(ThemeDto.ThemeListResponse::new)
             .collect(Collectors.toList());
