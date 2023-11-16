@@ -12,4 +12,6 @@ public interface EnumModel {
     Integer getOriginPrice();
 
     Integer getSellPrice();
+
+    Integer getThemeLimitCount();
 }
