@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 
 public class SubscriptionDto {
     @Getter
-    public static class updateSubscription {
+    public static class UpdateSubscription {
         private MessageData message;
         private String subscription;
     }

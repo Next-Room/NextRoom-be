@@ -39,9 +39,9 @@ public class PaymentController {
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
-    @PostMapping("rtdn")
+    @PostMapping("/rtdn")
     public ResponseEntity<BaseResponse> updateSubscriptionPurchase(
-        @RequestBody SubscriptionDto.updateSubscription requestBody
+        @RequestBody SubscriptionDto.UpdateSubscription requestBody
     ) throws
         Exception {
         String decodedData = Base64Decoder.decode(requestBody.getMessage().getData());

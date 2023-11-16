@@ -31,7 +31,7 @@ public class SubscriptionController {
     private final SubscriptionService subscriptionService;
 
     @PostMapping
-    public ResponseEntity<BaseResponse> updateSubscription(@RequestBody SubscriptionDto.updateSubscription messageDto) {
+    public ResponseEntity<BaseResponse> updateSubscription(@RequestBody SubscriptionDto.UpdateSubscription messageDto) {
         String decodedData = Base64Decoder.decode(messageDto.getMessage().getData());
 
         System.out.println(decodedData);

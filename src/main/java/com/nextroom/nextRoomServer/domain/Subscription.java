@@ -43,7 +43,7 @@ public class Subscription extends Timestamped {
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan plan;
     private LocalDate expiryDate;
-    @Unique
+    @Column(unique = true)
     private String purchaseToken;
 
     public void renew(LocalDate expiryDate) {
