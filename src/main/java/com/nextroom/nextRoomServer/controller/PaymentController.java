@@ -33,9 +33,9 @@ public class PaymentController {
 
     @PostMapping("/purchase")
     public ResponseEntity<BaseResponse> purchaseSubscription(
-        @RequestBody SubscriptionDto.PurchaseSubscription requestBody
+        @RequestBody SubscriptionDto.PurchaseSubscription request
     ) throws IOException {
-        subscriptionService.purchaseSubscription(requestBody.getPurchaseToken());
+        subscriptionService.purchaseSubscription(request.getPurchaseToken(), request.getSubscriptionId());
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
@@ -59,9 +59,10 @@ public class PaymentController {
         //     TODO handle exception
         Integer notificationType = publishedMessage.getSubscriptionNotification().getNotificationType();
         String purchaseToken = publishedMessage.getSubscriptionNotification().getPurchaseToken();
+        String subscriptionId = publishedMessage.getSubscriptionNotification().getSubscriptionId();
 
         if (Objects.equals(notificationType, SubscriptionStatus.SUBSCRIPTION_RENEWED.getStatus())) {
-            subscriptionService.renew(purchaseToken);
+            subscriptionService.renew(purchaseToken, subscriptionId);
         } else if (Objects.equals(notificationType, SubscriptionStatus.SUBSCRIPTION_EXPIRED.getStatus())) {
             subscriptionService.expire(purchaseToken);
         }

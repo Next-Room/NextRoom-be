@@ -88,7 +88,7 @@ public class SubscriptionService {
             .collect(Collectors.toList());
     }
 
-    public void purchaseSubscription(String purchaseToken) throws IOException {
+    public void purchaseSubscription(String purchaseToken, String subscriptionId) throws IOException {
         Long shopId = SecurityUtil.getRequestedShopId();
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new CustomException(TARGET_HINT_NOT_FOUND));
 
@@ -109,9 +109,11 @@ public class SubscriptionService {
             .build();
 
         subscriptionRepository.save(subscription);
+
+        androidPublisherClient.acknowledgePurchase(purchaseToken, subscriptionId);
     }
 
-    public void renew(String purchaseToken) throws IOException {
+    public void renew(String purchaseToken, String subscriptionId) throws IOException {
         Subscription subscription = subscriptionRepository.findByPurchaseToken(purchaseToken)
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
 
@@ -122,6 +124,8 @@ public class SubscriptionService {
         LocalDate expiryDate = zonedDateTime.toLocalDate();
 
         subscription.renew(expiryDate);
+
+        androidPublisherClient.acknowledgePurchase(purchaseToken, subscriptionId);
     }
 
     public void expire(String purchaseToken) {

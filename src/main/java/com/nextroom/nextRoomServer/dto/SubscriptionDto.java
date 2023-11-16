@@ -89,5 +89,6 @@ public class SubscriptionDto {
     @RequiredArgsConstructor
     public static class PurchaseSubscription {
         private final String purchaseToken;
+        private final String subscriptionId;
     }
 }
