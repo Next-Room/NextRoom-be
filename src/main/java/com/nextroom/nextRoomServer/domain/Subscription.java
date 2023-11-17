@@ -52,5 +52,10 @@ public class Subscription extends Timestamped {
 
     public void expire() {
         this.status = UserStatus.EXPIRATION;
+
+    public void updateStatus(UserStatus userStatus, LocalDate expiryDate, SubscriptionPlan plan) {
+        this.status = userStatus;
+        this.expiryDate = expiryDate;
+        this.plan = plan;
     }
 }

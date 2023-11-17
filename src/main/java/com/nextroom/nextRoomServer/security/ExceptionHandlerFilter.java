@@ -41,6 +41,8 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
             setErrorResponse(response, INVALID_TOKEN);
         } catch (CustomException e) {
             setErrorResponse(response, e.getStatusCode());
+        } catch (Exception e) {
+            setErrorResponse(response, BAD_REQUEST);
         }
     }
 

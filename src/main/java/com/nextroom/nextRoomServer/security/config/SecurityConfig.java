@@ -67,8 +67,8 @@ public class SecurityConfig {
                 authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**")
-                    .permitAll() // Android 인증 면제
+                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**", "/api/v1/subscription/**")
+                    .permitAll() // TODO 구독 상태에 다른 권한 설정 필요
                     .requestMatchers("/api/v1/theme/**")
                     .hasAnyAuthority("ROLE_USER")
                     .anyRequest()

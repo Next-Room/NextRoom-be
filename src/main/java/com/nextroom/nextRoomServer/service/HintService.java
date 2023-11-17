@@ -62,12 +62,6 @@ public class HintService {
         return theme.getHints().stream().map(HintDto.HintListResponse::new).toList();
     }
 
-    public Object getHintListByThemeId(Long themeId) {
-        Theme theme = themeRepository.findById(themeId).orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
-
-        return theme.getHints().stream().map(HintDto.HintListResponse::new).toList();
-    }
-
     @Transactional
     public void editHint(HintDto.EditHintRequest request) {
         Hint hint = hintRepository.findById(request.getId()).orElseThrow(

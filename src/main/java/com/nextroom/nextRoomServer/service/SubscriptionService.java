@@ -9,12 +9,11 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.google.api.services.androidpublisher.model.SubscriptionPurchaseV2;
 import com.nextroom.nextRoomServer.domain.Shop;
@@ -22,11 +21,13 @@ import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
 import com.nextroom.nextRoomServer.enums.EnumModel;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
+import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.util.AndroidPublisherClient;
+import com.nextroom.nextRoomServer.util.Timestamped;
 
 import lombok.RequiredArgsConstructor;
 
@@ -58,6 +59,7 @@ public class SubscriptionService {
         subscriptionRepository.save(entity);
     }
 
+    @Transactional(readOnly = true)
     public SubscriptionDto.SubscriptionInfoResponse getSubscriptionInfo() {
         Long shopId = SecurityUtil.getRequestedShopId();
         Subscription subscription = subscriptionRepository.findByShopId(shopId).orElseThrow(
@@ -66,19 +68,34 @@ public class SubscriptionService {
         return new SubscriptionDto.SubscriptionInfoResponse(subscription);
     }
 
+    @Transactional
     public SubscriptionDto.UserStatusResponse getUserStatus() {
         Long shopId = SecurityUtil.getRequestedShopId();
         Subscription subscription = subscriptionRepository.findByShopId(shopId).orElseThrow(
             () -> new CustomException(TARGET_SHOP_NOT_FOUND));
 
+        checkUserStatus(subscription);
+
         return new SubscriptionDto.UserStatusResponse(subscription);
     }
 
-    public Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> getSubscriptionPlan() {
-        Map<String, List<SubscriptionDto.SubscriptionPlanResponse>> enumValues = new LinkedHashMap<>();
-        enumValues.put("SubscriptionPlan", toEnumValues(SubscriptionPlan.class));
+    private void checkUserStatus(Subscription subscription) {
+        UserStatus status = subscription.getStatus();
+        LocalDate expiryDate = subscription.getExpiryDate();
 
-        return enumValues;
+        if (status == FREE && expiryDate.isBefore(Timestamped.getToday())) {
+            subscription.updateStatus(HOLD, expiryDate.plusYears(1), null);
+            return;
+        }
+
+        if (status == HOLD && expiryDate.isBefore(Timestamped.getToday())) {
+            // subscriptionRepository.delete(subscription);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<SubscriptionDto.SubscriptionPlanResponse> getSubscriptionPlan() {
+        return toEnumValues(SubscriptionPlan.class);
     }
 
     private List<SubscriptionDto.SubscriptionPlanResponse> toEnumValues(Class<? extends EnumModel> e) {
