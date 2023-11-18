@@ -1,5 +1,8 @@
 package com.nextroom.nextRoomServer.enums;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 public enum SubscriptionPlan implements EnumModel {
     MINI("mini_subscription", "미니", "2개의 테마를 등록할 수 있어요", 19900, 9900),
     MEDIUM("medium_subscription", "미디움", "5개의 테마를 등록할 수 있어요", 29900, 14900),
@@ -49,4 +52,9 @@ public enum SubscriptionPlan implements EnumModel {
         return sellPrice;
     }
 
+    public static SubscriptionPlan getSubscriptionPlanByPlanId(String planId) {
+        return Arrays.stream(SubscriptionPlan.values())
+            .filter(subscriptionPlan -> Objects.equals(subscriptionPlan.getId(), planId))
+            .toList().get(0);
+    }
 }

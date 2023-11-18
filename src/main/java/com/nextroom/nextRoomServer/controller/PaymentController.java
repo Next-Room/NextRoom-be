@@ -2,6 +2,8 @@ package com.nextroom.nextRoomServer.controller;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import java.io.IOException;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -12,10 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.api.services.androidpublisher.model.SubscriptionPurchase;
 import com.nextroom.nextRoomServer.dto.BaseResponse;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
-import com.nextroom.nextRoomServer.util.AndroidPublisherClient;
+import com.nextroom.nextRoomServer.enums.SubscriptionStatus;
+import com.nextroom.nextRoomServer.service.SubscriptionService;
 import com.nextroom.nextRoomServer.util.Base64Decoder;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,35 +28,44 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/v1/payment")
 @RequiredArgsConstructor
 public class PaymentController {
-    @PostMapping
-    public ResponseEntity<BaseResponse> updatePayment(
-        // @RequestBody Object message
-        @RequestBody SubscriptionDto.UpdateSubscription messageDto
+
+    private final SubscriptionService subscriptionService;
+
+    @PostMapping("/purchase")
+    public ResponseEntity<BaseResponse> purchaseSubscription(
+        @RequestBody SubscriptionDto.PurchaseSubscription request
+    ) throws IOException {
+        subscriptionService.purchaseSubscription(request.getPurchaseToken(), request.getSubscriptionId());
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
+
+    @PostMapping("/rtdn")
+    public ResponseEntity<BaseResponse> updateSubscriptionPurchase(
+        @RequestBody SubscriptionDto.UpdateSubscription requestBody
     ) throws
         Exception {
-        System.out.println(messageDto.getMessage());
-
-        // AndroidPublisherClient androidPublisherClient = new AndroidPublisherClient();
-        // SubscriptionPurchase subscriptionPurchase = androidPublisherClient.getSubscriptionPurchase("1",
-        //     "fhcdpgkjdpngkkealpkolhaf.AO-J1OzVCAYlVXjtKwF3vymo0VO1x2S2CZnD9lDszWLd4ePJ9hV6-QkM-zTv2_gUPNeDTPZhZWFgPiuZbEal5uX80iYaloHItHPOBJ43Kv_Tu7OZdoHijtg");
-
-        //TEST END
-        String decodedData = Base64Decoder.decode(messageDto.getMessage().getData());
-
-        System.out.println("decodedData = " + decodedData);
+        String decodedData = Base64Decoder.decode(requestBody.getMessage().getData());
 
         Pattern pattern = Pattern.compile(
-            ".*\"subscriptionNotification\":\\{(.*?)\\}.*"); // TODO modify test -> subscription
+            ".*\"subscriptionNotification\":\\{(.*?)\\}.*");
         Matcher matcher = pattern.matcher(decodedData);
 
-        if (matcher.find()) {
-            String notificationContent = matcher.group(1);
-            ObjectMapper objectMapper = new ObjectMapper();
-            SubscriptionDto.PublishedMessage publishedMessage = objectMapper.readValue(decodedData,
-                SubscriptionDto.PublishedMessage.class);
-            System.out.println(publishedMessage.getSubscriptionNotification().getPurchaseToken());
-        }
+        String notificationContent = matcher.group(1);
+        ObjectMapper objectMapper = new ObjectMapper();
+        SubscriptionDto.PublishedMessage publishedMessage = objectMapper.readValue(decodedData,
+            SubscriptionDto.PublishedMessage.class);
+        System.out.println(publishedMessage.getSubscriptionNotification().getPurchaseToken());
 
+        //     TODO handle exception
+        Integer notificationType = publishedMessage.getSubscriptionNotification().getNotificationType();
+        String purchaseToken = publishedMessage.getSubscriptionNotification().getPurchaseToken();
+        String subscriptionId = publishedMessage.getSubscriptionNotification().getSubscriptionId();
+
+        if (Objects.equals(notificationType, SubscriptionStatus.SUBSCRIPTION_RENEWED.getStatus())) {
+            subscriptionService.renew(purchaseToken, subscriptionId);
+        } else if (Objects.equals(notificationType, SubscriptionStatus.SUBSCRIPTION_EXPIRED.getStatus())) {
+            subscriptionService.expire(purchaseToken);
+        }
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 }

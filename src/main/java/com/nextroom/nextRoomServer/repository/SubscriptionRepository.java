@@ -8,4 +8,5 @@ import com.nextroom.nextRoomServer.domain.Subscription;
 
 public interface SubscriptionRepository extends JpaRepository<Subscription, Long> {
     Optional<Subscription> findByShopId(Long id);
+    Optional<Subscription> findByPurchaseToken(String purchaseToken);
 }
