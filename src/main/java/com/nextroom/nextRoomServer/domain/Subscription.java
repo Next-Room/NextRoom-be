@@ -2,8 +2,6 @@ package com.nextroom.nextRoomServer.domain;
 
 import java.time.LocalDate;
 
-import org.checkerframework.common.aliasing.qual.Unique;
-
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
@@ -52,6 +50,7 @@ public class Subscription extends Timestamped {
 
     public void expire() {
         this.status = UserStatus.EXPIRATION;
+    }
 
     public void updateStatus(UserStatus userStatus, LocalDate expiryDate, SubscriptionPlan plan) {
         this.status = userStatus;
