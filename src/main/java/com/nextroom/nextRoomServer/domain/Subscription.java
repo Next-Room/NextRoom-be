@@ -36,11 +36,25 @@ public class Subscription extends Timestamped {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    private String googleId;
-
     @Enumerated(EnumType.STRING)
     private UserStatus status;
     @Enumerated(EnumType.STRING)
     private SubscriptionPlan plan;
     private LocalDate expiryDate;
+    @Column(unique = true)
+    private String purchaseToken;
+
+    public void renew(LocalDate expiryDate) {
+        this.expiryDate = expiryDate;
+    }
+
+    public void expire() {
+        this.status = UserStatus.EXPIRATION;
+    }
+
+    public void updateStatus(UserStatus userStatus, LocalDate expiryDate, SubscriptionPlan plan) {
+        this.status = userStatus;
+        this.expiryDate = expiryDate;
+        this.plan = plan;
+    }
 }

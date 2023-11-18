@@ -14,6 +14,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.androidpublisher.AndroidPublisher;
 import com.google.api.services.androidpublisher.model.SubscriptionPurchaseV2;
+import com.google.api.services.androidpublisher.model.SubscriptionPurchasesAcknowledgeRequest;
 
 public class AndroidPublisherClient {
 
@@ -51,11 +52,18 @@ public class AndroidPublisherClient {
         androidPublisher = initializeAndroidPublisher();
     }
 
-    public SubscriptionPurchaseV2 getSubscriptionPurchase(String subscriptionId, String purchaseToken) throws
+    public SubscriptionPurchaseV2 getSubscriptionPurchase(String purchaseToken) throws
         IOException {
         return androidPublisher
             .purchases()
             .subscriptionsv2()
             .get(PACKAGE_NAME, purchaseToken).execute();
+    }
+
+    public void acknowledgePurchase(String purchaseToken, String subscriptionId) throws IOException {
+        SubscriptionPurchasesAcknowledgeRequest request = new SubscriptionPurchasesAcknowledgeRequest();
+        androidPublisher.purchases()
+            .subscriptions()
+            .acknowledge(PACKAGE_NAME, subscriptionId, purchaseToken, request);
     }
 }
