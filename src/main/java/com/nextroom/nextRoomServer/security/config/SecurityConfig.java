@@ -26,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
 @Configuration
-@EnableWebSecurity(debug = true)
+@EnableWebSecurity
 public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
