@@ -1,9 +1,9 @@
 package com.nextroom.nextRoomServer.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nextroom.nextRoomServer.dto.ThemeDto;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.persistence.CascadeType;
@@ -26,33 +26,21 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Theme extends Timestamped {
+public class PlayHistory extends Timestamped {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "theme_id", nullable = false)
+    @Column(name = "play_history_id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "shop_id", nullable = false)
-    private Shop shop;
+    @JoinColumn(name = "theme_id", nullable = false)
+    private Theme theme;
 
     @Column(nullable = false)
-    private String title;
+    private LocalDateTime gameStartTime;
 
-    private Integer timeLimit;
-    private Integer hintLimit;
-
-    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "playHistory", cascade = CascadeType.ALL)
     @Builder.Default
-    private List<Hint> hints = new ArrayList<>();
+    private List<HintHistory> hints = new ArrayList<>();
 
-    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
-    @Builder.Default
-    private List<PlayHistory> playHistories = new ArrayList<>();
-
-    public void update(ThemeDto.EditThemeRequest request) {
-        this.title = request.getTitle();
-        this.timeLimit = request.getTimeLimit();
-        this.hintLimit = request.getHintLimit();
-    }
 }
