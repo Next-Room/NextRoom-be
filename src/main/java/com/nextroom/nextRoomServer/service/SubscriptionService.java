@@ -105,22 +105,25 @@ public class SubscriptionService {
             .collect(Collectors.toList());
     }
 
-    public void purchaseSubscription(String purchaseToken, String subscriptionId) throws IOException {
+    public void purchaseSubscription(String purchaseToken) throws IOException {
         Long shopId = SecurityUtil.getRequestedShopId();
         Shop shop = shopRepository.findById(shopId).orElseThrow(() -> new CustomException(TARGET_HINT_NOT_FOUND));
 
         SubscriptionPurchaseV2 purchase = androidPublisherClient.getSubscriptionPurchase(purchaseToken);
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
-        LocalDate expiryDate = zonedDateTime.toLocalDate();
+        // ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
+        // LocalDate expiryDate = zonedDateTime.toLocalDate();
 
-        String planId = purchase.getLineItems().get(0).getOfferDetails().getBasePlanId();
+        LocalDate expiryDate = LocalDate.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
+        String basePlanId = purchase.getLineItems().get(0).getOfferDetails().getBasePlanId();
+        String productId = purchase.getLineItems().get(0).getProductId();
+        String subscriptionId = productId + ":" + basePlanId;
 
         Subscription subscription = Subscription.builder()
             .shop(shop)
             .status(SUBSCRIPTION)
-            .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(planId))
+            .plan(SubscriptionPlan.getSubscriptionPlanByProductId(productId))
             .expiryDate(expiryDate)
             .purchaseToken(purchaseToken)
             .build();

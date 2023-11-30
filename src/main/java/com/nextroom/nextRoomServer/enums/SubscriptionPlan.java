@@ -60,9 +60,9 @@ public enum SubscriptionPlan implements EnumModel {
         return themeLimitCount;
     }
 
-    public static SubscriptionPlan getSubscriptionPlanByPlanId(String planId) {
+    public static SubscriptionPlan getSubscriptionPlanByProductId(String productId) {
         return Arrays.stream(SubscriptionPlan.values())
-            .filter(subscriptionPlan -> Objects.equals(subscriptionPlan.getId(), planId))
+            .filter(subscriptionPlan -> Objects.equals(subscriptionPlan.getId(), productId))
             .toList().get(0);
     }
 }
