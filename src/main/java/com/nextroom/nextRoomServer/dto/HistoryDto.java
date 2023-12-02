@@ -12,7 +12,6 @@ import lombok.RequiredArgsConstructor;
 
 public class HistoryDto {
     @Getter
-    @Builder
     @RequiredArgsConstructor
     @NoArgsConstructor(force = true)
     public static class AddPlayHistoryRequest {
@@ -23,7 +22,6 @@ public class HistoryDto {
     }
 
     @Getter
-    @Builder
     @RequiredArgsConstructor
     @NoArgsConstructor(force = true)
     public static class AddHintHistoryRequest {
@@ -32,5 +30,25 @@ public class HistoryDto {
         private final LocalDateTime entryTime;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
         private final LocalDateTime answerOpenTime;
+    }
+
+    @Getter
+    @Builder
+    @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
+    public static class ThemeAnalyticsResponse {
+        private final Long themeId;
+        private final Integer totalPlayCount;
+        private final List<HintAnalyticsListResponse> hint;
+    }
+
+    @Getter
+    @Builder
+    @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
+    public static class HintAnalyticsListResponse {
+        private final Long id;
+        private final Integer hintOpenCount;
+        private final Integer answerOpenCount;
     }
 }
