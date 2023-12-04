@@ -2,6 +2,9 @@ package com.nextroom.nextRoomServer.service;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.stereotype.Service;
@@ -58,5 +61,43 @@ public class HistoryService {
 
             hintHistoryRepository.save(hintHistory);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public HistoryDto.ThemeAnalyticsResponse getThemeAnalytics(Long themeId) {
+        Theme theme = themeRepository.findById(themeId)
+            .orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
+
+        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getRequestedShopId())) {
+            throw new CustomException(NOT_PERMITTED);
+        }
+
+        List<Object[]> hintAnalyticsList = hintHistoryRepository.findAnalyticsByThemeId(
+            theme.getId());
+
+        List<HistoryDto.HintAnalyticsListResponse> hintAnalyticsListResponses = new ArrayList<>();
+        for (Object[] objects : hintAnalyticsList) {
+            Long hintId = (Long)objects[0];
+            Long hintOpenCount = (Long)objects[1];
+            BigDecimal answerCount = (BigDecimal)objects[2];
+
+            Integer convertedHintOpenCount = hintOpenCount != null ? hintOpenCount.intValue() : 0;
+            Integer convertedAnswerCount = answerCount != null ? answerCount.intValue() : 0;
+
+            HistoryDto.HintAnalyticsListResponse hintAnalyticsDto = HistoryDto.HintAnalyticsListResponse.builder()
+                .id(hintId)
+                .hintOpenCount(convertedHintOpenCount)
+                .answerOpenCount(convertedAnswerCount)
+                .build();
+            hintAnalyticsListResponses.add(hintAnalyticsDto);
+        }
+
+        Integer totalPlayCount = playHistoryRepository.countByThemeId(theme.getId());
+
+        return HistoryDto.ThemeAnalyticsResponse.builder()
+            .themeId(theme.getId())
+            .totalPlayCount(totalPlayCount)
+            .hint(hintAnalyticsListResponses)
+            .build();
     }
 }
