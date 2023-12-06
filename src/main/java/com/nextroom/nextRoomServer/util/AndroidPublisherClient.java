@@ -64,6 +64,6 @@ public class AndroidPublisherClient {
         SubscriptionPurchasesAcknowledgeRequest request = new SubscriptionPurchasesAcknowledgeRequest();
         androidPublisher.purchases()
             .subscriptions()
-            .acknowledge(PACKAGE_NAME, subscriptionId, purchaseToken, request);
+            .acknowledge(PACKAGE_NAME, subscriptionId, purchaseToken, request).execute();
     }
 }

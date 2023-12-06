@@ -7,6 +7,7 @@ import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 public class SubscriptionDto {
@@ -89,8 +90,8 @@ public class SubscriptionDto {
 
     @Getter
     @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class PurchaseSubscription {
         private final String purchaseToken;
-        private final String subscriptionId;
     }
 }
