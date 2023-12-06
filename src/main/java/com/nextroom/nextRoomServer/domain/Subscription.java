@@ -44,17 +44,17 @@ public class Subscription extends Timestamped {
     @Column(unique = true)
     private String purchaseToken;
 
-    public void renew(LocalDate expiryDate) {
-        this.expiryDate = expiryDate;
-    }
-
-    public void expire() {
-        this.status = UserStatus.EXPIRATION;
-    }
-
-    public void updateStatus(UserStatus userStatus, LocalDate expiryDate, SubscriptionPlan plan) {
-        this.status = userStatus;
-        this.expiryDate = expiryDate;
-        this.plan = plan;
-    }
+//    public void renew(LocalDate expiryDate) {
+//        this.expiryDate = expiryDate;
+//    }
+//
+//    public void expire() {
+//        this.status = UserStatus.EXPIRATION;
+//    }
+//
+//    public void updateStatus(UserStatus userStatus, LocalDate expiryDate, SubscriptionPlan plan) {
+//        this.status = userStatus;
+//        this.expiryDate = expiryDate;
+//        this.plan = plan;
+//    }
 }

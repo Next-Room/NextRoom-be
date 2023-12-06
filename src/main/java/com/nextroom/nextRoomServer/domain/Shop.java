@@ -47,6 +47,6 @@ public class Shop extends Timestamped {
     @Builder.Default
     private List<Theme> themes = new ArrayList<>();
 
-    @OneToOne(mappedBy = "shop", cascade = CascadeType.DETACH)
-    private Subscription subscription;
+//    @OneToOne(mappedBy = "shop", cascade = CascadeType.DETACH)
+//    private Subscription subscription;
 }
