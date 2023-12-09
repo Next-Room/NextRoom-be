@@ -48,7 +48,7 @@ public class ThemeService {
 
     @Transactional
     public void addTheme(ThemeDto.AddThemeRequest request) {
-        checkThemeLimitCount();
+//        checkThemeLimitCount();
 
         Theme theme = Theme.builder()
             .title(request.getTitle())
@@ -60,22 +60,22 @@ public class ThemeService {
         themeRepository.save(theme);
     }
 
-    private Integer getThemeLimitCount() {
-        Subscription subscription = subscriptionRepository.findByShopId(SecurityUtil.getRequestedShopId()).orElseThrow(
-            () -> new CustomException(TARGET_SHOP_NOT_FOUND));
-
-        return subscription.getPlan().getThemeLimitCount();
-    }
-
-    private Integer getThemeCount() {
-        return themeRepository.countByShopId(SecurityUtil.getRequestedShopId());
-    }
-
-    private void checkThemeLimitCount() {
-        if (getThemeLimitCount() <= getThemeCount()) {
-            throw new CustomException(THEME_COUNT_EXCEEDED);
-        }
-    }
+//    private Integer getThemeLimitCount() {
+//        Subscription subscription = subscriptionRepository.findByShopId(SecurityUtil.getRequestedShopId()).orElseThrow(
+//            () -> new CustomException(TARGET_SHOP_NOT_FOUND));
+//
+//        return subscription.getPlan().getThemeLimitCount();
+//    }
+//
+//    private Integer getThemeCount() {
+//        return themeRepository.countByShopId(SecurityUtil.getRequestedShopId());
+//    }
+//
+//    private void checkThemeLimitCount() {
+//        if (getThemeLimitCount() <= getThemeCount()) {
+//            throw new CustomException(THEME_COUNT_EXCEEDED);
+//        }
+//    }
 
     @Transactional(readOnly = true)
     public List<ThemeDto.ThemeListResponse> getThemeList() {
