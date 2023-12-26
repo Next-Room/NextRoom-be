@@ -13,24 +13,24 @@ public enum StatusCode {
      * 400 Bad Request
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    AUTH_BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
     LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "관리자 코드 또는 패스워드가 일치하지 않습니다."),
     SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "업체가 이미 존재합니다."),
-    INVALID_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 토큰입니다."),
-    UNSUPPORTED_TOKEN(HttpStatus.BAD_REQUEST, "지원하지 않는 토큰 형식입니다."),
-    INVALID_TOKEN_SIGNATURE(HttpStatus.BAD_REQUEST, "잘못된 토큰 서명입니다."),
+    THEME_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "테마 생성 최대 개수를 초과하였습니다."),
 
     /**
      * 401 Unauthorized
      */
-    TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한 정보가 잘못된 토큰입니다."),
+    INVALID_TOKEN_SIGNATURE(HttpStatus.UNAUTHORIZED, "잘못된 토큰 서명입니다."),
     TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
+    UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED, "지원하지 않는 토큰 형식입니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "잘못된 토큰입니다."),
+    TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한 정보가 잘못된 토큰입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Refresh token 이 유효하지 않습니다."),
     SHOP_IS_LOG_OUT(HttpStatus.UNAUTHORIZED, "로그아웃 된 사용자입니다."),
 
     /**
      * 403 FORBIDDEN
      */
-    INVALID_REFRESH_TOKEN(HttpStatus.FORBIDDEN, "Refresh token 이 유효하지 않습니다."),
     NOT_PERMITTED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
 
     /**

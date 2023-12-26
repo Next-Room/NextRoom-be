@@ -105,6 +105,8 @@ public class AuthDto {
 
     @Getter
     @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor(force = true)
     public static class ReissueRequestDto {
         private String accessToken;
         private String refreshToken;
