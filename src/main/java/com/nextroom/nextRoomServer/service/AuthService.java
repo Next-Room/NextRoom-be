@@ -30,12 +30,12 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final ShopRepository shopRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
 
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {

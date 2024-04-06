@@ -10,4 +10,6 @@ public interface ShopRepository extends JpaRepository<Shop, Long> {
     boolean existsByAdminCode(String adminCode);
 
     Optional<Shop> findByAdminCode(String adminCode);
+
+    Optional<Shop> findByEmail(String email);
 }
