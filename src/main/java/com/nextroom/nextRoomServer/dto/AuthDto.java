@@ -9,8 +9,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.nextroom.nextRoomServer.domain.Authority;
 import com.nextroom.nextRoomServer.domain.Shop;
 
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,9 +33,9 @@ public class AuthDto {
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
     public static class SignUpRequestDto {
-        @NotBlank(message = "관리자 코드는 필수 입력 사항입니다.")
-        @Pattern(regexp = ADMIN_CODE_REGEX, message = "관리자 코드는 5자리 숫자(0~9)만 허용됩니다.")
-        private final String adminCode;
+        @NotNull(message = "이메일을 입력해 주세요.")
+        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        private final String email;
         @Setter
         @NotEmpty(message = "비밀번호를 입력해 주세요.")
         @Pattern(regexp = PASSWORD_CONDITION_MIN_LENGTH_REGEX, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
@@ -47,7 +49,8 @@ public class AuthDto {
 
         public Shop toShop(PasswordEncoder passwordEncoder) {
             return Shop.builder()
-                .adminCode(this.adminCode)
+                .email(this.email)
+                .adminCode("00000")
                 .password(passwordEncoder.encode(this.password))
                 .name(this.name)
                 .authority(Authority.ROLE_USER)
@@ -58,8 +61,9 @@ public class AuthDto {
     @Getter
     @Builder
     public static class SignUpResponseDto {
-        private String adminCode;
+        private String email;
         private String name;
+        private String adminCode;
         private String createdAt;
         private String modifiedAt;
     }
@@ -69,15 +73,15 @@ public class AuthDto {
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
     public static class LogInRequestDto {
-        @NotBlank(message = "관리자 코드가 비어 있습니다.")
-        @Pattern(regexp = ADMIN_CODE_REGEX, message = "관리자 코드는 5자리 숫자입니다.")
-        private final String adminCode;
+        @NotNull(message = "이메일을 입력해 주세요.")
+        @Email(message = "이메일 형식이 올바르지 않습니다.")
+        private final String email;
         @Setter
         @NotEmpty(message = "비밀번호를 입력해 주세요.")
         private String password;
 
         public UsernamePasswordAuthenticationToken toAuthentication() {
-            return new UsernamePasswordAuthenticationToken(this.adminCode, this.password,
+            return new UsernamePasswordAuthenticationToken(this.email, this.password,
                 Collections.singleton(new SimpleGrantedAuthority(Authority.ROLE_USER.toString()))
             );
         }
@@ -87,14 +91,17 @@ public class AuthDto {
     @Builder
     public static class LogInResponseDto {
         private String shopName;
+        private String adminCode;
         private String grantType;
         private String accessToken;
         private long accessTokenExpiresIn;
         private String refreshToken;
 
-        public static AuthDto.LogInResponseDto toLogInResponseDto(String shopName, TokenDto tokenDto) {
+        public static AuthDto.LogInResponseDto toLogInResponseDto(String shopName, String adminCode,
+            TokenDto tokenDto) {
             return new LogInResponseDtoBuilder()
                 .shopName(shopName)
+                .adminCode(adminCode)
                 .grantType(tokenDto.getGrantType())
                 .accessToken(tokenDto.getAccessToken())
                 .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
