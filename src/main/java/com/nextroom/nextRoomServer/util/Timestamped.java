@@ -19,10 +19,11 @@ import lombok.Getter;
 public class Timestamped {
 
     @CreatedDate
-    @Column(updatable = false)
+    @Column(updatable = false, nullable = false)
     private LocalDateTime createdAt;
 
     @LastModifiedDate
+    @Column(nullable = false)
     private LocalDateTime modifiedAt;
 
     public static String dateTimeFormatter(LocalDateTime localDateTime) {

@@ -33,7 +33,7 @@ public class AuthDto {
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
     public static class SignUpRequestDto {
-        @NotNull(message = "이메일을 입력해 주세요.")
+        @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         private final String email;
         @Setter
@@ -46,13 +46,19 @@ public class AuthDto {
         private String password;
         @NotBlank(message = "업체명을 입력해 주세요.")
         private String name;
+        @NotNull(message = "매장 오픈 여부를 입력해 주세요.")
+        private Boolean isNotOpened;
 
         public Shop toShop(PasswordEncoder passwordEncoder) {
+            String name = this.isNotOpened ? "오픈 에정 매장" : this.name;
+            String comment = this.isNotOpened ? this.name : null;
+
             return Shop.builder()
                 .email(this.email)
                 .adminCode("00000")
                 .password(passwordEncoder.encode(this.password))
-                .name(this.name)
+                .name(name)
+                .comment(comment)
                 .authority(Authority.ROLE_USER)
                 .build();
         }
@@ -73,11 +79,11 @@ public class AuthDto {
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
     public static class LogInRequestDto {
-        @NotNull(message = "이메일을 입력해 주세요.")
+        @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         private final String email;
         @Setter
-        @NotEmpty(message = "비밀번호를 입력해 주세요.")
+        @NotBlank(message = "비밀번호를 입력해 주세요.")
         private String password;
 
         public UsernamePasswordAuthenticationToken toAuthentication() {

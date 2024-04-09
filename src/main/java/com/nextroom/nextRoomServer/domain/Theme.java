@@ -39,16 +39,19 @@ public class Theme extends Timestamped {
     @Column(nullable = false)
     private String title;
 
-    private Integer timeLimit;
-    private Integer hintLimit;
+    @Column(nullable = false)
+    private int timeLimit;
+
+    @Column(nullable = false)
+    private int hintLimit;
 
     @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Hint> hints = new ArrayList<>();
 
-//    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
-//    @Builder.Default
-//    private List<PlayHistory> playHistories = new ArrayList<>();
+    //    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
+    //    @Builder.Default
+    //    private List<PlayHistory> playHistories = new ArrayList<>();
 
     public void update(ThemeDto.EditThemeRequest request) {
         this.title = request.getTitle();
