@@ -45,6 +45,9 @@ public class Shop extends Timestamped {
     @Column(nullable = false)
     private String name;
 
+    @Column
+    private String comment;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Authority authority;
