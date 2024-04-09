@@ -3,6 +3,8 @@ package com.nextroom.nextRoomServer.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.ColumnDefault;
+
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.persistence.CascadeType;
@@ -34,6 +36,7 @@ public class Shop extends Timestamped {
     private String email;
 
     @Column(nullable = false, length = 5)
+    @ColumnDefault("00000")
     private String adminCode;
 
     @Column(nullable = false)
@@ -42,6 +45,7 @@ public class Shop extends Timestamped {
     @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Authority authority;
 

@@ -34,8 +34,13 @@ public class Hint extends Timestamped {
     @Column(nullable = false, length = 4)
     private String hintCode;
 
+    @Column(nullable = false, length = 4000)
     private String contents;
+
+    @Column(nullable = false, length = 1000)
     private String answer;
+
+    @Column(nullable = false)
     private Integer progress;
 
     public void update(HintDto.EditHintRequest request) {
