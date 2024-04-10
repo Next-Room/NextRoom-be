@@ -13,7 +13,7 @@ public enum StatusCode {
      * 400 Bad Request
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "관리자 코드 또는 패스워드가 일치하지 않습니다."),
+    LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "이메일 또는 패스워드가 일치하지 않습니다."),
     THEME_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "테마 생성 최대 개수를 초과하였습니다."),
     UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "이메일이 전송되지 않았습니다."),
 
