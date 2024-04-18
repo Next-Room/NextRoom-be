@@ -50,7 +50,7 @@ public class AuthDto {
         private Boolean isNotOpened;
 
         public Shop toShop(PasswordEncoder passwordEncoder) {
-            String name = this.isNotOpened ? "오픈 에정 매장" : this.name;
+            String name = this.isNotOpened ? "오픈 예정 매장" : this.name;
             String comment = this.isNotOpened ? this.name : null;
 
             return Shop.builder()
