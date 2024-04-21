@@ -1,4 +1,4 @@
-package com.nextroom.nextRoomServer.util.email;
+package com.nextroom.nextRoomServer.util;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
@@ -11,10 +11,9 @@ import org.springframework.stereotype.Component;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 
 @Component
-public class CertificationGenerator {
+public class RandomCodeGenerator {
 
-    public String createCode() {
-        int length = 6;
+    public String createCode(int length) {
         try {
             Random random = SecureRandom.getInstanceStrong();
             StringBuilder builder = new StringBuilder();

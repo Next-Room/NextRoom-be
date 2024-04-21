@@ -9,6 +9,8 @@ import com.nextroom.nextRoomServer.domain.Shop;
 public interface ShopRepository extends JpaRepository<Shop, Long> {
     boolean existsByEmail(String email);
 
+    boolean existsByAdminCode(String adminCode);
+
     Optional<Shop> findByAdminCode(String adminCode);
 
     Optional<Shop> findByEmail(String email);

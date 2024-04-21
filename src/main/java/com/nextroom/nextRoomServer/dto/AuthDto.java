@@ -27,6 +27,7 @@ public class AuthDto {
     private static final String PASSWORD_CONDITION_UPPER_CASE_REGEX = ".*[A-Z].*";
     private static final String PASSWORD_CONDITION_NUMBER_REGEX = ".*[0-9].*";
     private static final String PASSWORD_CONDITION_SPECIAL_CHARACTER_REGEX = ".*[!@#$%^&*()].*";
+    private static final String NO_NAME = "오픈 예정 매장";
 
     @Getter
     @Builder
@@ -49,13 +50,13 @@ public class AuthDto {
         @NotNull(message = "매장 오픈 여부를 입력해 주세요.")
         private Boolean isNotOpened;
 
-        public Shop toShop(PasswordEncoder passwordEncoder) {
-            String name = this.isNotOpened ? "오픈 예정 매장" : this.name;
+        public Shop toShop(PasswordEncoder passwordEncoder, String adminCode) {
+            String name = this.isNotOpened ? NO_NAME : this.name;
             String comment = this.isNotOpened ? this.name : null;
 
             return Shop.builder()
                 .email(this.email)
-                .adminCode("00000")
+                .adminCode(adminCode)
                 .password(passwordEncoder.encode(this.password))
                 .name(name)
                 .comment(comment)
