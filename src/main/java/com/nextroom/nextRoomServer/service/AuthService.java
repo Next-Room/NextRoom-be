@@ -22,6 +22,7 @@ import com.nextroom.nextRoomServer.repository.RefreshTokenRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.TokenProvider;
+import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.transaction.Transactional;
@@ -36,6 +37,7 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final RandomCodeGenerator randomCodeGenerator;
 
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
@@ -43,7 +45,8 @@ public class AuthService {
             throw new CustomException(SHOP_ALREADY_EXIST);
         }
 
-        Shop shop = shopRepository.save(request.toShop(passwordEncoder));
+        String adminCode = createAdminCode();
+        Shop shop = shopRepository.save(request.toShop(passwordEncoder, adminCode));
         createSubscription(shop);
 
         return AuthDto.SignUpResponseDto.builder()
@@ -52,6 +55,14 @@ public class AuthService {
             .adminCode(shop.getAdminCode())
             .createdAt(dateTimeFormatter(shop.getCreatedAt()))
             .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
+    }
+
+    private String createAdminCode() {
+        String adminCode;
+        do {
+            adminCode = randomCodeGenerator.createCode(5);
+        } while (shopRepository.existsByAdminCode(adminCode));
+        return adminCode;
     }
 
     private void createSubscription(Shop shop) {
