@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.Comment;
 
 import com.nextroom.nextRoomServer.util.Timestamped;
 
@@ -37,7 +37,6 @@ public class Shop extends Timestamped {
     private String email;
 
     @Column(nullable = false, length = 5)
-    @ColumnDefault("00000")
     private String adminCode;
 
     @Column(nullable = false)
@@ -45,6 +44,10 @@ public class Shop extends Timestamped {
 
     @Column(nullable = false)
     private String name;
+
+    @Comment(value = "1: 웹(홈페이지)에서 PC로 들어온 유저, 2: 웹(홈페이지)에서 모바일로 들어온 유저, 3: 앱에서 들어온 유저")
+    @Column
+    private Integer type;
 
     @Column
     private String comment;

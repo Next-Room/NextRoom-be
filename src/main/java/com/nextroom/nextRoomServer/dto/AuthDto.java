@@ -36,7 +36,7 @@ public class AuthDto {
     public static class SignUpRequestDto {
         @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
-        private final String email;
+        private String email;
         @Setter
         @NotEmpty(message = "비밀번호를 입력해 주세요.")
         @Pattern(regexp = PASSWORD_CONDITION_MIN_LENGTH_REGEX, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
@@ -47,6 +47,7 @@ public class AuthDto {
         private String password;
         @NotBlank(message = "업체명을 입력해 주세요.")
         private String name;
+        private Integer type;
         @NotNull(message = "매장 오픈 여부를 입력해 주세요.")
         private Boolean isNotOpened;
 
@@ -59,6 +60,7 @@ public class AuthDto {
                 .adminCode(adminCode)
                 .password(passwordEncoder.encode(this.password))
                 .name(name)
+                .type(this.type)
                 .comment(comment)
                 .authority(Authority.ROLE_USER)
                 .build();
@@ -82,7 +84,7 @@ public class AuthDto {
     public static class LogInRequestDto {
         @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
-        private final String email;
+        private String email;
         @Setter
         @NotBlank(message = "비밀번호를 입력해 주세요.")
         private String password;
