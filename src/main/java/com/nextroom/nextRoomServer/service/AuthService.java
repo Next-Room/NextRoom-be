@@ -94,6 +94,8 @@ public class AuthService {
 
         refreshTokenRepository.save(refreshToken);
 
+        shop.updateLastLoginAt();
+
         return response;
     }
 

@@ -1,5 +1,6 @@
 package com.nextroom.nextRoomServer.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,9 +53,16 @@ public class Shop extends Timestamped {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
+    @Column
+    private LocalDateTime lastLoginAt;
+
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Theme> themes = new ArrayList<>();
+
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
+    }
 
     //    @OneToOne(mappedBy = "shop", cascade = CascadeType.DETACH)
     //    private Subscription subscription;
