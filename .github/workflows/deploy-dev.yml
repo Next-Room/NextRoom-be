@@ -35,7 +35,7 @@ jobs:
     # (3) application.yml 세팅
     - name: set application.yml
       run: |
-        echo "${{ secrets.APPLICATION_YML_DEVELOP }}" > src/main/resources/application.yml
+        echo "${{ secrets.NEXTROOM_APPLICATION_YML }}" > src/main/resources/application.yml
 
     # (4) Gradle build (Test 제외)
     - name: Build with Gradle
