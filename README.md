@@ -30,8 +30,6 @@
 
 ## 👨‍💻 Convention
 
----
-
 <details>
 <summary>
 Code
@@ -146,7 +144,7 @@ Git Commit
 ```
 
 </details> 
-    
+
 <details>
 <summary>
 Branch Rule
@@ -162,6 +160,7 @@ Branch Rule
 - PR 단위는 리뷰어가 감당할 수 있을만큼 최대한 작게 가져갑니다.
 - 팀원 모두가 승인해야만 Merge 할 수 있습니다.
 - 본인 PR은 본인이 Merge 합니다.
+
 </details>
 
 <details>
@@ -169,7 +168,7 @@ Branch Rule
 Response
 </summary>
 <div markdown="1">
-    
+
 </br>
 
 **BaseResponse**
@@ -183,13 +182,13 @@ public class BaseResponseDto<T> {
 ```
 
 </details> 
-    
+
 <details>
 <summary>
 Application Architecture
 </summary>
 <div markdown="1">
-    
+
 </br>
 
 **계층형 구조**

@@ -65,7 +65,8 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(
                 authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/**")
+                    .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/**",
+                        "/api/v1/email/**")
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**", "/api/v1/subscription/**")
                     .permitAll() // TODO 구독 상태에 다른 권한 설정 필요

@@ -13,9 +13,9 @@ public enum StatusCode {
      * 400 Bad Request
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
-    LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "관리자 코드 또는 패스워드가 일치하지 않습니다."),
-    SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "업체가 이미 존재합니다."),
+    LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "이메일 또는 패스워드가 일치하지 않습니다."),
     THEME_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "테마 생성 최대 개수를 초과하였습니다."),
+    UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "이메일이 전송되지 않았습니다."),
 
     /**
      * 401 Unauthorized
@@ -27,6 +27,7 @@ public enum StatusCode {
     TOKEN_UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "권한 정보가 잘못된 토큰입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "Refresh token 이 유효하지 않습니다."),
     SHOP_IS_LOG_OUT(HttpStatus.UNAUTHORIZED, "로그아웃 된 사용자입니다."),
+    INVALID_CODE(HttpStatus.UNAUTHORIZED, "이메일 인증 코드가 유효하지 않습니다."),
 
     /**
      * 403 FORBIDDEN
@@ -47,6 +48,7 @@ public enum StatusCode {
      * 409 Conflict
      */
     CONFLICT(HttpStatus.CONFLICT, "중복된 리소스 입니다."),
+    SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "업체가 이미 존재합니다."),
     HINT_CODE_CONFLICT(HttpStatus.CONFLICT, "테마 내 같은 힌트코드를 가진 힌트가 존재합니다."),
 
     /**

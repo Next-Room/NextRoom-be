@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8" name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>방탈출 힌트폰 서비스 '넥스트룸' 이메일 인증 번호 입니다.</title>
+</head>
+<body>
+    <section>
+        <div>
+            <p>
+                안녕하세요. 방탈출 힌트폰 서비스 넥스트룸 입니다.<br>
+                아래의 인증 번호를 화면에 입력하여 회원 가입을 완료해 주세요.
+            </p>
+            <p>
+                <b>🔑 인증 번호: <span th:text="${authCode}"></span></b>
+            </p>
+        </div>
+    </section>
+    <br>
+    <hr>
+    <footer>
+        <div>
+            <p>
+                이용 중에 도움이 필요하시면 아래 방법으로 문의 주세요.
+            </p>
+            <p>
+                💻 홈페이지에서 문의하기 <a href="https://nextroom.co.kr/" target="_blank">https://nextroom.co.kr/</a><br>
+
+                📮 이메일로 문의하기 <a href="mailto:nextroom.official@gmail.com" target="_blank">nextroom.official@gmail.com</a><br>
+
+                📝 넥스트룸 사용 가이드 보러가기 <a href="https://held-notebook-420.notion.site/134ed57b9c574733b31feab0ea5c36a5" target="_blank">https://www.notion.so/134ed57b9c574733b31feab0ea5c36a5?pvs=21</a>
+            </p>
+        </div>
+    </footer>
+</body>
+</html>

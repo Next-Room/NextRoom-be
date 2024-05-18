@@ -1,7 +1,10 @@
 package com.nextroom.nextRoomServer.domain;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.hibernate.annotations.Comment;
 
 import com.nextroom.nextRoomServer.util.Timestamped;
 
@@ -14,7 +17,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -31,6 +33,9 @@ public class Shop extends Timestamped {
     @Column(name = "shop_id", nullable = false)
     private Long id;
 
+    @Column
+    private String email;
+
     @Column(nullable = false, length = 5)
     private String adminCode;
 
@@ -40,13 +45,28 @@ public class Shop extends Timestamped {
     @Column(nullable = false)
     private String name;
 
+    @Comment(value = "1: 웹(홈페이지)에서 PC로 들어온 유저, 2: 웹(홈페이지)에서 모바일로 들어온 유저, 3: 앱에서 들어온 유저")
+    @Column
+    private Integer type;
+
+    @Column
+    private String comment;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
+    @Column
+    private LocalDateTime lastLoginAt;
 
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL)
     @Builder.Default
     private List<Theme> themes = new ArrayList<>();
 
-//    @OneToOne(mappedBy = "shop", cascade = CascadeType.DETACH)
-//    private Subscription subscription;
+    public void updateLastLoginAt() {
+        this.lastLoginAt = LocalDateTime.now();
+    }
+
+    //    @OneToOne(mappedBy = "shop", cascade = CascadeType.DETACH)
+    //    private Subscription subscription;
 }

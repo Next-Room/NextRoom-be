@@ -22,6 +22,7 @@ import com.nextroom.nextRoomServer.repository.RefreshTokenRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.TokenProvider;
+import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.transaction.Transactional;
@@ -30,27 +31,38 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final ShopRepository shopRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenProvider tokenProvider;
+    private final RandomCodeGenerator randomCodeGenerator;
 
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
-        if (shopRepository.existsByAdminCode(request.getAdminCode())) {
+        if (shopRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(SHOP_ALREADY_EXIST);
         }
 
-        Shop shop = shopRepository.save(request.toShop(passwordEncoder));
+        String adminCode = createAdminCode();
+        Shop shop = shopRepository.save(request.toShop(passwordEncoder, adminCode));
         createSubscription(shop);
 
         return AuthDto.SignUpResponseDto.builder()
-            .adminCode(shop.getAdminCode())
+            .email(shop.getEmail())
             .name(shop.getName())
+            .adminCode(shop.getAdminCode())
             .createdAt(dateTimeFormatter(shop.getCreatedAt()))
             .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
+    }
+
+    private String createAdminCode() {
+        String adminCode;
+        do {
+            adminCode = randomCodeGenerator.createCode(5);
+        } while (shopRepository.existsByAdminCode(adminCode));
+        return adminCode;
     }
 
     private void createSubscription(Shop shop) {
@@ -70,9 +82,10 @@ public class AuthService {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         TokenDto token = tokenProvider.generateTokenDto(authentication).toTokenResponseDto();
-        String shopName = shopRepository.findByAdminCode(request.getAdminCode())
-            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND)).getName();
-        AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shopName, token);
+        Shop shop = shopRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
+        AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shop.getName(),
+            shop.getAdminCode(), token);
 
         RefreshToken refreshToken = RefreshToken.builder()
             .key(authentication.getName())
@@ -80,6 +93,8 @@ public class AuthService {
             .build();
 
         refreshTokenRepository.save(refreshToken);
+
+        shop.updateLastLoginAt();
 
         return response;
     }
