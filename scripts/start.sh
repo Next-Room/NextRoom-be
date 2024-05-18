@@ -6,6 +6,7 @@ JAR_FILE="$PROJECT_ROOT/application.jar"
 APP_LOG="$PROJECT_ROOT/application.log"
 ERROR_LOG="$PROJECT_ROOT/error.log"
 DEPLOY_LOG="$PROJECT_ROOT/deploy.log"
+SPRING_PROFILES_ACTIVE=$(aws ssm get-parameters --output text --region ap-northeast-2 --names SPRING_PROFILES_ACTIVE --query Parameters[0].Value)
 
 TIME_NOW=$(date +%c)
 
