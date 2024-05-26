@@ -10,6 +10,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,7 @@ import org.hibernate.annotations.Comment;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Shop extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "shop_id", nullable = false)
@@ -64,6 +66,6 @@ public class Shop extends Timestamped {
         this.lastLoginAt = LocalDateTime.now();
     }
 
-    //    @OneToOne(mappedBy = "shop", cascade = CascadeType.DETACH)
-    //    private Subscription subscription;
+    @OneToOne(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Subscription subscription;
 }

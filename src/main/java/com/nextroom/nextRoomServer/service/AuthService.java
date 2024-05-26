@@ -127,7 +127,6 @@ public class AuthService {
 
     @Transactional
     public void unregister() {
-        subscriptionRepository.deleteByShopId(SecurityUtil.getRequestedShopId());
         shopRepository.deleteById(SecurityUtil.getRequestedShopId());
     }
 }
