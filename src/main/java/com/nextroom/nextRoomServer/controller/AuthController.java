@@ -1,29 +1,29 @@
 package com.nextroom.nextRoomServer.controller;
 
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.OK;
 
 import com.nextroom.nextRoomServer.dto.AuthDto;
 import com.nextroom.nextRoomServer.dto.BaseResponse;
 import com.nextroom.nextRoomServer.dto.DataResponse;
 import com.nextroom.nextRoomServer.service.AuthService;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Tag(name = "Auth")
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
+
     private final AuthService authService;
 
     @Operation(
@@ -61,11 +61,23 @@ public class AuthController {
     public ResponseEntity<BaseResponse> reissue(@RequestBody AuthDto.ReissueRequestDto request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.reissue(request)));
     }
-    
+
 
     @PostMapping("/rtdntest")
     public void reissue(@RequestBody Object message) {
         System.out.println(message);
 
+    }
+
+    @Operation(
+        summary = "회원탈퇴",
+        responses = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+        }
+    )
+    @DeleteMapping("/unregister")
+    public ResponseEntity<BaseResponse> unregister() {
+        authService.unregister();
+        return ResponseEntity.ok(new BaseResponse(OK));
     }
 }
