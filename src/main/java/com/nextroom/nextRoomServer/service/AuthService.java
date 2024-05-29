@@ -1,16 +1,12 @@
 package com.nextroom.nextRoomServer.service;
 
-import static com.nextroom.nextRoomServer.enums.SubscriptionPlan.*;
-import static com.nextroom.nextRoomServer.enums.UserStatus.*;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
-import static com.nextroom.nextRoomServer.util.Timestamped.*;
-
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
+import static com.nextroom.nextRoomServer.enums.SubscriptionPlan.MINI;
+import static com.nextroom.nextRoomServer.enums.UserStatus.FREE;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.INVALID_REFRESH_TOKEN;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.SHOP_ALREADY_EXIST;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.SHOP_IS_LOG_OUT;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_SHOP_NOT_FOUND;
+import static com.nextroom.nextRoomServer.util.Timestamped.dateTimeFormatter;
 
 import com.nextroom.nextRoomServer.domain.RefreshToken;
 import com.nextroom.nextRoomServer.domain.Shop;
@@ -21,16 +17,23 @@ import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.RefreshTokenRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
+import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.security.TokenProvider;
 import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 import com.nextroom.nextRoomServer.util.Timestamped;
-
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final ShopRepository shopRepository;
     private final RefreshTokenRepository refreshTokenRepository;
     private final SubscriptionRepository subscriptionRepository;
@@ -120,5 +123,10 @@ public class AuthService {
         refreshTokenRepository.save(newRefreshToken);
 
         return response;
+    }
+
+    @Transactional
+    public void unregister() {
+        shopRepository.deleteById(SecurityUtil.getRequestedShopId());
     }
 }
