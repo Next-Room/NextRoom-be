@@ -1,21 +1,13 @@
 package com.nextroom.nextRoomServer.security;
 
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.TOKEN_UNAUTHORIZED;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
-import com.nextroom.nextRoomServer.dto.TokenDto;
-import com.nextroom.nextRoomServer.exceptions.CustomException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.io.Decoders;
-import io.jsonwebtoken.security.Keys;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.stream.Collectors;
-import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -25,13 +17,26 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import com.nextroom.nextRoomServer.dto.TokenDto;
+import com.nextroom.nextRoomServer.exceptions.CustomException;
+
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+
 @Slf4j
 @Component
 public class TokenProvider {
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 5; // 5시간
-    private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000L * 60 * 60 * 24 * 30;  // 30일
+    @Value("${jwt.access-token-expiration-millis}")
+    private long accessTokenExpirationMillis;
+    @Value("${jwt.refresh-token-expiration-millis}")
+    private long refreshTokenExpirationMillis;
 
     private final Key key;
 
@@ -48,7 +53,7 @@ public class TokenProvider {
         long now = (new Date()).getTime();
 
         // Access Token 생성
-        Date accessTokenExpiresIn = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
+        Date accessTokenExpiresIn = new Date(now + accessTokenExpirationMillis);
         String accessToken = Jwts.builder()
             .setSubject(authentication.getName())
             .claim(AUTHORITIES_KEY, authorities)
@@ -57,7 +62,7 @@ public class TokenProvider {
             .compact();
 
         String refreshToken = Jwts.builder()
-            .setExpiration(new Date(now + REFRESH_TOKEN_EXPIRE_TIME))
+            .setExpiration(new Date(now + refreshTokenExpirationMillis))
             .signWith(key, SignatureAlgorithm.HS512)
             .compact();
 
