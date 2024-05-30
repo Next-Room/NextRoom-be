@@ -15,7 +15,7 @@ public class SecurityUtil {
     private SecurityUtil() {
     }
 
-    public static Long getCurrentMemberId() {
+    public static Long getCurrentShopId() {
         final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication == null || authentication.getName() == null) {
@@ -23,10 +23,5 @@ public class SecurityUtil {
         }
 
         return Long.parseLong(authentication.getName());
-    }
-
-    public static Long getRequestedShopId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return Long.parseLong(authentication.getPrincipal().toString());
     }
 }
