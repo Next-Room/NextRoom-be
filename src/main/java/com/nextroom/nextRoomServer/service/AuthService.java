@@ -5,6 +5,9 @@ import static com.nextroom.nextRoomServer.enums.UserStatus.*;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 import static com.nextroom.nextRoomServer.util.Timestamped.*;
 
+import java.time.Duration;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
@@ -12,15 +15,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.nextroom.nextRoomServer.domain.RefreshToken;
 import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.AuthDto;
 import com.nextroom.nextRoomServer.dto.TokenDto;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
-import com.nextroom.nextRoomServer.repository.RefreshTokenRepository;
+import com.nextroom.nextRoomServer.repository.RedisRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
+import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.security.TokenProvider;
 import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 import com.nextroom.nextRoomServer.util.Timestamped;
@@ -31,13 +34,18 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final ShopRepository shopRepository;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final RedisRepository redisRepository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RandomCodeGenerator randomCodeGenerator;
+
+    @Value("${jwt.refresh-token-expiration-millis}")
+    private long refreshTokenExpirationMillis;
+    private static final String REFRESH_TOKEN_PREFIX = "RefreshToken ";
 
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
@@ -87,12 +95,9 @@ public class AuthService {
         AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shop.getName(),
             shop.getAdminCode(), token);
 
-        RefreshToken refreshToken = RefreshToken.builder()
-            .key(authentication.getName())
-            .value(response.getRefreshToken())
-            .build();
-
-        refreshTokenRepository.save(refreshToken);
+        redisRepository.setValues(REFRESH_TOKEN_PREFIX + authentication.getName() + " " + response.getRefreshToken(),
+            response.getRefreshToken(),
+            Duration.ofMillis(refreshTokenExpirationMillis));
 
         shop.updateLastLoginAt();
 
@@ -107,18 +112,25 @@ public class AuthService {
 
         Authentication authentication = tokenProvider.getAuthentication(request.getAccessToken());
 
-        RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-            .orElseThrow(() -> new CustomException(SHOP_IS_LOG_OUT));
+        String redisKey = REFRESH_TOKEN_PREFIX + authentication.getName() + " " + request.getRefreshToken();
+        String refreshToken = redisRepository.getValues(redisKey);
 
-        if (!refreshToken.getValue().equals(request.getRefreshToken())) {
+        if (!refreshToken.equals(request.getRefreshToken())) {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
 
         AuthDto.ReissueResponseDto response = tokenProvider.generateTokenDto(authentication).toReissueResponseDto();
 
-        RefreshToken newRefreshToken = refreshToken.updateValue(response.getRefreshToken());
-        refreshTokenRepository.save(newRefreshToken);
+        redisRepository.deleteValues(redisKey);
+        redisRepository.setValues(REFRESH_TOKEN_PREFIX + authentication.getName() + " " + response.getRefreshToken(),
+            response.getRefreshToken(),
+            Duration.ofMillis(refreshTokenExpirationMillis));
 
         return response;
+    }
+
+    @Transactional
+    public void unregister() {
+        shopRepository.deleteById(SecurityUtil.getCurrentShopId());
     }
 }

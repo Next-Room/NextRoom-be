@@ -45,7 +45,7 @@ public class Theme extends Timestamped {
     @Column(nullable = false)
     private int hintLimit;
 
-    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "theme", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Hint> hints = new ArrayList<>();
 
