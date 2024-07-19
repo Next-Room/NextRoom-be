@@ -52,6 +52,11 @@ public enum StatusCode {
     HINT_CODE_CONFLICT(HttpStatus.CONFLICT, "테마 내 같은 힌트코드를 가진 힌트가 존재합니다."),
 
     /**
+     * 500 Internal Server Error
+     */
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "오류가 발생했습니다."),
+
+    /**
      * 2xx OK
      */
     OK(HttpStatus.OK, "성공");
