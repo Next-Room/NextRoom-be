@@ -132,6 +132,7 @@ public class SubscriptionService {
         androidPurchaseUtils.acknowledge(purchaseToken, subscriptionId);
     }
 
+    @Transactional
     public void expire(String purchaseToken) {
         Subscription subscription = subscriptionRepository.findByPurchaseToken(purchaseToken)
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
