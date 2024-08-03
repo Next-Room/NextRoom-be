@@ -1,11 +1,8 @@
 package com.nextroom.nextRoomServer.service;
 
 import static com.nextroom.nextRoomServer.enums.SubscriptionPlan.MINI;
-import static com.nextroom.nextRoomServer.enums.UserStatus.FREE;
-import static com.nextroom.nextRoomServer.enums.UserStatus.HOLD;
 import static com.nextroom.nextRoomServer.enums.UserStatus.SUBSCRIPTION;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.INTERNAL_SERVER_ERROR;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_HINT_NOT_FOUND;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_PAYMENT_NOT_FOUND;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_SHOP_NOT_FOUND;
 
@@ -17,19 +14,16 @@ import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.PaymentDto;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
-import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.PaymentRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
-import com.nextroom.nextRoomServer.util.Timestamped;
 import com.nextroom.nextRoomServer.util.inapp.AndroidPurchaseUtils;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -74,26 +68,11 @@ public class SubscriptionService {
         Subscription subscription = subscriptionRepository.findByShopId(shopId).orElseThrow(
             () -> new CustomException(TARGET_SHOP_NOT_FOUND));
 
-        checkUserStatus(subscription);
+        subscription.checkStatus();
 
         return new SubscriptionDto.UserStatusResponse(subscription);
     }
 
-    private void checkUserStatus(Subscription subscription) {
-        UserStatus status = subscription.getStatus();
-        LocalDate expiryDate = subscription.getExpiryDate();
-
-        if (status == FREE && expiryDate.isBefore(Timestamped.getToday())) {
-            subscription.updateStatus(HOLD, expiryDate.plusYears(1), null);
-            return;
-        }
-
-        if (status == HOLD && expiryDate.isBefore(Timestamped.getToday())) {
-            // subscriptionRepository.delete(subscription);
-        }
-    }
-
-    @Transactional(readOnly = true)
     public List<SubscriptionDto.SubscriptionPlanResponse> getSubscriptionPlan() {
         return SubscriptionPlan.toList();
     }
