@@ -30,6 +30,14 @@ public class PaymentController {
 
     private final SubscriptionService subscriptionService;
 
+    @PostMapping("/purchase")
+    public ResponseEntity<BaseResponse> purchaseSubscription(
+        @RequestBody SubscriptionDto.PurchaseSubscription request
+    ) {
+        subscriptionService.purchaseSubscription(request.getPurchaseToken(), request.getSubscriptionId());
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
+
     @GetMapping("/purchase")
     public ResponseEntity<BaseResponse> getPaymentList() {
         return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getShopPaymentList()));
