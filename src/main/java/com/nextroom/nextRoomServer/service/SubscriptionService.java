@@ -45,15 +45,6 @@ public class SubscriptionService {
     private final PaymentRepository paymentRepository;
     private final AndroidPurchaseUtils androidPurchaseUtils;
     private final ObjectMapper objectMapper;
-    //    private AndroidPublisherClient androidPublisherClient;
-
-    //    {
-    //        try {
-    //            androidPublisherClient = new AndroidPublisherClient();
-    //        } catch (Exception e) {
-    //            throw new RuntimeException(e);
-    //        }
-    //    }
 
     public void test() {
         Shop shop = shopRepository.findByAdminCode("12321").orElseThrow(
