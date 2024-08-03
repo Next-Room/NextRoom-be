@@ -4,7 +4,7 @@ import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
-
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,15 +45,15 @@ public class SubscriptionDto {
     public static class SubscriptionInfoResponse {
         private final Long id;
         private final SubscriptionPlan subStatus;
-        private final String startDate;
-        private final String expiryDate;
+        private final LocalDate startDate;
+        private final LocalDate expiryDate;
         private final String createdAt;
 
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.subStatus = subscription.getPlan();
-            this.startDate = subscription.getStartDate().toString();
-            this.expiryDate = subscription.getExpiryDate().toString();
+            this.startDate = subscription.getStartDate();
+            this.expiryDate = subscription.getExpiryDate();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
         }
     }
@@ -62,15 +62,15 @@ public class SubscriptionDto {
     public static class UserStatusResponse {
         private final Long id;
         private final UserStatus userStatus;
-        private final String expiryDate;
-        private final String startDate;
+        private final LocalDate expiryDate;
+        private final LocalDate startDate;
         private final String createdAt;
 
         public UserStatusResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.userStatus = subscription.getStatus();
-            this.startDate = subscription.getStartDate().toString();
-            this.expiryDate = subscription.getExpiryDate().toString();
+            this.startDate = subscription.getStartDate();
+            this.expiryDate = subscription.getExpiryDate();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
         }
     }
