@@ -25,7 +25,6 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -118,10 +117,9 @@ public class SubscriptionService {
         }
     }
 
+    @Transactional
     public void renew(String purchaseToken, String subscriptionId) throws IOException {
-        Subscription subscription = subscriptionRepository.findByPurchaseToken(purchaseToken)
-            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
-
+        Subscription subscription = getSubscriptionByPurchase(purchaseToken);
         SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verify(purchaseToken);
 
         ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), FORMATTER);
@@ -134,8 +132,7 @@ public class SubscriptionService {
 
     @Transactional
     public void expire(String purchaseToken) {
-        Subscription subscription = subscriptionRepository.findByPurchaseToken(purchaseToken)
-            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
+        Subscription subscription = getSubscriptionByPurchase(purchaseToken);
         subscription.expire();
     }
 
@@ -144,7 +141,7 @@ public class SubscriptionService {
         List<Payment> payments = paymentRepository.findAllByShopId(shopId);
         return payments.stream()
             .map(PaymentDto::toMeta)
-            .collect(Collectors.toList());
+            .toList();
     }
 
     public PaymentDto.Detail getPaymentDetail(String transactionId) {
@@ -161,5 +158,11 @@ public class SubscriptionService {
     private Subscription getSubscription(Long shopId) {
         return subscriptionRepository.findByShopId(shopId)
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
+    }
+
+    private Subscription getSubscriptionByPurchase(String purchaseToken) {
+        Payment payment = paymentRepository.findFirstByPurchaseTokenOrderByCreatedAt(purchaseToken)
+            .orElseThrow(() -> new CustomException(TARGET_PAYMENT_NOT_FOUND));
+        return getSubscription(payment.getShop().getId());
     }
 }
