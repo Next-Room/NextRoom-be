@@ -25,6 +25,7 @@ import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,19 +92,21 @@ public class SubscriptionService {
             String planId = purchase.getLineItems().get(0).getOfferDetails().getBasePlanId();
 
             // save subscription
-            Subscription subscription = Subscription.builder()
-                .shop(shop)
-                .status(SUBSCRIPTION)
-                .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(planId))
-                .startDate(LocalDate.now())
-                .expiryDate(expiryDate)
-                .build();
+            Subscription subscription = subscriptionRepository.findByShopId(shopId)
+                .orElse(Subscription.builder()
+                    .shop(shop)
+                    .status(SUBSCRIPTION)
+                    .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(planId))
+                    .startDate(LocalDate.now())
+                    .expiryDate(expiryDate)
+                    .build());
             subscriptionRepository.save(subscription);
 
             // save payment
             Payment payment = Payment.builder()
                 .shop(shop)
                 .purchaseToken(purchaseToken)
+                .transactionId(String.valueOf(UUID.randomUUID()))
                 .subscriptionId(subscription.getId())
                 .type(subscription.getPlan())
                 .receipt(objectMapper.writeValueAsString(purchase))

@@ -37,8 +37,7 @@ public class Payment extends Timestamped {
     @Column(name = "subscription_id", nullable = false)
     private Long subscriptionId;
 
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "transaction_id", nullable = false)
+    @Column(name = "transaction_id")
     private String transactionId;
 
     @Enumerated(EnumType.STRING)
