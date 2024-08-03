@@ -4,7 +4,6 @@ import com.nextroom.nextRoomServer.dto.SubscriptionDto.SubscriptionPlanResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import lombok.Getter;
 
 @Getter
@@ -39,7 +38,7 @@ public enum SubscriptionPlan {
     public static List<SubscriptionPlanResponse> toList() {
         return Arrays.stream(values())
             .map(SubscriptionPlanResponse::new)
-            .collect(Collectors.toList());
+            .toList();
     }
 
 }
