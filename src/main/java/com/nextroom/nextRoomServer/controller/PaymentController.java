@@ -38,12 +38,12 @@ public class PaymentController {
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
-    @GetMapping("/purchase")
+    @GetMapping("/payment")
     public ResponseEntity<BaseResponse> getPaymentList() {
         return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getShopPaymentList()));
     }
 
-    @GetMapping("/purchase/{transactionId}")
+    @GetMapping("/payment/{transactionId}")
     public ResponseEntity<BaseResponse> purchaseSubscription(@PathVariable String transactionId) {
         return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getPaymentDetail(transactionId)));
     }
