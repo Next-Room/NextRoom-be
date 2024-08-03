@@ -1,7 +1,6 @@
 package com.nextroom.nextRoomServer.dto;
 
 import com.nextroom.nextRoomServer.domain.Subscription;
-import com.nextroom.nextRoomServer.enums.EnumModel;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
@@ -80,12 +79,12 @@ public class SubscriptionDto {
         private final Integer originPrice;
         private final Integer sellPrice;
 
-        public SubscriptionPlanResponse(EnumModel enumModel) {
-            this.id = enumModel.getId();
-            this.plan = enumModel.getPlan();
-            this.description = enumModel.getDescription();
-            this.originPrice = enumModel.getOriginPrice();
-            this.sellPrice = enumModel.getSellPrice();
+        public SubscriptionPlanResponse(SubscriptionPlan plan) {
+            this.id = plan.getId();
+            this.plan = plan.getPlan();
+            this.description = plan.getDescription();
+            this.originPrice = plan.getOriginPrice();
+            this.sellPrice = plan.getSellPrice();
         }
     }
 

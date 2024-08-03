@@ -1,9 +1,14 @@
 package com.nextroom.nextRoomServer.enums;
 
+import com.nextroom.nextRoomServer.dto.SubscriptionDto.SubscriptionPlanResponse;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import lombok.Getter;
 
-public enum SubscriptionPlan implements EnumModel {
+@Getter
+public enum SubscriptionPlan {
     MINI("mini_subscription", "미니", "2개의 테마를 등록할 수 있어요", 19900, 9900, 2),
     MEDIUM("medium_subscription", "미디움", "5개의 테마를 등록할 수 있어요", 29900, 14900, 5),
     LARGE("large_subscription", "라지", "8개의 테마를 등록할 수 있어요", 39900, 19900, 8);
@@ -25,44 +30,16 @@ public enum SubscriptionPlan implements EnumModel {
         this.themeLimitCount = themeLimitCount;
     }
 
-    @Override
-    public String getKey() {
-        return name();
-    }
-
-    @Override
-    public String getId() {
-        return id;
-    }
-
-    @Override
-    public String getPlan() {
-        return plan;
-    }
-
-    @Override
-    public String getDescription() {
-        return description;
-    }
-
-    @Override
-    public Integer getOriginPrice() {
-        return originPrice;
-    }
-
-    @Override
-    public Integer getSellPrice() {
-        return sellPrice;
-    }
-
-    @Override
-    public Integer getThemeLimitCount() {
-        return themeLimitCount;
-    }
-
     public static SubscriptionPlan getSubscriptionPlanByPlanId(String planId) {
         return Arrays.stream(SubscriptionPlan.values())
             .filter(subscriptionPlan -> Objects.equals(subscriptionPlan.getId(), planId))
             .toList().get(0);
     }
+
+    public static List<SubscriptionPlanResponse> toList() {
+        return Arrays.stream(values())
+            .map(SubscriptionPlanResponse::new)
+            .collect(Collectors.toList());
+    }
+
 }

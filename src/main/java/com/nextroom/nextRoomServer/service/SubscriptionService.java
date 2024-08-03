@@ -16,7 +16,6 @@ import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.PaymentDto;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
-import com.nextroom.nextRoomServer.enums.EnumModel;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
@@ -105,14 +104,7 @@ public class SubscriptionService {
 
     @Transactional(readOnly = true)
     public List<SubscriptionDto.SubscriptionPlanResponse> getSubscriptionPlan() {
-        return toEnumValues(SubscriptionPlan.class);
-    }
-
-    private List<SubscriptionDto.SubscriptionPlanResponse> toEnumValues(Class<? extends EnumModel> e) {
-        return Arrays
-            .stream(e.getEnumConstants())
-            .map(SubscriptionDto.SubscriptionPlanResponse::new)
-            .collect(Collectors.toList());
+        return SubscriptionPlan.toList();
     }
 
     @Transactional(rollbackFor = Exception.class)
