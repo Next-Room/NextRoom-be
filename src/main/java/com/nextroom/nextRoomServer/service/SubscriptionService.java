@@ -58,8 +58,7 @@ public class SubscriptionService {
     @Transactional(readOnly = true)
     public SubscriptionDto.SubscriptionInfoResponse getSubscriptionInfo() {
         Long shopId = SecurityUtil.getCurrentShopId();
-        Subscription subscription = subscriptionRepository.findByShopId(shopId).orElseThrow(
-            () -> new CustomException(TARGET_SHOP_NOT_FOUND));
+        Subscription subscription = getSubscription(shopId);
 
         return new SubscriptionDto.SubscriptionInfoResponse(subscription);
     }
@@ -67,8 +66,7 @@ public class SubscriptionService {
     @Transactional
     public SubscriptionDto.UserStatusResponse getUserStatus() {
         Long shopId = SecurityUtil.getCurrentShopId();
-        Subscription subscription = subscriptionRepository.findByShopId(shopId).orElseThrow(
-            () -> new CustomException(TARGET_SHOP_NOT_FOUND));
+        Subscription subscription = getSubscription(shopId);
 
         subscription.checkStatus();
 
@@ -156,6 +154,11 @@ public class SubscriptionService {
 
     private Shop getShop(Long shopId) {
         return shopRepository.findById(shopId)
+            .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
+    }
+
+    private Subscription getSubscription(Long shopId) {
+        return subscriptionRepository.findByShopId(shopId)
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
     }
 }
