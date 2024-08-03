@@ -26,7 +26,7 @@ import lombok.NoArgsConstructor;
 public class Payment extends Timestamped {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id", nullable = false)
     private Long id;
 
@@ -38,8 +38,8 @@ public class Payment extends Timestamped {
     private Long subscriptionId;
 
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "transactionId", nullable = false)
-    private UUID transactionId;
+    @Column(name = "transaction_id", nullable = false)
+    private String transactionId;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
