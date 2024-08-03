@@ -6,6 +6,7 @@ import static com.nextroom.nextRoomServer.enums.UserStatus.HOLD;
 import static com.nextroom.nextRoomServer.enums.UserStatus.SUBSCRIPTION;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.INTERNAL_SERVER_ERROR;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_HINT_NOT_FOUND;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_PAYMENT_NOT_FOUND;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_SHOP_NOT_FOUND;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -114,12 +115,13 @@ public class SubscriptionService {
             .collect(Collectors.toList());
     }
 
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void purchaseSubscription(String purchaseToken, String subscriptionId) {
         Long shopId = SecurityUtil.getCurrentShopId();
         Shop shop = getShop(shopId);
 
         try {
+            // request Google API payment
             SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verify(purchaseToken);
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -128,15 +130,16 @@ public class SubscriptionService {
 
             String planId = purchase.getLineItems().get(0).getOfferDetails().getBasePlanId();
 
+            // save subscription
             Subscription subscription = Subscription.builder()
                 .shop(shop)
                 .status(SUBSCRIPTION)
                 .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(planId))
                 .expiryDate(expiryDate)
                 .build();
-
             subscriptionRepository.save(subscription);
 
+            // save payment
             Payment payment = Payment.builder()
                 .shop(shop)
                 .purchaseToken(purchaseToken)
@@ -144,9 +147,9 @@ public class SubscriptionService {
                 .type(subscription.getPlan())
                 .receipt(objectMapper.writeValueAsString(purchase))
                 .build();
-
             paymentRepository.save(payment);
 
+            // confirm Google API payment
             androidPurchaseUtils.acknowledge(purchaseToken, subscriptionId);
         } catch (IOException e) {
             throw new CustomException(INTERNAL_SERVER_ERROR);  // FIXME: Throwable e.getMessage()
@@ -184,7 +187,7 @@ public class SubscriptionService {
 
     public PaymentDto.Detail getPaymentDetail(String transactionId) {
         Payment payment = paymentRepository.findByTransactionId(transactionId)
-            .orElseThrow(() -> new CustomException(TARGET_HINT_NOT_FOUND));
+            .orElseThrow(() -> new CustomException(TARGET_PAYMENT_NOT_FOUND));
         return PaymentDto.toDetail(payment);
     }
 
