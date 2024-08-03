@@ -45,12 +45,14 @@ public class SubscriptionDto {
     public static class SubscriptionInfoResponse {
         private final Long id;
         private final SubscriptionPlan subStatus;
+        private final String startDate;
         private final String expiryDate;
         private final String createdAt;
 
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.subStatus = subscription.getPlan();
+            this.startDate = subscription.getStartDate().toString();
             this.expiryDate = subscription.getExpiryDate().toString();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
         }
@@ -61,11 +63,13 @@ public class SubscriptionDto {
         private final Long id;
         private final UserStatus userStatus;
         private final String expiryDate;
+        private final String startDate;
         private final String createdAt;
 
         public UserStatusResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.userStatus = subscription.getStatus();
+            this.startDate = subscription.getStartDate().toString();
             this.expiryDate = subscription.getExpiryDate().toString();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
         }

@@ -98,6 +98,7 @@ public class SubscriptionService {
                 .shop(shop)
                 .status(SUBSCRIPTION)
                 .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(planId))
+                .startDate(LocalDate.now())
                 .expiryDate(expiryDate)
                 .build();
             subscriptionRepository.save(subscription);
