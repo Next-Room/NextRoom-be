@@ -34,6 +34,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class SubscriptionService {
 
+    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
     private final SubscriptionRepository subscriptionRepository;
     private final ShopRepository shopRepository;
     private final PaymentRepository paymentRepository;
@@ -86,8 +88,7 @@ public class SubscriptionService {
             // request Google API payment
             SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verify(purchaseToken);
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-            ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
+            ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), FORMATTER);
             LocalDate expiryDate = zonedDateTime.toLocalDate();
 
             String planId = purchase.getLineItems().get(0).getOfferDetails().getBasePlanId();
@@ -124,8 +125,7 @@ public class SubscriptionService {
 
         SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verify(purchaseToken);
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), formatter);
+        ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), FORMATTER);
         LocalDate expiryDate = zonedDateTime.toLocalDate();
 
         subscription.renew(expiryDate);
