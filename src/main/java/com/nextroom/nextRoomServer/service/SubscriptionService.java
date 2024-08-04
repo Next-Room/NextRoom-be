@@ -134,8 +134,8 @@ public class SubscriptionService {
             .toList();
     }
 
-    public PaymentDto.Detail getPaymentDetail(String transactionId) {
-        Payment payment = paymentRepository.findByTransactionId(transactionId)
+    public PaymentDto.Detail getPaymentDetail(String orderId) {
+        Payment payment = paymentRepository.findByOrderId(orderId)
             .orElseThrow(() -> new CustomException(TARGET_PAYMENT_NOT_FOUND));
         return PaymentDto.toDetail(payment);
     }

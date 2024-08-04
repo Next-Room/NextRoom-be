@@ -1,19 +1,7 @@
 package com.nextroom.nextRoomServer.controller;
 
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.OK;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nextroom.nextRoomServer.dto.BaseResponse;
-import com.nextroom.nextRoomServer.dto.DataResponse;
-import com.nextroom.nextRoomServer.dto.SubscriptionDto;
-import com.nextroom.nextRoomServer.enums.SubscriptionStatus;
-import com.nextroom.nextRoomServer.service.SubscriptionService;
-import com.nextroom.nextRoomServer.util.Base64Decoder;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +9,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.nextroom.nextRoomServer.dto.BaseResponse;
+import com.nextroom.nextRoomServer.dto.DataResponse;
+import com.nextroom.nextRoomServer.dto.SubscriptionDto;
+import com.nextroom.nextRoomServer.service.SubscriptionService;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Payment")
 @RestController
@@ -43,9 +39,9 @@ public class PaymentController {
         return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getShopPaymentList()));
     }
 
-    @GetMapping("/payment/{transactionId}")
-    public ResponseEntity<BaseResponse> purchaseSubscription(@PathVariable String transactionId) {
-        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getPaymentDetail(transactionId)));
+    @GetMapping("/payment/{orderId}")
+    public ResponseEntity<BaseResponse> purchaseSubscription(@PathVariable String orderId) {
+        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getPaymentDetail(orderId)));
     }
 
     @PostMapping("/rtdn")

@@ -1,8 +1,9 @@
 package com.nextroom.nextRoomServer.dto;
 
-import com.nextroom.nextRoomServer.domain.Payment;
-import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import java.time.LocalDateTime;
+
+import com.nextroom.nextRoomServer.domain.Payment;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -12,8 +13,8 @@ public class PaymentDto {
     @Builder
     public static class Meta {
 
-        private final String transactionId;
-        private final SubscriptionPlan type;
+        private final String orderId;
+        private final Integer type;
         private final LocalDateTime createdAt;
     }
 
@@ -21,8 +22,8 @@ public class PaymentDto {
     @Builder
     public static class Detail {
 
-        private final String transactionId;
-        private final SubscriptionPlan type;
+        private final String orderId;
+        private final Integer type;
         private final LocalDateTime createdAt;
         private final String purchaseToken;
         private final String receipt;  // FIXME: ui 픽스 후 유저 조회용 데이터로 변환
@@ -30,7 +31,7 @@ public class PaymentDto {
 
     public static Meta toMeta(Payment payment) {
         return Meta.builder()
-            .transactionId(String.valueOf(payment.getTransactionId()))
+            .orderId(String.valueOf(payment.getOrderId()))
             .type(payment.getType())
             .createdAt(payment.getCreatedAt())
             .build();
@@ -38,7 +39,7 @@ public class PaymentDto {
 
     public static Detail toDetail(Payment payment) {
         return Detail.builder()
-            .transactionId(String.valueOf(payment.getTransactionId()))
+            .orderId(String.valueOf(payment.getOrderId()))
             .type(payment.getType())
             .createdAt(payment.getCreatedAt())
             .purchaseToken(payment.getPurchaseToken())
