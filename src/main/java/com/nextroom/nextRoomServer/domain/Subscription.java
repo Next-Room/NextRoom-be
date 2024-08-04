@@ -1,10 +1,13 @@
 package com.nextroom.nextRoomServer.domain;
 
-import static com.nextroom.nextRoomServer.enums.UserStatus.SUBSCRIPTION;
+import static com.nextroom.nextRoomServer.enums.UserStatus.*;
+
+import java.time.LocalDate;
 
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,7 +18,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -47,7 +49,8 @@ public class Subscription extends Timestamped {
     @Column(nullable = false)
     private LocalDate expiryDate;
 
-    public void renew(LocalDate expiryDate) {
+    public void renew(LocalDate startDate, LocalDate expiryDate) {
+        this.startDate = startDate;
         this.expiryDate = expiryDate;
     }
 

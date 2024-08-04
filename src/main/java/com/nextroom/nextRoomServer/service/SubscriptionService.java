@@ -1,40 +1,39 @@
 package com.nextroom.nextRoomServer.service;
 
-import static com.nextroom.nextRoomServer.enums.SubscriptionPlan.MINI;
-import static com.nextroom.nextRoomServer.enums.UserStatus.SUBSCRIPTION;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.INTERNAL_SERVER_ERROR;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_PAYMENT_NOT_FOUND;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_SHOP_NOT_FOUND;
+import static com.nextroom.nextRoomServer.enums.UserStatus.*;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
+
+import java.io.IOException;
+import java.time.LocalDate;
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.api.services.androidpublisher.model.SubscriptionPurchaseLineItem;
 import com.google.api.services.androidpublisher.model.SubscriptionPurchaseV2;
 import com.nextroom.nextRoomServer.domain.Payment;
 import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.PaymentDto;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
+import com.nextroom.nextRoomServer.enums.NotificationType;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
+import com.nextroom.nextRoomServer.enums.SubscriptionState;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.PaymentRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
+import com.nextroom.nextRoomServer.util.Timestamped;
 import com.nextroom.nextRoomServer.util.inapp.AndroidPurchaseUtils;
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.UUID;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
-
-    private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private final SubscriptionRepository subscriptionRepository;
     private final ShopRepository shopRepository;
@@ -71,34 +70,30 @@ public class SubscriptionService {
 
         try {
             // request Google API payment
-            SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verify(purchaseToken);
+            SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verifyPurchase(purchaseToken);
+            SubscriptionPurchaseLineItem lineItem = purchase.getLineItems().get(0);
 
-            ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), FORMATTER);
-            LocalDate expiryDate = zonedDateTime.toLocalDate();
-
-            String planId = purchase.getLineItems().get(0).getOfferDetails().getBasePlanId();
+            // save payment
+            Payment payment = Payment.builder()
+                .shop(shop)
+                .orderId(purchase.getLatestOrderId())
+                .productId(lineItem.getProductId())
+                .type(SubscriptionState.getSubscriptionType(purchase.getSubscriptionState()))
+                .purchaseToken(purchaseToken)
+                .receipt(objectMapper.writeValueAsString(purchase))
+                .build();
+            paymentRepository.save(payment);
 
             // save subscription
             Subscription subscription = subscriptionRepository.findByShopId(shopId)
                 .orElse(Subscription.builder()
                     .shop(shop)
                     .status(SUBSCRIPTION)
-                    .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(planId))
-                    .startDate(LocalDate.now())
-                    .expiryDate(expiryDate)
+                    .plan(SubscriptionPlan.getSubscriptionPlanByPlanId(lineItem.getProductId()))
+                    .startDate(Timestamped.stringToKstLocalDate(purchase.getStartTime()))
+                    .expiryDate(Timestamped.stringToKstLocalDate(lineItem.getExpiryTime()))
                     .build());
             subscriptionRepository.save(subscription);
-
-            // save payment
-            Payment payment = Payment.builder()
-                .shop(shop)
-                .purchaseToken(purchaseToken)
-                .transactionId(String.valueOf(UUID.randomUUID()))
-                .subscriptionId(subscription.getId())
-                .type(subscription.getPlan())
-                .receipt(objectMapper.writeValueAsString(purchase))
-                .build();
-            paymentRepository.save(payment);
 
             // confirm Google API payment
             androidPurchaseUtils.acknowledge(purchaseToken, subscriptionId);
@@ -108,22 +103,82 @@ public class SubscriptionService {
     }
 
     @Transactional
-    public void renew(String purchaseToken, String subscriptionId) throws IOException {
-        Subscription subscription = getSubscriptionByPurchase(purchaseToken);
-        SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verify(purchaseToken);
+    public void updateSubscription(SubscriptionDto.UpdateSubscription requestBody) {
+        try {
+            SubscriptionDto.SubscriptionNotification subscriptionNotification = androidPurchaseUtils.getSubscriptionNotification(
+                requestBody.getMessage().getData());
 
-        ZonedDateTime zonedDateTime = ZonedDateTime.parse(purchase.getLineItems().get(0).getExpiryTime(), FORMATTER);
-        LocalDate expiryDate = zonedDateTime.toLocalDate();
+            int notificationType = subscriptionNotification.getNotificationType();
+            String purchaseToken = subscriptionNotification.getPurchaseToken();
 
-        subscription.renew(expiryDate);
+            if (isRenew(notificationType)) {
+                renew(purchaseToken);
+            }
 
-        androidPurchaseUtils.acknowledge(purchaseToken, subscriptionId);
+            if (isExpired(notificationType)) {
+                expire(purchaseToken);
+            }
+        } catch (IOException e) {
+            throw new CustomException(INTERNAL_SERVER_ERROR);  // FIXME: Throwable e.getMessage()
+        }
+
+    }
+
+    @Transactional
+    public void renew(String purchaseToken) throws IOException {
+        try {
+            // request Google API payment
+            SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verifyNotification(purchaseToken);
+            SubscriptionPurchaseLineItem lineItem = purchase.getLineItems().get(0);
+
+            // save payment
+            Subscription subscription = getSubscriptionByPurchase(purchaseToken);
+
+            Payment payment = Payment.builder()
+                .shop(subscription.getShop())
+                .orderId(purchase.getLatestOrderId())
+                .productId(lineItem.getProductId())
+                .type(SubscriptionState.getSubscriptionType(purchase.getSubscriptionState()))
+                .purchaseToken(purchaseToken)
+                .receipt(objectMapper.writeValueAsString(purchase))
+                .build();
+            paymentRepository.save(payment);
+
+            // update subscription
+            LocalDate startDate = Timestamped.stringToKstLocalDate(purchase.getStartTime());
+            LocalDate expiryDate = Timestamped.stringToKstLocalDate(lineItem.getExpiryTime());
+
+            subscription.renew(startDate, expiryDate);
+        } catch (IOException e) {
+            throw new CustomException(INTERNAL_SERVER_ERROR);  // FIXME: Throwable e.getMessage()
+        }
     }
 
     @Transactional
     public void expire(String purchaseToken) {
-        Subscription subscription = getSubscriptionByPurchase(purchaseToken);
-        subscription.expire();
+        try {
+            // request Google API payment
+            SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verifyNotification(purchaseToken);
+            SubscriptionPurchaseLineItem lineItem = purchase.getLineItems().get(0);
+
+            // save payment
+            Subscription subscription = getSubscriptionByPurchase(purchaseToken);
+
+            Payment payment = Payment.builder()
+                .shop(subscription.getShop())
+                .orderId(purchase.getLatestOrderId())
+                .productId(lineItem.getProductId())
+                .type(SubscriptionState.getSubscriptionType(purchase.getSubscriptionState()))
+                .purchaseToken(purchaseToken)
+                .receipt(objectMapper.writeValueAsString(purchase))
+                .build();
+            paymentRepository.save(payment);
+
+            // delete subscription
+            subscriptionRepository.deleteById(subscription.getId());
+        } catch (IOException e) {
+            throw new CustomException(INTERNAL_SERVER_ERROR);  // FIXME: Throwable e.getMessage()
+        }
     }
 
     public List<PaymentDto.Meta> getShopPaymentList() {
@@ -154,5 +209,13 @@ public class SubscriptionService {
         Payment payment = paymentRepository.findFirstByPurchaseTokenOrderByCreatedAt(purchaseToken)
             .orElseThrow(() -> new CustomException(TARGET_PAYMENT_NOT_FOUND));
         return getSubscription(payment.getShop().getId());
+    }
+
+    private boolean isRenew(int notificationType) {
+        return notificationType == NotificationType.SUBSCRIPTION_RENEWED.getType();
+    }
+
+    private boolean isExpired(int notificationType) {
+        return notificationType == NotificationType.SUBSCRIPTION_EXPIRED.getType();
     }
 }

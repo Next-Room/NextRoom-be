@@ -1,10 +1,12 @@
 package com.nextroom.nextRoomServer.dto;
 
+import java.time.LocalDate;
+
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
-import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -26,19 +28,19 @@ public class SubscriptionDto {
     }
 
     @Getter
-    public static class SubscriptionNotification {
-        private String version;
-        private Integer notificationType;
-        private String purchaseToken;
-        private String subscriptionId;
-    }
-
-    @Getter
     public static class PublishedMessage {
         private String version;
         private String packageName;
         private String eventTimeMillis;
         private SubscriptionNotification subscriptionNotification;
+    }
+
+    @Getter
+    public static class SubscriptionNotification {
+        private String version;
+        private int notificationType;
+        private String purchaseToken;
+        private String subscriptionId;
     }
 
     @Getter

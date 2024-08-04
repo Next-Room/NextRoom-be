@@ -46,30 +46,8 @@ public class PaymentController {
 
     @PostMapping("/rtdn")
     public ResponseEntity<BaseResponse> updateSubscriptionPurchase(
-        @RequestBody SubscriptionDto.UpdateSubscription requestBody
-    ) throws Exception {
-        String decodedData = Base64Decoder.decode(requestBody.getMessage().getData());
-
-        Pattern pattern = Pattern.compile(
-            ".*\"subscriptionNotification\":\\{(.*?)\\}.*");
-        Matcher matcher = pattern.matcher(decodedData);
-
-        String notificationContent = matcher.group(1);
-        ObjectMapper objectMapper = new ObjectMapper();
-        SubscriptionDto.PublishedMessage publishedMessage = objectMapper.readValue(decodedData,
-            SubscriptionDto.PublishedMessage.class);
-        System.out.println(publishedMessage.getSubscriptionNotification().getPurchaseToken());
-
-        //     TODO handle exception
-        Integer notificationType = publishedMessage.getSubscriptionNotification().getNotificationType();
-        String purchaseToken = publishedMessage.getSubscriptionNotification().getPurchaseToken();
-        String subscriptionId = publishedMessage.getSubscriptionNotification().getSubscriptionId();
-
-        if (Objects.equals(notificationType, SubscriptionStatus.SUBSCRIPTION_RENEWED.getStatus())) {
-            subscriptionService.renew(purchaseToken, subscriptionId);
-        } else if (Objects.equals(notificationType, SubscriptionStatus.SUBSCRIPTION_EXPIRED.getStatus())) {
-            subscriptionService.expire(purchaseToken);
-        }
+        @RequestBody SubscriptionDto.UpdateSubscription requestBody) {
+        subscriptionService.updateSubscription(requestBody);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 }
