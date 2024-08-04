@@ -42,19 +42,6 @@ public class SubscriptionService {
     private final AndroidPurchaseUtils androidPurchaseUtils;
     private final ObjectMapper objectMapper;
 
-    public void test() {
-        Shop shop = shopRepository.findByAdminCode("12321").orElseThrow(
-            () -> new RuntimeException("ERROR"));
-
-        Subscription entity = Subscription.builder()
-            .shop(shop)
-            .status(SUBSCRIPTION)
-            .plan(MINI)
-            .expiryDate(LocalDate.now().plusDays(30))
-            .build();
-        subscriptionRepository.save(entity);
-    }
-
     @Transactional(readOnly = true)
     public SubscriptionDto.SubscriptionInfoResponse getSubscriptionInfo() {
         Long shopId = SecurityUtil.getCurrentShopId();
