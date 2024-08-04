@@ -1,12 +1,16 @@
 package com.nextroom.nextRoomServer.enums;
 
-import com.nextroom.nextRoomServer.dto.SubscriptionDto.SubscriptionPlanResponse;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import com.nextroom.nextRoomServer.dto.SubscriptionDto.SubscriptionPlanResponse;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public enum SubscriptionPlan {
     MINI("mini_subscription", "미니", "2개의 테마를 등록할 수 있어요", 19900, 9900, 2),
     MEDIUM("medium_subscription", "미디움", "5개의 테마를 등록할 수 있어요", 29900, 14900, 5),
@@ -18,16 +22,6 @@ public enum SubscriptionPlan {
     private final Integer originPrice;
     private final Integer sellPrice;
     private final Integer themeLimitCount;
-
-    SubscriptionPlan(String id, String plan, String description, Integer originPrice, Integer sellPrice,
-        Integer themeLimitCount) {
-        this.id = id;
-        this.plan = plan;
-        this.description = description;
-        this.originPrice = originPrice;
-        this.sellPrice = sellPrice;
-        this.themeLimitCount = themeLimitCount;
-    }
 
     public static SubscriptionPlan getSubscriptionPlanByPlanId(String planId) {
         return Arrays.stream(SubscriptionPlan.values())
