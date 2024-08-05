@@ -1,6 +1,5 @@
 package com.nextroom.nextRoomServer.service;
 
-import static com.nextroom.nextRoomServer.enums.SubscriptionPlan.*;
 import static com.nextroom.nextRoomServer.enums.UserStatus.*;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 import static com.nextroom.nextRoomServer.util.Timestamped.*;
@@ -77,7 +76,6 @@ public class AuthService {
         Subscription subscription = Subscription.builder()
             .shop(shop)
             .status(FREE)
-            .plan(MINI)
             .expiryDate(Timestamped.getToday().plusDays(30))
             .build();
         subscriptionRepository.save(subscription);

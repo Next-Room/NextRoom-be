@@ -46,14 +46,12 @@ public class SubscriptionDto {
     @Getter
     public static class SubscriptionInfoResponse {
         private final Long id;
-        private final SubscriptionPlan subStatus;
         private final LocalDate startDate;
         private final LocalDate expiryDate;
         private final String createdAt;
 
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
-            this.subStatus = subscription.getPlan();
             this.startDate = subscription.getStartDate();
             this.expiryDate = subscription.getExpiryDate();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
