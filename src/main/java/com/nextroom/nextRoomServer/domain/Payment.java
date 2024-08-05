@@ -9,6 +9,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,14 +32,12 @@ public class Payment extends Timestamped {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    @Column(name = "subscription_id", nullable = false)
-    private Long subscriptionId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
 
     @Column(name = "order_id")
     private String orderId;
-
-    @Column(name = "product_id")
-    private String productId;
 
     @Column(name = "type", nullable = false)
     private Integer type;
