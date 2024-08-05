@@ -65,17 +65,11 @@ public class SubscriptionDto {
     @Getter
     public static class UserStatusResponse {
         private final Long id;
-        private final UserStatus userStatus;
-        private final LocalDate expiryDate;
-        private final LocalDate startDate;
-        private final String createdAt;
+        private final UserStatus status;
 
         public UserStatusResponse(Subscription subscription) {
             this.id = subscription.getId();
-            this.userStatus = subscription.getStatus();
-            this.startDate = subscription.getStartDate();
-            this.expiryDate = subscription.getExpiryDate();
-            this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
+            this.status = subscription.getStatus();
         }
     }
 
