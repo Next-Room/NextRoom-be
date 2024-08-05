@@ -46,12 +46,16 @@ public class SubscriptionDto {
     @Getter
     public static class SubscriptionInfoResponse {
         private final Long id;
+        private final String name;
+        private final UserStatus status;
         private final LocalDate startDate;
         private final LocalDate expiryDate;
         private final String createdAt;
 
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
+            this.name = subscription.getShop().getName();
+            this.status = subscription.getStatus();
             this.startDate = subscription.getStartDate();
             this.expiryDate = subscription.getExpiryDate();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
