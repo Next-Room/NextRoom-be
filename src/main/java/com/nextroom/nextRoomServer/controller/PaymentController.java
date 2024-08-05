@@ -30,7 +30,7 @@ public class PaymentController {
     public ResponseEntity<BaseResponse> purchaseSubscription(
         @RequestBody SubscriptionDto.PurchaseSubscription request
     ) {
-        subscriptionService.purchaseSubscription(request.getPurchaseToken(), request.getSubscriptionId());
+        subscriptionService.purchaseSubscription(request.getPurchaseToken());
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 

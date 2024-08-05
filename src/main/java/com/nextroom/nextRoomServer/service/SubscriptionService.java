@@ -64,7 +64,7 @@ public class SubscriptionService {
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public void purchaseSubscription(String purchaseToken, String subscriptionId) {
+    public void purchaseSubscription(String purchaseToken) {
         Long shopId = SecurityUtil.getCurrentShopId();
         Shop shop = getShop(shopId);
 
@@ -72,6 +72,7 @@ public class SubscriptionService {
             // request Google API payment
             SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verifyPurchase(purchaseToken);
             SubscriptionPurchaseLineItem lineItem = purchase.getLineItems().get(0);
+            String subscriptionProductId = lineItem.getProductId();
 
             // save payment
             Payment payment = Payment.builder()
@@ -96,7 +97,7 @@ public class SubscriptionService {
             subscriptionRepository.save(subscription);
 
             // confirm Google API payment
-            androidPurchaseUtils.acknowledge(purchaseToken, subscriptionId);
+            androidPurchaseUtils.acknowledge(purchaseToken, subscriptionProductId);
         } catch (IOException e) {
             throw new CustomException(INTERNAL_SERVER_ERROR);  // FIXME: Throwable e.getMessage()
         }

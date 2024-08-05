@@ -100,6 +100,5 @@ public class SubscriptionDto {
     @NoArgsConstructor(force = true)
     public static class PurchaseSubscription {
         private final String purchaseToken;
-        private final String subscriptionId;
     }
 }
