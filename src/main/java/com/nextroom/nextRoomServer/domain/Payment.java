@@ -45,7 +45,7 @@ public class Payment extends Timestamped {
     @Column(name = "purchase_token", nullable = false)
     private String purchaseToken;
 
-    @Column(name = "receipt", nullable = false)
+    @Column(name = "receipt", nullable = false, columnDefinition = "TEXT")
     private String receipt;
 
 }
