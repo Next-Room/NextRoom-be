@@ -40,11 +40,11 @@ public class Product extends Timestamped {
     private String subDescription;
 
     @Column(name = "origin_price", nullable = false)
-    private String originPrice;
+    private Integer originPrice;
 
     @Column(name = "sell_price", nullable = false)
-    private String sellPrice;
+    private Integer sellPrice;
 
     @Column(name = "discount_rate", nullable = false)
-    private String discountRate;
+    private Integer discountRate;
 }
