@@ -44,6 +44,7 @@ public enum StatusCode {
     TARGET_HINT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 힌트입니다."),
     TARGET_SHOP_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 업체입니다."),
     TARGET_PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제내역입니다."),
+    TARGET_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 구독 상품입니다."),
 
     /**
      * 409 Conflict

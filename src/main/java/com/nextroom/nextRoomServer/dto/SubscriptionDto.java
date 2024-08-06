@@ -2,8 +2,8 @@ package com.nextroom.nextRoomServer.dto;
 
 import java.time.LocalDate;
 
+import com.nextroom.nextRoomServer.domain.Product;
 import com.nextroom.nextRoomServer.domain.Subscription;
-import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
@@ -55,7 +55,8 @@ public class SubscriptionDto {
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.name = subscription.getShop().getName();
-            this.status = subscription.getStatus();
+            this.status = UserStatus.SUBSCRIPTION_EXPIRATION.equals(subscription.getStatus()) ?
+                UserStatus.FREE : subscription.getStatus();
             this.startDate = subscription.getStartDate();
             this.expiryDate = subscription.getExpiryDate();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
@@ -69,24 +70,33 @@ public class SubscriptionDto {
 
         public UserStatusResponse(Subscription subscription) {
             this.id = subscription.getId();
-            this.status = subscription.getStatus();
+            this.status = UserStatus.SUBSCRIPTION_EXPIRATION.equals(subscription.getStatus()) ?
+                UserStatus.FREE : subscription.getStatus();
         }
     }
 
     @Getter
     public static class SubscriptionPlanResponse {
-        private final String id;
-        private final String plan;
+        private final Long id;
+        private final String subscriptionProductId;
+        private final String planId;
+        private final String productName;
         private final String description;
+        private final String subDescription;
         private final Integer originPrice;
         private final Integer sellPrice;
+        private final Integer discountRate;
 
-        public SubscriptionPlanResponse(SubscriptionPlan plan) {
-            this.id = plan.getId();
-            this.plan = plan.getPlan();
-            this.description = plan.getDescription();
-            this.originPrice = plan.getOriginPrice();
-            this.sellPrice = plan.getSellPrice();
+        public SubscriptionPlanResponse(Product product) {
+            this.id = product.getId();
+            this.subscriptionProductId = product.getSubscriptionProductId();
+            this.planId = product.getPlanId();
+            this.productName = product.getProductName();
+            this.description = product.getDescription();
+            this.subDescription = product.getSubDescription();
+            this.originPrice = product.getOriginPrice();
+            this.sellPrice = product.getSellPrice();
+            this.discountRate = product.getDiscountRate();
         }
     }
 

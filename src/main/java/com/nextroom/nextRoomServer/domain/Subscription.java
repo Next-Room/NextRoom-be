@@ -44,6 +44,7 @@ public class Subscription extends Timestamped {
     private Product product;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private UserStatus status;
 
     @Column
@@ -51,6 +52,13 @@ public class Subscription extends Timestamped {
 
     @Column
     private LocalDate expiryDate;
+
+    public void subscribe(Product product, LocalDate startDate, LocalDate expiryDate) {
+        this.status = UserStatus.SUBSCRIPTION;
+        this.product = product;
+        this.startDate = startDate;
+        this.expiryDate = expiryDate;
+    }
 
     public void renew(LocalDate startDate, LocalDate expiryDate) {
         this.startDate = startDate;

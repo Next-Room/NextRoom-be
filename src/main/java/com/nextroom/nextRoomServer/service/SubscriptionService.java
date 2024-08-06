@@ -1,11 +1,11 @@
 package com.nextroom.nextRoomServer.service;
 
-import static com.nextroom.nextRoomServer.enums.UserStatus.*;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +14,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.api.services.androidpublisher.model.SubscriptionPurchaseLineItem;
 import com.google.api.services.androidpublisher.model.SubscriptionPurchaseV2;
 import com.nextroom.nextRoomServer.domain.Payment;
+import com.nextroom.nextRoomServer.domain.Product;
 import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.dto.PaymentDto;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
 import com.nextroom.nextRoomServer.enums.NotificationType;
-import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.SubscriptionState;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.PaymentRepository;
+import com.nextroom.nextRoomServer.repository.ProductRepository;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
@@ -38,6 +39,7 @@ public class SubscriptionService {
     private final SubscriptionRepository subscriptionRepository;
     private final ShopRepository shopRepository;
     private final PaymentRepository paymentRepository;
+    private final ProductRepository productRepository;
     private final AndroidPurchaseUtils androidPurchaseUtils;
     private final ObjectMapper objectMapper;
 
@@ -59,8 +61,28 @@ public class SubscriptionService {
         return new SubscriptionDto.UserStatusResponse(subscription);
     }
 
+    @Transactional(readOnly = true)
     public List<SubscriptionDto.SubscriptionPlanResponse> getSubscriptionPlan() {
-        return SubscriptionPlan.toList();
+        List<Product> productList = productRepository.findAll();
+        return productList.stream()
+            .map(SubscriptionDto.SubscriptionPlanResponse::new)
+            .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaymentDto.Meta> getShopPaymentList() {
+        Long shopId = SecurityUtil.getCurrentShopId();
+        List<Payment> payments = paymentRepository.findAllByShopId(shopId);
+        return payments.stream()
+            .map(PaymentDto::toMeta)
+            .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public PaymentDto.Detail getPaymentDetail(String orderId) {
+        Payment payment = paymentRepository.findByOrderId(orderId)
+            .orElseThrow(() -> new CustomException(TARGET_PAYMENT_NOT_FOUND));
+        return PaymentDto.toDetail(payment);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -72,11 +94,12 @@ public class SubscriptionService {
             // request Google API payment
             SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verifyPurchase(purchaseToken);
             SubscriptionPurchaseLineItem lineItem = purchase.getLineItems().get(0);
-            String subscriptionProductId = lineItem.getProductId();
+            Product product = getProduct(lineItem.getProductId());
 
             // save payment
             Payment payment = Payment.builder()
                 .shop(shop)
+                .product(product)
                 .orderId(purchase.getLatestOrderId())
                 .type(SubscriptionState.getSubscriptionType(purchase.getSubscriptionState()))
                 .purchaseToken(purchaseToken)
@@ -84,18 +107,15 @@ public class SubscriptionService {
                 .build();
             paymentRepository.save(payment);
 
-            // save subscription
-            Subscription subscription = subscriptionRepository.findByShopId(shopId)
-                .orElse(Subscription.builder()
-                    .shop(shop)
-                    .status(SUBSCRIPTION)
-                    .startDate(Timestamped.stringToKstLocalDate(purchase.getStartTime()))
-                    .expiryDate(Timestamped.stringToKstLocalDate(lineItem.getExpiryTime()))
-                    .build());
-            subscriptionRepository.save(subscription);
+            // update subscription
+            LocalDate startDate = Timestamped.stringToKstLocalDate(purchase.getStartTime());
+            LocalDate expiryDate = Timestamped.stringToKstLocalDate(lineItem.getExpiryTime());
+
+            Subscription subscription = getSubscription(shopId);
+            subscription.subscribe(product, startDate, expiryDate);
 
             // confirm Google API payment
-            androidPurchaseUtils.acknowledge(purchaseToken, subscriptionProductId);
+            androidPurchaseUtils.acknowledge(purchaseToken, product.getSubscriptionProductId());
         } catch (IOException e) {
             throw new CustomException(INTERNAL_SERVER_ERROR);  // FIXME: Throwable e.getMessage()
         }
@@ -123,18 +143,19 @@ public class SubscriptionService {
 
     }
 
-    @Transactional
-    public void renew(String purchaseToken) throws IOException {
+    private void renew(String purchaseToken) throws IOException {
         try {
             // request Google API payment
             SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verifyNotification(purchaseToken);
             SubscriptionPurchaseLineItem lineItem = purchase.getLineItems().get(0);
+            Product product = getProduct(lineItem.getProductId());
 
             // save payment
             Subscription subscription = getSubscriptionByPurchase(purchaseToken);
 
             Payment payment = Payment.builder()
                 .shop(subscription.getShop())
+                .product(product)
                 .orderId(purchase.getLatestOrderId())
                 .type(SubscriptionState.getSubscriptionType(purchase.getSubscriptionState()))
                 .purchaseToken(purchaseToken)
@@ -152,18 +173,19 @@ public class SubscriptionService {
         }
     }
 
-    @Transactional
-    public void expire(String purchaseToken) {
+    private void expire(String purchaseToken) {
         try {
             // request Google API payment
             SubscriptionPurchaseV2 purchase = androidPurchaseUtils.verifyNotification(purchaseToken);
             SubscriptionPurchaseLineItem lineItem = purchase.getLineItems().get(0);
+            Product product = getProduct(lineItem.getProductId());
 
             // save payment
             Subscription subscription = getSubscriptionByPurchase(purchaseToken);
 
             Payment payment = Payment.builder()
                 .shop(subscription.getShop())
+                .product(product)
                 .orderId(purchase.getLatestOrderId())
                 .type(SubscriptionState.getSubscriptionType(purchase.getSubscriptionState()))
                 .purchaseToken(purchaseToken)
@@ -171,25 +193,11 @@ public class SubscriptionService {
                 .build();
             paymentRepository.save(payment);
 
-            // delete subscription
-            subscriptionRepository.deleteById(subscription.getId());
+            // update subscription
+            subscription.expire();
         } catch (IOException e) {
             throw new CustomException(INTERNAL_SERVER_ERROR);  // FIXME: Throwable e.getMessage()
         }
-    }
-
-    public List<PaymentDto.Meta> getShopPaymentList() {
-        Long shopId = SecurityUtil.getCurrentShopId();
-        List<Payment> payments = paymentRepository.findAllByShopId(shopId);
-        return payments.stream()
-            .map(PaymentDto::toMeta)
-            .toList();
-    }
-
-    public PaymentDto.Detail getPaymentDetail(String orderId) {
-        Payment payment = paymentRepository.findByOrderId(orderId)
-            .orElseThrow(() -> new CustomException(TARGET_PAYMENT_NOT_FOUND));
-        return PaymentDto.toDetail(payment);
     }
 
     private Shop getShop(Long shopId) {
@@ -206,6 +214,11 @@ public class SubscriptionService {
         Payment payment = paymentRepository.findFirstByPurchaseTokenOrderByCreatedAt(purchaseToken)
             .orElseThrow(() -> new CustomException(TARGET_PAYMENT_NOT_FOUND));
         return getSubscription(payment.getShop().getId());
+    }
+
+    private Product getProduct(String productId) {
+        return productRepository.findBySubscriptionProductId(productId)
+            .orElseThrow(() -> new CustomException(TARGET_PRODUCT_NOT_FOUND));
     }
 
     private boolean isRenew(int notificationType) {
