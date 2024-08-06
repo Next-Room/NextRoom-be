@@ -25,7 +25,6 @@ import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.security.TokenProvider;
 import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
-import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -76,7 +75,6 @@ public class AuthService {
         Subscription subscription = Subscription.builder()
             .shop(shop)
             .status(FREE)
-            .expiryDate(Timestamped.getToday().plusDays(30))
             .build();
         subscriptionRepository.save(subscription);
     }
