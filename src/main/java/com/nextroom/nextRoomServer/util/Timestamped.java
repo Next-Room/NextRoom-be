@@ -2,6 +2,8 @@ package com.nextroom.nextRoomServer.util;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.springframework.data.annotation.CreatedDate;
@@ -32,6 +34,12 @@ public class Timestamped {
 
     public static LocalDate getToday() {
         return LocalDate.now();
+    }
+
+    public static LocalDate stringToKstLocalDate(String isoDateString) {
+        ZonedDateTime utcDateTime = ZonedDateTime.parse(isoDateString, DateTimeFormatter.ISO_DATE_TIME);
+        ZonedDateTime kstDateTime = utcDateTime.withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+        return kstDateTime.toLocalDate();
     }
 
 }

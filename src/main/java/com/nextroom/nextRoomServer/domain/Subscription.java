@@ -1,8 +1,9 @@
 package com.nextroom.nextRoomServer.domain;
 
+import static com.nextroom.nextRoomServer.enums.UserStatus.*;
+
 import java.time.LocalDate;
 
-import com.nextroom.nextRoomServer.enums.SubscriptionPlan;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
@@ -15,6 +16,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,6 +29,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Subscription extends Timestamped {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "subscription_id", nullable = false)
@@ -36,25 +39,39 @@ public class Subscription extends Timestamped {
     @JoinColumn(name = "shop_id", nullable = false)
     private Shop shop;
 
-    @Enumerated(EnumType.STRING)
-    private UserStatus status;
-    @Enumerated(EnumType.STRING)
-    private SubscriptionPlan plan;
-    private LocalDate expiryDate;
-    @Column(unique = true)
-    private String purchaseToken;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id")
+    private Product product;
 
-//    public void renew(LocalDate expiryDate) {
-//        this.expiryDate = expiryDate;
-//    }
-//
-//    public void expire() {
-//        this.status = UserStatus.EXPIRATION;
-//    }
-//
-//    public void updateStatus(UserStatus userStatus, LocalDate expiryDate, SubscriptionPlan plan) {
-//        this.status = userStatus;
-//        this.expiryDate = expiryDate;
-//        this.plan = plan;
-//    }
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status;
+
+    @Column
+    private LocalDate startDate;
+
+    @Column
+    private LocalDate expiryDate;
+
+    public void subscribe(Product product, LocalDate startDate, LocalDate expiryDate) {
+        this.status = UserStatus.SUBSCRIPTION;
+        this.product = product;
+        this.startDate = startDate;
+        this.expiryDate = expiryDate;
+    }
+
+    public void renew(LocalDate startDate, LocalDate expiryDate) {
+        this.startDate = startDate;
+        this.expiryDate = expiryDate;
+    }
+
+    public void expire() {
+        this.status = UserStatus.SUBSCRIPTION_EXPIRATION;
+    }
+
+    public void checkStatus() {
+        if (SUBSCRIPTION.equals(this.status) && this.expiryDate.isBefore(Timestamped.getToday())) {
+            this.expire();
+        }
+    }
 }

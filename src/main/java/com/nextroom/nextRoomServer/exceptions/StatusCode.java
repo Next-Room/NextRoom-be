@@ -43,6 +43,8 @@ public enum StatusCode {
     TARGET_THEME_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 테마입니다."),
     TARGET_HINT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 힌트입니다."),
     TARGET_SHOP_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 업체입니다."),
+    TARGET_PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 결제내역입니다."),
+    TARGET_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 구독 상품입니다."),
 
     /**
      * 409 Conflict
@@ -50,6 +52,11 @@ public enum StatusCode {
     CONFLICT(HttpStatus.CONFLICT, "중복된 리소스 입니다."),
     SHOP_ALREADY_EXIST(HttpStatus.BAD_REQUEST, "업체가 이미 존재합니다."),
     HINT_CODE_CONFLICT(HttpStatus.CONFLICT, "테마 내 같은 힌트코드를 가진 힌트가 존재합니다."),
+
+    /**
+     * 500 Internal Server Error
+     */
+    INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "오류가 발생했습니다."),
 
     /**
      * 2xx OK

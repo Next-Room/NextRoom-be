@@ -1,6 +1,13 @@
 package com.nextroom.nextRoomServer.domain;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.hibernate.annotations.Comment;
+
 import com.nextroom.nextRoomServer.util.Timestamped;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -11,14 +18,10 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Comment;
 
 @Entity
 @Builder
@@ -62,10 +65,10 @@ public class Shop extends Timestamped {
     @Builder.Default
     private List<Theme> themes = new ArrayList<>();
 
+    @OneToOne(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Subscription subscription;
+
     public void updateLastLoginAt() {
         this.lastLoginAt = LocalDateTime.now();
     }
-
-    @OneToOne(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Subscription subscription;
 }
