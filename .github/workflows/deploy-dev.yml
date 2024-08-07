@@ -39,8 +39,11 @@ jobs:
 
       # (3-1) Google Credential 세팅
       - name: Set Google Credential
-        run: |
-          echo "${{ secrets.NEXTROOM_GOOGLE_CREDENTIAL }}" > src/main/resources/credential/android/nextroom-423b5-c373d4cf16bb.json
+        id: create-json
+        uses: jsdaniell/create-json@1.1.2
+        with:
+          name: "nextroom-423b5-c373d4cf16bb.json"
+          json: ${{ secrets.NEXTROOM_GOOGLE_CREDENTIAL }}
 
       # (4) Gradle build (Test 제외)
       - name: Build with Gradle
