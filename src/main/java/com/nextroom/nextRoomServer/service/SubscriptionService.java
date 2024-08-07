@@ -130,11 +130,11 @@ public class SubscriptionService {
             int notificationType = subscriptionNotification.getNotificationType();
             String purchaseToken = subscriptionNotification.getPurchaseToken();
 
-            if (isRenew(notificationType)) {
+            if (NotificationType.isRenew(notificationType)) {
                 renew(purchaseToken);
             }
 
-            if (isExpired(notificationType)) {
+            if (NotificationType.isExpired(notificationType)) {
                 expire(purchaseToken);
             }
         } catch (IOException e) {
@@ -219,13 +219,5 @@ public class SubscriptionService {
     private Product getProduct(String productId) {
         return productRepository.findBySubscriptionProductId(productId)
             .orElseThrow(() -> new CustomException(TARGET_PRODUCT_NOT_FOUND));
-    }
-
-    private boolean isRenew(int notificationType) {
-        return notificationType == NotificationType.SUBSCRIPTION_RENEWED.getType();
-    }
-
-    private boolean isExpired(int notificationType) {
-        return notificationType == NotificationType.SUBSCRIPTION_EXPIRED.getType();
     }
 }

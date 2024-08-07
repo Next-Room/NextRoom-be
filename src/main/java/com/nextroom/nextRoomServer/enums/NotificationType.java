@@ -23,4 +23,12 @@ public enum NotificationType {
 
     private final Integer type;
     private final String state;
+
+    public static boolean isRenew(int notificationType) {
+        return notificationType == SUBSCRIPTION_RENEWED.getType();
+    }
+
+    public static boolean isExpired(int notificationType) {
+        return notificationType == SUBSCRIPTION_EXPIRED.getType();
+    }
 }
