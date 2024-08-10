@@ -62,13 +62,6 @@ public class AuthController {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.reissue(request)));
     }
 
-
-    @PostMapping("/rtdntest")
-    public void reissue(@RequestBody Object message) {
-        System.out.println(message);
-
-    }
-
     @Operation(
         summary = "회원탈퇴",
         responses = {
