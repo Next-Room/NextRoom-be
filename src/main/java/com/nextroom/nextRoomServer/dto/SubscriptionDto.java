@@ -7,6 +7,7 @@ import com.nextroom.nextRoomServer.domain.Subscription;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -100,11 +101,13 @@ public class SubscriptionDto {
         }
     }
 
+    @Schema(description = "구독 결제 요청 request")
     @Getter
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
     public static class PurchaseSubscription {
+        @Schema(description = "purchaseToken(결제 토큰)")
         private final String purchaseToken;
     }
 }
