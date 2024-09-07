@@ -33,9 +33,18 @@ jobs:
         java-version: '17'
 
     # (3) application.yml 세팅
-    - name: set application.yml
+    - name: Set application.yml
       run: |
         echo "${{ secrets.NEXTROOM_APPLICATION_YML }}" > src/main/resources/application.yml
+
+    # (3-1) Google Credential 세팅
+    - name: Set Google Credential
+      id: create-json
+      uses: jsdaniell/create-json@v1.2.3
+      with:
+        name: "nextroom-423b5-c373d4cf16bb.json"
+        json: ${{ secrets.NEXTROOM_GOOGLE_CREDENTIAL }}
+        dir: 'src/main/resources/'
 
     # (4) Gradle build (Test 제외)
     - name: Build with Gradle
