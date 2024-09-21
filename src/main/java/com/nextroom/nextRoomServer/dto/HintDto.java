@@ -12,6 +12,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 public class HintDto {
     private static final String HINT_CODE_REGEX = "[0-9]{4}";
     private static final String PROGRESS_REGEX = "(?:[0-9]|[1-9][0-9]|100)";
@@ -76,5 +78,30 @@ public class HintDto {
     public static class RemoveHintRequest {
         @NotNull(message = "힌트 ID를 입력해 주세요.")
         private Long id;
+    }
+
+    @Getter
+    @RequiredArgsConstructor
+    @NoArgsConstructor(force = true)
+    public static class UrlRequest {
+        @NotNull(message = "테마 ID를 입력해 주세요.")
+        private final Long themeId;
+        @Min(value = 0, message = "힌트 이미지 수는 0 이상이어야 합니다.")
+        @Max(value = 3, message = "힌트 이미지 수는 3 이하여야 합니다.")
+        private final Integer hintImageCount;
+        @Min(value = 0, message = "정답 이미지 수는 0 이상이어야 합니다.")
+        @Max(value = 3, message = "정답 이미지 수는 3 이하여야 합니다.")
+        private final Integer answerImageCount;
+    }
+
+    @Getter
+    public static class UrlResponse {
+        private final List<String> hintImageUrlList;
+        private final List<String> answerImageUrlList;
+
+        public UrlResponse(List<String> hintImageUrlList, List<String> answerImageUrlList) {
+            this.hintImageUrlList = hintImageUrlList;
+            this.answerImageUrlList = answerImageUrlList;
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.nextroom.nextRoomServer.controller;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,5 +86,18 @@ public class HintController {
     public ResponseEntity<BaseResponse> removeHint(@RequestBody @Valid HintDto.RemoveHintRequest request) {
         hintService.removeHint(request);
         return ResponseEntity.ok(new BaseResponse(OK));
+    }
+
+    @Operation(
+            summary = "PreSigned Url 요청",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "NOT_PERMITTED", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "THEME_NOT_FOUND", content = @Content)
+            }
+    )
+    @GetMapping("/url")
+    public ResponseEntity<DataResponse<HintDto.UrlResponse>> getUrl(@RequestBody @Valid HintDto.UrlRequest request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, hintService.getPresignedUrl(request)));
     }
 }
