@@ -2,7 +2,6 @@ package com.nextroom.nextRoomServer.service;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,30 +32,20 @@ public class HintService {
 
     @Transactional
     public HintDto.UrlResponse getPresignedUrl(HintDto.UrlRequest request) {
-        Long shopId = SecurityUtil.getCurrentShopId();
         Long themeId = request.getThemeId();
+        this.validateThemeAndShop(themeId);
 
-        validateThemeAndShop(shopId, themeId);
-
-        List<String> hintImageUrlList = generatePresignedUrls(shopId, themeId, TYPE_HINT, request.getHintImageCount());
-        List<String> answerImageUrlList = generatePresignedUrls(shopId, themeId, TYPE_ANSWER, request.getAnswerImageCount());
+        Long shopId = SecurityUtil.getCurrentShopId();
+        List<String> hintImageUrlList = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_HINT, request.getHintImageCount());
+        List<String> answerImageUrlList = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_ANSWER, request.getAnswerImageCount());
 
         return new HintDto.UrlResponse(hintImageUrlList, answerImageUrlList);
     }
 
     @Transactional
     public void addHint(HintDto.AddHintRequest request) {
-        Theme theme = themeRepository.findById(
-                request.getThemeId()) // TODO optimize by making method get theme from shop
-            .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
-
-        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getCurrentShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
-
-        if (hintRepository.existsByThemeAndHintCode(theme, request.getHintCode())) {
-            throw new CustomException(HINT_CODE_CONFLICT);
-        }
+        Theme theme = this.validateThemeAndShop(request.getThemeId());
+        this.validateHintCodeConflict(theme, request.getHintCode());
 
         Hint hint = Hint.builder()
             .theme(theme)
@@ -64,6 +53,8 @@ public class HintService {
             .contents(request.getContents())
             .answer(request.getAnswer())
             .progress(request.getProgress())
+            .hintImageList(request.getHintImageList())
+            .answerImageList(request.getAnswerImageList())
             .build();
 
         hintRepository.save(hint);
@@ -71,58 +62,72 @@ public class HintService {
 
     @Transactional(readOnly = true)
     public List<HintDto.HintListResponse> getHintList(Long themeId) {
-        Theme theme = themeRepository.findById(
-                themeId) // TODO optimize by making method get theme from shop
-            .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
+        this.validateThemeAndShop(themeId);
 
-        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getCurrentShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
+        List<Hint> hints = hintRepository.findAllByThemeId(themeId);
 
-        return theme.getHints().stream().map(HintDto.HintListResponse::new).toList();
+        Long shopId = SecurityUtil.getCurrentShopId();
+        return hints.stream().map(hint ->
+                new HintDto.HintListResponse(
+                        hint,
+                        s3Component.generatePresignedUrlsForDownLoad(shopId, themeId, TYPE_HINT, hint.getHintImageList()),
+                        s3Component.generatePresignedUrlsForDownLoad(shopId, themeId, TYPE_ANSWER, hint.getAnswerImageList())
+                )
+        ).toList();
     }
 
     @Transactional
     public void editHint(HintDto.EditHintRequest request) {
-        Hint hint = hintRepository.findById(request.getId()).orElseThrow(
-            () -> new CustomException(TARGET_HINT_NOT_FOUND)
-        );
+        Hint hint = this.validateHintAndShop(request.getId());
 
-        if (!Objects.equals(hint.getTheme().getShop().getId(), SecurityUtil.getCurrentShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
+        deleteHintAndAnswerImages(hint);
 
         hint.update(request);
     }
 
     @Transactional
     public void removeHint(HintDto.RemoveHintRequest request) {
-        Hint hint = hintRepository.findById(request.getId()).orElseThrow(
-            () -> new CustomException(HINT_NOT_FOUND)
-        );
+        Hint hint = this.validateHintAndShop(request.getId());
 
-        if (!Objects.equals(hint.getTheme().getShop().getId(), SecurityUtil.getCurrentShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
+        deleteHintAndAnswerImages(hint);
 
         hintRepository.delete(hint);
     }
 
-    private void validateThemeAndShop(Long shopId, Long themeId) {
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
+    private void deleteHintAndAnswerImages(Hint hint) {
+        Long shopId = SecurityUtil.getCurrentShopId();
+        Long themeId = hint.getTheme().getId();
+        s3Component.deleteObjects(shopId, themeId, TYPE_HINT, hint.getHintImageList());
+        s3Component.deleteObjects(shopId, themeId, TYPE_ANSWER, hint.getAnswerImageList());
+    }
 
-        if (!Objects.equals(theme.getShop().getId(), shopId)) {
+    private void validateShop(Long shopId) {
+        if (!Objects.equals(shopId, SecurityUtil.getCurrentShopId())) {
             throw new CustomException(NOT_PERMITTED);
         }
     }
 
-    private List<String> generatePresignedUrls(Long shopId, Long themeId, String type, int imageCount) {
-        List<String> imageUrlList = new ArrayList<>();
-        for (int i = 1; i <= imageCount; i++) {
-            String fileName = s3Component.createFileName(shopId, themeId, type, i);
-            imageUrlList.add(s3Component.createPresignedUrl(fileName));
+    private Theme validateThemeAndShop(Long themeId) {
+        Theme theme = themeRepository.findById(themeId)
+                .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
+
+        this.validateShop(theme.getShop().getId());
+
+        return theme;
+    }
+
+    private Hint validateHintAndShop(Long hintId) {
+        Hint hint = hintRepository.findById(hintId)
+                .orElseThrow(() -> new CustomException(HINT_NOT_FOUND));
+
+        validateShop(hint.getTheme().getShop().getId());
+
+        return hint;
+    }
+
+    private void validateHintCodeConflict(Theme theme, String hintCode) {
+        if (hintRepository.existsByThemeAndHintCode(theme, hintCode)) {
+            throw new CustomException(HINT_CODE_CONFLICT);
         }
-        return imageUrlList;
     }
 }
