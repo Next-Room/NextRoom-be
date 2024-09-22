@@ -1,20 +1,16 @@
 package com.nextroom.nextRoomServer.domain;
 
 import com.nextroom.nextRoomServer.dto.HintDto;
+import com.nextroom.nextRoomServer.util.StringListConverter;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Getter
@@ -43,10 +39,18 @@ public class Hint extends Timestamped {
     @Column(nullable = false)
     private Integer progress;
 
+    @Convert(converter = StringListConverter.class)
+    private List<String> hintImageList;
+
+    @Convert(converter = StringListConverter.class)
+    private List<String> answerImageList;
+
     public void update(HintDto.EditHintRequest request) {
         this.hintCode = request.getHintCode();
         this.contents = request.getContents();
         this.answer = request.getAnswer();
         this.progress = request.getProgress();
+        this.hintImageList = request.getHintImageList();
+        this.answerImageList = request.getAnswerImageList();
     }
 }
