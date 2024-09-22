@@ -11,6 +11,8 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.INTERNAL_SERVER_ERROR;
@@ -28,8 +30,39 @@ public class S3Component {
 
     private final static String EXTENSION = ".png";
 
-    public String createPresignedUrl(String fileName) {
-        validateFileName(fileName);
+    public List<String> generatePresignedUrlsForUpload(Long shopId, Long themeId, String type, int imageCount) {
+        if (imageCount == 0) return null;
+
+        List<String> imageUrlList = new ArrayList<>();
+        for (int i = 1; i <= imageCount; i++) {
+            String fileName = this.createFileNameForUpload(shopId, themeId, type, i);
+            imageUrlList.add(this.createPresignedPutUrl(fileName));
+        }
+        return imageUrlList;
+    }
+
+    public List<String> generatePresignedUrlsForDownLoad(Long shopId, Long themeId, String type, List<String> uuidList) {
+        if (uuidList == null || uuidList.isEmpty()) return null;
+
+        List<String> imageUrlList = new ArrayList<>();
+        for (String s : uuidList) {
+            String fileName = this.createFileNameForDownLoad(shopId, themeId, type, s);
+            imageUrlList.add(this.createPresignedGetUrl(fileName));
+        }
+        return imageUrlList;
+    }
+
+    public void deleteObjects(Long shopId, Long themeId, String type, List<String> imageList) {
+        if (imageList == null || imageList.isEmpty()) return;
+
+        for (String s : imageList) {
+            String fileName = this.createFileNameForDownLoad(shopId, themeId, type, s);
+            this.deleteObject(fileName);
+        }
+    }
+
+    private String createPresignedPutUrl(String fileName) {
+        this.validateFileName(fileName);
 
         PutObjectRequest objectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
@@ -45,8 +78,8 @@ public class S3Component {
         return presigner.presignPutObject(presignRequest).url().toExternalForm();
     }
 
-    public String createPresignedGetUrl(String fileName) {
-        validateFileName(fileName);
+    private String createPresignedGetUrl(String fileName) {
+        this.validateFileName(fileName);
 
         GetObjectRequest objectRequest = GetObjectRequest.builder()
                 .bucket(bucketName)
@@ -61,8 +94,8 @@ public class S3Component {
         return presigner.presignGetObject(presignRequest).url().toExternalForm();
     }
 
-    public void deleteObject(String fileName) {
-        validateFileName(fileName);
+    private void deleteObject(String fileName) {
+        if (fileName == null || fileName.isEmpty()) return;
 
         try {
             DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
@@ -73,13 +106,16 @@ public class S3Component {
             s3Client.deleteObject(objectRequest);
         } catch (S3Exception e) {
             System.err.println(e.awsErrorDetails().errorMessage());
-            System.exit(1);
             throw new CustomException(INTERNAL_SERVER_ERROR);
         }
     }
 
-    public String createFileName(Long shopId, Long themeId, String type, int i) {
+    private String createFileNameForUpload(Long shopId, Long themeId, String type, int i) {
         return String.format("%s/%s/%s/%s/%s_%s%s", profile, shopId, themeId, type, i, UUID.randomUUID(), EXTENSION);
+    }
+
+    private String createFileNameForDownLoad(Long shopId, Long themeId, String type, String uuid) {
+        return String.format("%s/%s/%s/%s/%s%s", profile, shopId, themeId, type, uuid, EXTENSION);
     }
 
     private void validateFileName(String fileName) {
