@@ -8,6 +8,7 @@ import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -77,7 +78,14 @@ public class SubscriptionDto {
     }
 
     @Getter
+    @Builder
     public static class SubscriptionPlanResponse {
+        private final String url;
+        private final List<SubscriptionPlan> plans;
+    }
+
+    @Getter
+    public static class SubscriptionPlan {
         private final Long id;
         private final String subscriptionProductId;
         private final String planId;
@@ -88,7 +96,7 @@ public class SubscriptionDto {
         private final Integer sellPrice;
         private final Integer discountRate;
 
-        public SubscriptionPlanResponse(Product product) {
+        public SubscriptionPlan(Product product) {
             this.id = product.getId();
             this.subscriptionProductId = product.getSubscriptionProductId();
             this.planId = product.getPlanId();
