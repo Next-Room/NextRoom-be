@@ -20,7 +20,6 @@ public class HintDto {
 
     @Getter
     @RequiredArgsConstructor
-    @NoArgsConstructor(force = true)
     public static class AddHintRequest {
         @NotNull(message = "테마 ID를 입력해 주세요.")
         private final Long themeId;
@@ -64,7 +63,6 @@ public class HintDto {
 
     @Getter
     @RequiredArgsConstructor
-    @NoArgsConstructor(force = true)
     public static class EditHintRequest {
         @NotNull(message = "힌트 ID를 입력해 주세요.")
         private final Long id;
