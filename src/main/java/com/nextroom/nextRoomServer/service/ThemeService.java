@@ -46,7 +46,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void addTheme(ThemeDto.AddThemeRequest request) {
+    public ThemeDto.AddThemeResponse addTheme(ThemeDto.AddThemeRequest request) {
         //        checkThemeLimitCount();
 
         Theme theme = Theme.builder()
@@ -56,7 +56,7 @@ public class ThemeService {
             .shop(getShop())
             .build();
 
-        themeRepository.save(theme);
+        return new ThemeDto.AddThemeResponse(themeRepository.save(theme).getId());
     }
 
     //    private Integer getThemeLimitCount() {
