@@ -10,5 +10,5 @@ import java.util.List;
 public interface HintRepository extends JpaRepository<Hint, Long> {
     boolean existsByThemeAndHintCode(Theme theme, String hintCode);
 
-    List<Hint> findAllByThemeId(Long themeId);
+    List<Hint> findAllByThemeIdOrderByProgress(Long themeId);
 }

@@ -64,7 +64,7 @@ public class HintService {
     public List<HintDto.HintListResponse> getHintList(Long themeId) {
         this.validateThemeAndShop(themeId);
 
-        List<Hint> hints = hintRepository.findAllByThemeId(themeId);
+        List<Hint> hints = hintRepository.findAllByThemeIdOrderByProgress(themeId);
 
         Long shopId = SecurityUtil.getCurrentShopId();
         return hints.stream().map(hint ->
