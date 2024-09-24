@@ -100,13 +100,9 @@ public class HintDto {
     }
 
     @Getter
+    @RequiredArgsConstructor
     public static class UrlResponse {
         private final List<String> hintImageUrlList;
         private final List<String> answerImageUrlList;
-
-        public UrlResponse(List<String> hintImageUrlList, List<String> answerImageUrlList) {
-            this.hintImageUrlList = hintImageUrlList;
-            this.answerImageUrlList = answerImageUrlList;
-        }
     }
 }
