@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.INTERNAL_SERVER_ERROR;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.INVALID_FILE_NAME;
 
 @Component
 @RequiredArgsConstructor
@@ -119,7 +120,7 @@ public class S3Component {
 
     private void validateFileName(String fileName) {
         if (fileName == null || fileName.isEmpty()) {
-            throw new CustomException(INTERNAL_SERVER_ERROR);
+            throw new CustomException(INVALID_FILE_NAME);
         }
     }
 }

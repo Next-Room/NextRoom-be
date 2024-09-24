@@ -16,6 +16,7 @@ public enum StatusCode {
     LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "이메일 또는 패스워드가 일치하지 않습니다."),
     THEME_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "테마 생성 최대 개수를 초과하였습니다."),
     UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "이메일이 전송되지 않았습니다."),
+    INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, "파일 이름이 유효하지 않습니다."),
 
     /**
      * 401 Unauthorized
