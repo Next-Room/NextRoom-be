@@ -1,7 +1,6 @@
 package com.nextroom.nextRoomServer.domain;
 
 import com.nextroom.nextRoomServer.dto.HintDto;
-import com.nextroom.nextRoomServer.util.StringListConverter;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.persistence.*;
@@ -9,6 +8,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.List;
 
@@ -39,10 +40,10 @@ public class Hint extends Timestamped {
     @Column(nullable = false)
     private Integer progress;
 
-    @Convert(converter = StringListConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<String> hintImageList;
 
-    @Convert(converter = StringListConverter.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     private List<String> answerImageList;
 
     public void update(HintDto.EditHintRequest request) {
