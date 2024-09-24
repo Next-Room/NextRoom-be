@@ -105,7 +105,6 @@ public class S3Component {
 
             s3Client.deleteObject(objectRequest);
         } catch (S3Exception e) {
-            System.err.println(e.awsErrorDetails().errorMessage());
             throw new CustomException(INTERNAL_SERVER_ERROR);
         }
     }
