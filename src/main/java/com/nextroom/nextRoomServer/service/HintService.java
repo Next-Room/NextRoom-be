@@ -101,7 +101,7 @@ public class HintService {
         s3Component.deleteObjects(shopId, themeId, TYPE_ANSWER, hint.getAnswerImageList());
     }
 
-    private void validateShop(Long shopId) {
+    private void checkShopAuthorization(Long shopId) {
         if (!Objects.equals(shopId, SecurityUtil.getCurrentShopId())) {
             throw new CustomException(NOT_PERMITTED);
         }
@@ -111,7 +111,7 @@ public class HintService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
 
-        this.validateShop(theme.getShop().getId());
+        this.checkShopAuthorization(theme.getShop().getId());
 
         return theme;
     }
@@ -120,7 +120,7 @@ public class HintService {
         Hint hint = hintRepository.findById(hintId)
                 .orElseThrow(() -> new CustomException(HINT_NOT_FOUND));
 
-        validateShop(hint.getTheme().getShop().getId());
+        checkShopAuthorization(hint.getTheme().getShop().getId());
 
         return hint;
     }
