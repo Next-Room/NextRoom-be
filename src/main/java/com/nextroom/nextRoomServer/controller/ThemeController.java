@@ -2,6 +2,7 @@ package com.nextroom.nextRoomServer.controller;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,16 +34,15 @@ public class ThemeController {
         summary = "테마 등록",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED"),
-            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
-            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND"),
-            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND")
+            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED", content = @Content),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED", content = @Content),
+            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND", content = @Content),
+            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND", content = @Content)
         }
     )
     @PostMapping
-    public ResponseEntity<BaseResponse> addTheme(@RequestBody @Valid ThemeDto.AddThemeRequest request) {
-        themeService.addTheme(request);
-        return ResponseEntity.ok(new BaseResponse(OK));
+    public ResponseEntity<DataResponse<ThemeDto.AddThemeResponse>> addTheme(@RequestBody @Valid ThemeDto.AddThemeRequest request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, themeService.addTheme(request)));
     }
 
     @Operation(

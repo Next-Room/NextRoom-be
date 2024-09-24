@@ -24,6 +24,15 @@ public class ThemeDto {
     }
 
     @Getter
+    public static class AddThemeResponse {
+        private final Long id;
+
+        public AddThemeResponse(Long id) {
+            this.id = id;
+        }
+    }
+
+    @Getter
     public static class ThemeListResponse {
         private final Long id;
         private final String title;
