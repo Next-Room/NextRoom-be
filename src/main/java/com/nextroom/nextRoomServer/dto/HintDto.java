@@ -93,10 +93,10 @@ public class HintDto {
         private final Long themeId;
         @Min(value = 0, message = "힌트 이미지 수는 0 이상이어야 합니다.")
         @Max(value = 3, message = "힌트 이미지 수는 3 이하여야 합니다.")
-        private final Integer hintImageCount;
+        private final int hintImageCount;
         @Min(value = 0, message = "정답 이미지 수는 0 이상이어야 합니다.")
         @Max(value = 3, message = "정답 이미지 수는 3 이하여야 합니다.")
-        private final Integer answerImageCount;
+        private final int answerImageCount;
     }
 
     @Getter
