@@ -96,7 +96,7 @@ public class S3Component {
     }
 
     private void deleteObject(String fileName) {
-        if (fileName == null || fileName.isEmpty()) return;
+        this.validateFileName(fileName);
 
         try {
             DeleteObjectRequest objectRequest = DeleteObjectRequest.builder()
