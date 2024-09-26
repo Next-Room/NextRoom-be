@@ -3,7 +3,6 @@ package com.nextroom.nextRoomServer.controller;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.OK;
 
 import com.nextroom.nextRoomServer.dto.BannerDto;
-import com.nextroom.nextRoomServer.dto.BaseResponse;
 import com.nextroom.nextRoomServer.dto.DataResponse;
 import com.nextroom.nextRoomServer.service.BannerService;
 import io.swagger.v3.oas.annotations.Operation;
