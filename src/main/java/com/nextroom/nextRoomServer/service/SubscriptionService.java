@@ -2,13 +2,11 @@ package com.nextroom.nextRoomServer.service;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
-import com.nextroom.nextRoomServer.dto.SubscriptionDto.SubscriptionPlan;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,9 +43,6 @@ public class SubscriptionService {
     private final AndroidPurchaseUtils androidPurchaseUtils;
     private final ObjectMapper objectMapper;
 
-    @Value("${nextroom.plan-document-url}")
-    private String planDocumentUrl;
-
     @Transactional(readOnly = true)
     public SubscriptionDto.SubscriptionInfoResponse getSubscriptionInfo() {
         Long shopId = SecurityUtil.getCurrentShopId();
@@ -67,15 +62,11 @@ public class SubscriptionService {
     }
 
     @Transactional(readOnly = true)
-    public SubscriptionDto.SubscriptionPlanResponse getSubscriptionPlan() {
+    public List<SubscriptionDto.SubscriptionPlanResponse> getSubscriptionPlan() {
         List<Product> productList = productRepository.findAll();
-        List<SubscriptionPlan> plans = productList.stream()
-            .map(SubscriptionPlan::new)
-            .toList();
-        return SubscriptionDto.SubscriptionPlanResponse.builder()
-            .url(planDocumentUrl)
-            .plans(plans)
-            .build();
+        return productList.stream()
+            .map(SubscriptionDto.SubscriptionPlanResponse::new)
+            .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
