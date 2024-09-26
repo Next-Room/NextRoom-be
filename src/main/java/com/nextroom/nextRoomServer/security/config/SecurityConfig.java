@@ -68,7 +68,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/**",
                         "/api/v1/email/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**", "/api/v1/subscription/**")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**", "/api/v1/subscription/**", "/api/v1/banner/**")
                     .permitAll() // TODO 구독 상태에 다른 권한 설정 필요
                     .requestMatchers("/api/v1/theme/**")
                     .hasAnyAuthority("ROLE_USER")

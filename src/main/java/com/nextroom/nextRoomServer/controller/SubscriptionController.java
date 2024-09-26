@@ -1,31 +1,26 @@
 package com.nextroom.nextRoomServer.controller;
 
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.OK;
 
+import com.nextroom.nextRoomServer.dto.DataResponse;
 import com.nextroom.nextRoomServer.dto.SubscriptionDto;
+import com.nextroom.nextRoomServer.service.SubscriptionService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.nextroom.nextRoomServer.dto.BaseResponse;
-import com.nextroom.nextRoomServer.dto.DataResponse;
-import com.nextroom.nextRoomServer.service.SubscriptionService;
-
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.RequiredArgsConstructor;
-
-import java.util.List;
 
 @Tag(name = "Subscription")
 @RestController
 @RequestMapping("/api/v1/subscription")
 @RequiredArgsConstructor
 public class SubscriptionController {
+
     private final SubscriptionService subscriptionService;
 
     @Operation(
@@ -65,7 +60,7 @@ public class SubscriptionController {
         }
     )
     @GetMapping("/plan")
-    public ResponseEntity<DataResponse<List<SubscriptionDto.SubscriptionPlanResponse>>> getSubscriptionPlan() {
+    public ResponseEntity<DataResponse<SubscriptionDto.SubscriptionPlanResponse>> getSubscriptionPlan() {
         return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getSubscriptionPlan()));
     }
 }
