@@ -2,6 +2,7 @@ package com.nextroom.nextRoomServer.dto;
 
 import java.util.Collections;
 
+import jakarta.validation.constraints.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -47,6 +48,9 @@ public class AuthDto {
         private String password;
         @NotBlank(message = "업체명을 입력해 주세요.")
         private String name;
+        @NotNull(message = "가입 경로를 입력해 주세요.")
+        @Min(value = 1, message = "가입 경로는 1 이상이어야 합니다.")
+        @Max(value = 3, message = "가입 경로는 3 이하여야 합니다.")
         private Integer type;
         @NotNull(message = "매장 오픈 여부를 입력해 주세요.")
         private Boolean isNotOpened;
