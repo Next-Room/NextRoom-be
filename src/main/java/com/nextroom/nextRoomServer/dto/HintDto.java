@@ -28,7 +28,9 @@ public class HintDto {
         private final String hintCode;
         @NotBlank(message = "힌트 내용을 입력해 주세요.")
         private final String contents;
+        @NotBlank(message = "정답을 입력해 주세요.")
         private final String answer;
+        @NotNull(message = "진행률을 입력해 주세요.")
         @Min(value = 0, message = "진행률은 0 이상이어야 합니다.")
         @Max(value = 100, message = "진행률은 100 이하여야 합니다.")
         private final int progress;
@@ -71,7 +73,9 @@ public class HintDto {
         private final String hintCode;
         @NotBlank(message = "힌트 내용을 입력해 주세요.")
         private final String contents;
+        @NotBlank(message = "정답을 입력해 주세요.")
         private final String answer;
+        @NotNull(message = "진행률을 입력해 주세요.")
         @Min(value = 0, message = "진행률은 0 이상이어야 합니다.")
         @Max(value = 100, message = "진행률은 100 이하여야 합니다.")
         private final Integer progress;
