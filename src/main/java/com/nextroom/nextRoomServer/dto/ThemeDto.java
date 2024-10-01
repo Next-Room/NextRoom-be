@@ -4,7 +4,7 @@ import com.nextroom.nextRoomServer.domain.Theme;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +19,9 @@ public class ThemeDto {
     public static class AddThemeRequest {
         @NotBlank(message = "테마 이름을 입력해 주세요.")
         private final String title;
+        @NotNull(message = "제한 시간을 입력해 주세요.")
         private final Integer timeLimit;
+        @NotNull(message = "힌트 제한 수를 입력해 주세요.")
         private final Integer hintLimit;
     }
 
@@ -55,18 +57,20 @@ public class ThemeDto {
     @RequiredArgsConstructor
     @NoArgsConstructor(force = true)
     public static class EditThemeRequest {
-        @Positive(message = "THEME ID를 입력해 주세요.")
+        @NotNull(message = "테마 ID를 입력해 주세요.")
         private final Long id;
         @NotBlank(message = "테마 이름을 입력해 주세요.")
         private final String title;
+        @NotNull(message = "제한 시간을 입력해 주세요.")
         private final Integer timeLimit;
+        @NotNull(message = "힌트 제한 수를 입력해 주세요.")
         private final Integer hintLimit;
     }
 
     @Getter
     @NoArgsConstructor
     public static class RemoveThemeRequest {
-        @Positive(message = "THEME ID를 입력해 주세요.")
+        @NotNull(message = "테마 ID를 입력해 주세요.")
         private Long id;
     }
 }
