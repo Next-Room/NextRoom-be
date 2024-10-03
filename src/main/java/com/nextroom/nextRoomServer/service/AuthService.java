@@ -46,7 +46,7 @@ public class AuthService {
     private static final String REFRESH_TOKEN_PREFIX = "RefreshToken ";
 
     @Transactional
-    public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
+    public AuthDto.SignUpResponse signUp(AuthDto.SignUpRequest request) {
         if (shopRepository.existsByEmail(request.getEmail())) {
             throw new CustomException(SHOP_ALREADY_EXIST);
         }
@@ -55,7 +55,7 @@ public class AuthService {
         Shop shop = shopRepository.save(request.toShop(passwordEncoder, adminCode));
         createSubscription(shop);
 
-        return AuthDto.SignUpResponseDto.builder()
+        return AuthDto.SignUpResponse.builder()
             .email(shop.getEmail())
             .name(shop.getName())
             .adminCode(shop.getAdminCode())
@@ -80,7 +80,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthDto.LogInResponseDto login(@RequestBody AuthDto.LogInRequestDto request) {
+    public AuthDto.LogInResponse login(@RequestBody AuthDto.LogInRequest request) {
 
         UsernamePasswordAuthenticationToken authenticationToken = request.toAuthentication();
 
@@ -88,7 +88,7 @@ public class AuthService {
         TokenDto token = tokenProvider.generateTokenDto(authentication).toTokenResponseDto();
         Shop shop = shopRepository.findByEmail(request.getEmail())
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
-        AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shop.getName(),
+        AuthDto.LogInResponse response = AuthDto.LogInResponse.toLogInResponseDto(shop.getName(),
             shop.getAdminCode(), token);
 
         redisRepository.setValues(REFRESH_TOKEN_PREFIX + authentication.getName() + " " + response.getRefreshToken(),
@@ -101,7 +101,7 @@ public class AuthService {
     }
 
     @Transactional
-    public AuthDto.ReissueResponseDto reissue(AuthDto.ReissueRequestDto request) {
+    public AuthDto.ReissueResponse reissue(AuthDto.ReissueRequest request) {
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
@@ -115,7 +115,7 @@ public class AuthService {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
 
-        AuthDto.ReissueResponseDto response = tokenProvider.generateTokenDto(authentication).toReissueResponseDto();
+        AuthDto.ReissueResponse response = tokenProvider.generateTokenDto(authentication).toReissueResponseDto();
 
         redisRepository.deleteValues(redisKey);
         redisRepository.setValues(REFRESH_TOKEN_PREFIX + authentication.getName() + " " + response.getRefreshToken(),

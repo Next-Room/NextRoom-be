@@ -20,8 +20,8 @@ public class TokenDto {
             .build();
     }
 
-    public AuthDto.ReissueResponseDto toReissueResponseDto() {
-        return new AuthDto.ReissueResponseDto.ReissueResponseDtoBuilder()
+    public AuthDto.ReissueResponse toReissueResponseDto() {
+        return new AuthDto.ReissueResponse.ReissueResponseBuilder()
             .grantType(this.grantType)
             .accessToken(this.accessToken)
             .accessTokenExpiresIn(this.accessTokenExpiresIn)

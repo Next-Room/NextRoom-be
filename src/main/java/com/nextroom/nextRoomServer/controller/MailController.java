@@ -35,7 +35,7 @@ public class MailController {
         }
     )
     @PostMapping("/verification-requests")
-    public ResponseEntity<BaseResponse> sendMessage(@RequestBody @Valid MailDto.SendRequestDto request) {
+    public ResponseEntity<BaseResponse> sendMessage(@RequestBody @Valid MailDto.SendRequest request) {
         mailService.sendCodeToEmail(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
@@ -50,7 +50,7 @@ public class MailController {
         }
     )
     @PostMapping("/verifications")
-    public ResponseEntity<BaseResponse> sendMessage(@RequestBody @Valid MailDto.VerifyRequestDto request) {
+    public ResponseEntity<BaseResponse> sendMessage(@RequestBody @Valid MailDto.VerifyRequest request) {
         mailService.verifiedCode(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }

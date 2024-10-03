@@ -33,7 +33,7 @@ public class MailService {
     private final RandomCodeGenerator randomCodeGenerator;
 
     @Transactional
-    public void sendCodeToEmail(MailDto.SendRequestDto request) {
+    public void sendCodeToEmail(MailDto.SendRequest request) {
         String toEmail = request.getEmail();
         this.checkDuplicatedEmail(toEmail);
         String authCode = randomCodeGenerator.createCode(6);
@@ -51,7 +51,7 @@ public class MailService {
     }
 
     @Transactional
-    public void verifiedCode(MailDto.VerifyRequestDto request) {
+    public void verifiedCode(MailDto.VerifyRequest request) {
         String email = request.getEmail();
         this.checkDuplicatedEmail(email);
         String redisAuthCode = redisRepository.getValues(AUTH_CODE_PREFIX + email);

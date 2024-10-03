@@ -10,11 +10,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.nextroom.nextRoomServer.domain.Authority;
 import com.nextroom.nextRoomServer.domain.Shop;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -34,7 +29,7 @@ public class AuthDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
-    public static class SignUpRequestDto {
+    public static class SignUpRequest {
         @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         private String email;
@@ -73,7 +68,7 @@ public class AuthDto {
 
     @Getter
     @Builder
-    public static class SignUpResponseDto {
+    public static class SignUpResponse {
         private String email;
         private String name;
         private String adminCode;
@@ -85,7 +80,7 @@ public class AuthDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
-    public static class LogInRequestDto {
+    public static class LogInRequest {
         @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         private String email;
@@ -102,7 +97,7 @@ public class AuthDto {
 
     @Getter
     @Builder
-    public static class LogInResponseDto {
+    public static class LogInResponse {
         private String shopName;
         private String adminCode;
         private String grantType;
@@ -110,9 +105,9 @@ public class AuthDto {
         private long accessTokenExpiresIn;
         private String refreshToken;
 
-        public static AuthDto.LogInResponseDto toLogInResponseDto(String shopName, String adminCode,
-            TokenDto tokenDto) {
-            return new LogInResponseDtoBuilder()
+        public static AuthDto.LogInResponse toLogInResponseDto(String shopName, String adminCode,
+                                                       TokenDto tokenDto) {
+            return new LogInResponseBuilder()
                 .shopName(shopName)
                 .adminCode(adminCode)
                 .grantType(tokenDto.getGrantType())
@@ -127,14 +122,14 @@ public class AuthDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
-    public static class ReissueRequestDto {
+    public static class ReissueRequest {
         private String accessToken;
         private String refreshToken;
     }
 
     @Getter
     @Builder
-    public static class ReissueResponseDto {
+    public static class ReissueResponse {
         private String grantType;
         private String accessToken;
         private long accessTokenExpiresIn;

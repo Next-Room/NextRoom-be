@@ -14,8 +14,7 @@ public class MailDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
-    public static class SendRequestDto {
-        @NotNull(message = "이메일을 입력해 주세요.")
+    public static class SendRequest {
         @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         private String email;
@@ -25,8 +24,7 @@ public class MailDto {
     @Builder
     @AllArgsConstructor
     @NoArgsConstructor(force = true)
-    public static class VerifyRequestDto {
-        @NotNull(message = "이메일을 입력해 주세요.")
+    public static class VerifyRequest {
         @NotBlank(message = "이메일을 입력해 주세요.")
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         private String email;

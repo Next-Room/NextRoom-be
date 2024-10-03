@@ -34,7 +34,7 @@ public class AuthController {
         }
     )
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse> signUp(@RequestBody @Valid AuthDto.SignUpRequestDto request) {
+    public ResponseEntity<BaseResponse> signUp(@RequestBody @Valid AuthDto.SignUpRequest request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.signUp(request)));
     }
 
@@ -46,7 +46,7 @@ public class AuthController {
         }
     )
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse> logIn(@RequestBody @Valid AuthDto.LogInRequestDto request) {
+    public ResponseEntity<BaseResponse> logIn(@RequestBody @Valid AuthDto.LogInRequest request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.login(request)));
     }
 
@@ -58,7 +58,7 @@ public class AuthController {
         }
     )
     @PostMapping("/reissue")
-    public ResponseEntity<BaseResponse> reissue(@RequestBody AuthDto.ReissueRequestDto request) {
+    public ResponseEntity<BaseResponse> reissue(@RequestBody AuthDto.ReissueRequest request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.reissue(request)));
     }
 
