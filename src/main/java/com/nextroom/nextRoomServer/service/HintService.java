@@ -5,6 +5,8 @@ import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 import java.util.List;
 import java.util.Objects;
 
+import com.nextroom.nextRoomServer.domain.Shop;
+import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.aws.S3Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,8 @@ public class HintService {
     @Transactional
     public HintDto.UrlResponse getPresignedUrl(HintDto.UrlRequest request) {
         Long themeId = request.getThemeId();
-        this.validateThemeAndShop(themeId);
+        Theme theme = this.validateThemeAndShop(themeId);
+        this.validateSubscription(theme.getShop());
 
         Long shopId = SecurityUtil.getCurrentShopId();
         List<String> hintImageUrlList = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_HINT, request.getHintImageCount());
@@ -45,6 +48,7 @@ public class HintService {
     @Transactional
     public void addHint(HintDto.AddHintRequest request) {
         Theme theme = this.validateThemeAndShop(request.getThemeId());
+        this.validateSubscriptionWithImageRequest(theme.getShop(), request);
         this.validateHintCodeConflict(theme, request.getHintCode());
 
         Hint hint = Hint.builder()
@@ -104,6 +108,22 @@ public class HintService {
     private void checkShopAuthorization(Long shopId) {
         if (!Objects.equals(shopId, SecurityUtil.getCurrentShopId())) {
             throw new CustomException(NOT_PERMITTED);
+        }
+    }
+
+    private void validateSubscription(Shop shop) {
+        if (shop.getSubscription().getStatus() != UserStatus.SUBSCRIPTION) {
+            throw new CustomException(SUBSCRIPTION_NOT_PERMITTED);
+        }
+    }
+
+    private void validateSubscriptionWithImageRequest(Shop shop, HintDto.AddHintRequest request) {
+        boolean hasSubscription = shop.getSubscription().getStatus() == UserStatus.SUBSCRIPTION;
+        boolean hasHintImages = request.getHintImageList() != null && !request.getHintImageList().isEmpty();
+        boolean hasAnswerImages = request.getAnswerImageList() != null && !request.getAnswerImageList().isEmpty();
+
+        if ((!hasSubscription) && (hasHintImages || hasAnswerImages)) {
+            throw new CustomException(SUBSCRIPTION_NOT_PERMITTED);
         }
     }
 

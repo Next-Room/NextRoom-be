@@ -34,6 +34,8 @@ public enum StatusCode {
      * 403 FORBIDDEN
      */
     NOT_PERMITTED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    SUBSCRIPTION_NOT_PERMITTED(HttpStatus.FORBIDDEN, "구독 권한이 없습니다."),
+
 
     /**
      * 404 Not Found
