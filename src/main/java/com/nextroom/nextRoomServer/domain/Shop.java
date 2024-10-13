@@ -3,7 +3,11 @@ package com.nextroom.nextRoomServer.domain;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+import com.nextroom.nextRoomServer.enums.UserStatus;
+import com.nextroom.nextRoomServer.exceptions.CustomException;
+import com.nextroom.nextRoomServer.security.SecurityUtil;
 import org.hibernate.annotations.Comment;
 
 import com.nextroom.nextRoomServer.util.Timestamped;
@@ -22,6 +26,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.NOT_PERMITTED;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.SUBSCRIPTION_NOT_PERMITTED;
 
 @Entity
 @Builder
@@ -74,5 +81,17 @@ public class Shop extends Timestamped {
 
     public void updateLastLoginAt() {
         this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public void checkAuthorized() {
+        if (!Objects.equals(this.id, SecurityUtil.getCurrentShopId())) {
+            throw new CustomException(NOT_PERMITTED);
+        }
+    }
+
+    public void validateSubscription() {
+        if (this.subscription == null || this.subscription.getStatus() != UserStatus.SUBSCRIPTION) {
+            throw new CustomException(SUBSCRIPTION_NOT_PERMITTED);
+        }
     }
 }

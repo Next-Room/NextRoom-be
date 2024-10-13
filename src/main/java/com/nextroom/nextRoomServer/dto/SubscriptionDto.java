@@ -57,8 +57,7 @@ public class SubscriptionDto {
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.name = subscription.getShop().getName();
-            this.status = UserStatus.SUBSCRIPTION_EXPIRATION.equals(subscription.getStatus()) ?
-                UserStatus.FREE : subscription.getStatus();
+            this.status = subscription.getStatus();
             this.startDate = subscription.getStartDate();
             this.expiryDate = subscription.getExpiryDate();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
@@ -72,8 +71,7 @@ public class SubscriptionDto {
 
         public UserStatusResponse(Subscription subscription) {
             this.id = subscription.getId();
-            this.status = UserStatus.SUBSCRIPTION_EXPIRATION.equals(subscription.getStatus()) ?
-                UserStatus.FREE : subscription.getStatus();
+            this.status = subscription.getStatus();
         }
     }
 
