@@ -3,10 +3,8 @@ package com.nextroom.nextRoomServer.service;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 import java.util.List;
-import java.util.Objects;
 
 import com.nextroom.nextRoomServer.domain.Shop;
-import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.aws.S3Component;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +15,6 @@ import com.nextroom.nextRoomServer.dto.HintDto;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.HintRepository;
 import com.nextroom.nextRoomServer.repository.ThemeRepository;
-import com.nextroom.nextRoomServer.security.SecurityUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -34,11 +31,13 @@ public class HintService {
 
     @Transactional
     public HintDto.UrlResponse getPresignedUrl(HintDto.UrlRequest request) {
-        Long themeId = request.getThemeId();
-        Theme theme = this.validateThemeAndShop(themeId);
-        this.validateSubscription(theme.getShop());
+        Theme theme = this.validateThemeAndShop(request.getThemeId());
+        Shop shop = theme.getShop();
 
-        Long shopId = SecurityUtil.getCurrentShopId();
+        shop.validateSubscription();
+
+        Long themeId = theme.getId();
+        Long shopId = shop.getId();
         List<String> hintImageUrlList = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_HINT, request.getHintImageCount());
         List<String> answerImageUrlList = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_ANSWER, request.getAnswerImageCount());
 
@@ -66,11 +65,11 @@ public class HintService {
 
     @Transactional(readOnly = true)
     public List<HintDto.HintListResponse> getHintList(Long themeId) {
-        this.validateThemeAndShop(themeId);
+        Theme theme = this.validateThemeAndShop(themeId);
 
         List<Hint> hints = hintRepository.findAllByThemeIdOrderByProgress(themeId);
 
-        Long shopId = SecurityUtil.getCurrentShopId();
+        Long shopId = theme.getShop().getId();
         return hints.stream().map(hint ->
                 new HintDto.HintListResponse(
                         hint,
@@ -99,31 +98,16 @@ public class HintService {
     }
 
     private void deleteHintAndAnswerImages(Hint hint) {
-        Long shopId = SecurityUtil.getCurrentShopId();
+        Long shopId = hint.getTheme().getShop().getId();
         Long themeId = hint.getTheme().getId();
+
         s3Component.deleteObjects(shopId, themeId, TYPE_HINT, hint.getHintImageList());
         s3Component.deleteObjects(shopId, themeId, TYPE_ANSWER, hint.getAnswerImageList());
     }
 
-    private void checkShopAuthorization(Long shopId) {
-        if (!Objects.equals(shopId, SecurityUtil.getCurrentShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
-    }
-
-    private void validateSubscription(Shop shop) {
-        if (shop.getSubscription().getStatus() != UserStatus.SUBSCRIPTION) {
-            throw new CustomException(SUBSCRIPTION_NOT_PERMITTED);
-        }
-    }
-
     private void validateSubscriptionWithImageRequest(Shop shop, HintDto.AddHintRequest request) {
-        boolean hasSubscription = shop.getSubscription().getStatus() == UserStatus.SUBSCRIPTION;
-        boolean hasHintImages = request.getHintImageList() != null && !request.getHintImageList().isEmpty();
-        boolean hasAnswerImages = request.getAnswerImageList() != null && !request.getAnswerImageList().isEmpty();
-
-        if ((!hasSubscription) && (hasHintImages || hasAnswerImages)) {
-            throw new CustomException(SUBSCRIPTION_NOT_PERMITTED);
+        if (request.hasImages()) {
+            shop.validateSubscription();
         }
     }
 
@@ -131,7 +115,7 @@ public class HintService {
         Theme theme = themeRepository.findById(themeId)
                 .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
 
-        this.checkShopAuthorization(theme.getShop().getId());
+        theme.getShop().checkAuthorized();
 
         return theme;
     }
@@ -140,7 +124,7 @@ public class HintService {
         Hint hint = hintRepository.findById(hintId)
                 .orElseThrow(() -> new CustomException(HINT_NOT_FOUND));
 
-        checkShopAuthorization(hint.getTheme().getShop().getId());
+        hint.getTheme().getShop().checkAuthorized();
 
         return hint;
     }
