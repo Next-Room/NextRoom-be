@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 public class AndroidPurchaseUtils {
+    private final String profile;
     private final String packageName;
     private final GoogleCredentials credentials;
     private final AndroidPublisher androidPublisher;
@@ -39,8 +40,10 @@ public class AndroidPurchaseUtils {
 
     public AndroidPurchaseUtils(@Value("${iap.google.credentials}") String accountFilePath,
         @Value("${iap.google.packageName}") String packageName,
+        @Value("${spring.config.activate.on-profile}") String profile,
         @Autowired ObjectMapper objectMapper) throws IOException, GeneralSecurityException {
 
+        this.profile = profile;
         this.packageName = packageName;
         this.objectMapper = objectMapper;
 
@@ -116,15 +119,14 @@ public class AndroidPurchaseUtils {
         String decodedData = Base64Decoder.decode(data);
         SubscriptionDto.PublishedMessage publishedMessage = objectMapper.readValue(decodedData,
             SubscriptionDto.PublishedMessage.class);
+        SubscriptionDto.SubscriptionNotification subscriptionNotification = publishedMessage.getSubscriptionNotification();
 
-        log.info("PURCHASE TOKEN AT NOTIFICATION : {}",
-            publishedMessage.getSubscriptionNotification().getPurchaseToken());
+        log.info("PURCHASE TOKEN AT NOTIFICATION : {}", subscriptionNotification.getPurchaseToken());
 
-        if (!this.packageName.equals(publishedMessage.getPackageName())) {
-            throw new CustomException(INTERNAL_SERVER_ERROR);
-        }
+        validateEnvironment(publishedMessage);
+        validatePackageName(publishedMessage);
 
-        return publishedMessage.getSubscriptionNotification();
+        return subscriptionNotification;
     }
 
     private SubscriptionPurchaseV2 getSubscriptionPurchase(String purchaseToken) throws IOException {
@@ -133,11 +135,36 @@ public class AndroidPurchaseUtils {
             .get(packageName, purchaseToken);
         get.setAccessToken(getAccessToken().getTokenValue());
 
-        return get.execute();
+        SubscriptionPurchaseV2 subscriptionPurchaseV2 = get.execute();
+
+        validateEnvironment(subscriptionPurchaseV2);
+
+        return subscriptionPurchaseV2;
     }
 
     private AccessToken getAccessToken() throws IOException {
         credentials.refreshIfExpired();
         return credentials.getAccessToken();
+    }
+
+    private void validateEnvironment(SubscriptionDto.PublishedMessage publishedMessage) {
+        if (("prod".equals(profile) && publishedMessage.isTestNotification())
+                || ("dev".equals(profile) && !publishedMessage.isTestNotification())) {
+            throw new CustomException(ENVIRONMENT_DOES_NOT_MATCH);
+        }
+    }
+
+    private void validateEnvironment(SubscriptionPurchaseV2 subscriptionPurchaseV2) {
+        boolean isTestPurchase = subscriptionPurchaseV2.getTestPurchase() != null;
+
+        if (("prod".equals(profile) && isTestPurchase) || ("dev".equals(profile) && !isTestPurchase)) {
+            throw new CustomException(ENVIRONMENT_DOES_NOT_MATCH);
+        }
+    }
+
+    private void validatePackageName(SubscriptionDto.PublishedMessage publishedMessage) {
+        if (!this.packageName.equals(publishedMessage.getPackageName())) {
+            throw new CustomException(PACKAGE_NAME_DOES_NOT_MATCH);
+        }
     }
 }
