@@ -35,6 +35,11 @@ public class SubscriptionDto {
         private String packageName;
         private String eventTimeMillis;
         private SubscriptionNotification subscriptionNotification;
+        private TestNotification testNotification;
+
+        public boolean isTestNotification() {
+            return this.testNotification != null;
+        }
     }
 
     @Getter
@@ -43,6 +48,11 @@ public class SubscriptionDto {
         private int notificationType;
         private String purchaseToken;
         private String subscriptionId;
+    }
+
+    @Getter
+    public static class TestNotification {
+        private String version;
     }
 
     @Getter
