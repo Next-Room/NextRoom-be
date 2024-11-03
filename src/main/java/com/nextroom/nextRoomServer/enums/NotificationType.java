@@ -1,5 +1,6 @@
 package com.nextroom.nextRoomServer.enums;
 
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -24,11 +25,11 @@ public enum NotificationType {
     private final Integer type;
     private final String state;
 
-    public static boolean isRenew(int notificationType) {
-        return notificationType == SUBSCRIPTION_RENEWED.getType();
+    public static NotificationType of(int notificationType) {
+        return Arrays.stream(NotificationType.values())
+            .filter(it -> it.getType().equals(notificationType))
+            .findFirst()
+            .orElse(null);
     }
 
-    public static boolean isExpired(int notificationType) {
-        return notificationType == SUBSCRIPTION_EXPIRED.getType();
-    }
 }
