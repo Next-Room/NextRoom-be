@@ -9,6 +9,7 @@ import com.nextroom.nextRoomServer.util.Timestamped;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,12 @@ public class SubscriptionDto {
     public static class UpdateSubscription {
         private MessageData message;
         private String subscription;
+
+        public String getData() {
+            return Optional.ofNullable(message)
+                .map(MessageData::getData)
+                .orElse(null);
+        }
     }
 
     @Getter
