@@ -62,6 +62,8 @@ public enum StatusCode {
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "오류가 발생했습니다."),
+    IO_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API에 오류가 발생했습니다."),
+    SERIALIZE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "직렬화/역직렬화에 실패했습니다."),
 
     /**
      * 2xx OK
