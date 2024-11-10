@@ -84,8 +84,11 @@ public class HintService {
     @Transactional
     public void editHint(HintDto.EditHintRequest request) {
         Hint hint = this.validateHintAndShop(request.getId());
+        Theme theme = hint.getTheme();
 
-        deleteHintAndAnswerImages(hint);
+        this.validateSubscriptionWithImageRequest(theme.getShop(), request);
+        this.validateHintCodeConflict(theme, request.getHintCode());
+
         updateImageLists(TYPE_HINT, hint.getHintImageList(), request.getHintImageList(), hint);
         updateImageLists(TYPE_ANSWER, hint.getAnswerImageList(), request.getAnswerImageList(), hint);
 
@@ -138,6 +141,12 @@ public class HintService {
     }
 
     private void validateSubscriptionWithImageRequest(Shop shop, HintDto.AddHintRequest request) {
+        if (request.hasImages()) {
+            shop.validateSubscription();
+        }
+    }
+
+    private void validateSubscriptionWithImageRequest(Shop shop, HintDto.EditHintRequest request) {
         if (request.hasImages()) {
             shop.validateSubscription();
         }
