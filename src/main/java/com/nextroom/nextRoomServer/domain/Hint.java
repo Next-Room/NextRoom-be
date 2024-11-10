@@ -51,13 +51,7 @@ public class Hint extends Timestamped {
         this.contents = request.getContents();
         this.answer = request.getAnswer();
         this.progress = request.getProgress();
-    }
-
-    public void updateHintImageList(List<String> hintImageList) {
-        this.hintImageList = hintImageList;
-    }
-
-    public void updateAnswerImageList(List<String> answerImageList) {
-        this.answerImageList = answerImageList;
+        this.hintImageList = request.getHintImageList();
+        this.answerImageList = request.getAnswerImageList();
     }
 }

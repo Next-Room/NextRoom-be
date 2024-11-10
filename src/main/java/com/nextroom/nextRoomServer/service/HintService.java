@@ -89,8 +89,8 @@ public class HintService {
         this.validateSubscriptionWithImageRequest(theme.getShop(), request);
         this.validateHintCodeConflict(theme, request.getHintCode());
 
-        updateImageLists(TYPE_HINT, hint.getHintImageList(), request.getHintImageList(), hint);
-        updateImageLists(TYPE_ANSWER, hint.getAnswerImageList(), request.getAnswerImageList(), hint);
+        deleteMismatchedImagesFromS3(TYPE_HINT, hint.getHintImageList(), request.getHintImageList(), hint);
+        deleteMismatchedImagesFromS3(TYPE_ANSWER, hint.getAnswerImageList(), request.getAnswerImageList(), hint);
 
         hint.update(request);
     }
@@ -107,18 +107,14 @@ public class HintService {
         hintRepository.delete(hint);
     }
 
-    private void updateImageLists(String imageType, List<String> dbList, List<String> requestList, Hint hint) {
-        if (!Objects.equals(dbList, requestList)) {
-            if (dbList != null) {
-                List<String> imagesToRemove = findImagesToRemove(dbList, requestList);
+    private void deleteMismatchedImagesFromS3(String imageType, List<String> dbList, List<String> requestList, Hint hint) {
+        if (!Objects.equals(dbList, requestList) && dbList != null) {
+            List<String> imagesToRemove = findImagesToRemove(dbList, requestList);
 
-                Long shopId = hint.getTheme().getShop().getId();
-                Long themeId = hint.getTheme().getId();
+            Long shopId = hint.getTheme().getShop().getId();
+            Long themeId = hint.getTheme().getId();
 
-                s3Component.deleteObjects(shopId, themeId, imageType, imagesToRemove);
-            }
-
-            updateImages(imageType, hint, requestList);
+            s3Component.deleteObjects(shopId, themeId, imageType, imagesToRemove);
         }
     }
 
@@ -129,14 +125,6 @@ public class HintService {
         List<String> imagesToRemove = new ArrayList<>(dbList);
         imagesToRemove.removeAll(requestList);
         return imagesToRemove;
-    }
-
-    private void updateImages(String imageType, Hint hint, List<String> images) {
-        if (TYPE_HINT.equals(imageType)) {
-            hint.updateHintImageList(images);
-        } else if (TYPE_ANSWER.equals(imageType)) {
-            hint.updateAnswerImageList(images);
-        }
     }
 
     private void validateSubscriptionWithImageRequest(Shop shop, HintDto.AddHintRequest request) {
