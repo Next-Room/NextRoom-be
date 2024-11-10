@@ -36,7 +36,7 @@ public class HintService {
         Theme theme = this.validateThemeAndShop(request.getThemeId());
         Shop shop = theme.getShop();
 
-        shop.validateSubscription();
+        shop.validateSubscriptionInNeed(true);
 
         Long themeId = theme.getId();
         Long shopId = shop.getId();
@@ -49,7 +49,8 @@ public class HintService {
     @Transactional
     public void addHint(HintDto.AddHintRequest request) {
         Theme theme = this.validateThemeAndShop(request.getThemeId());
-        this.validateSubscriptionWithImageRequest(theme.getShop(), request);
+
+        theme.getShop().validateSubscriptionInNeed(request.hasImages());
         this.validateHintCodeConflict(theme, request.getHintCode());
 
         Hint hint = Hint.builder()
@@ -86,7 +87,7 @@ public class HintService {
         Hint hint = this.validateHintAndShop(request.getId());
         Theme theme = hint.getTheme();
 
-        this.validateSubscriptionWithImageRequest(theme.getShop(), request);
+        theme.getShop().validateSubscriptionInNeed(request.hasImages());
         this.validateHintCodeConflict(theme, request.getHintCode());
 
         deleteMismatchedImagesFromS3(TYPE_HINT, hint.getHintImageList(), request.getHintImageList(), hint);
@@ -125,18 +126,6 @@ public class HintService {
         List<String> imagesToRemove = new ArrayList<>(dbList);
         imagesToRemove.removeAll(requestList);
         return imagesToRemove;
-    }
-
-    private void validateSubscriptionWithImageRequest(Shop shop, HintDto.AddHintRequest request) {
-        if (request.hasImages()) {
-            shop.validateSubscription();
-        }
-    }
-
-    private void validateSubscriptionWithImageRequest(Shop shop, HintDto.EditHintRequest request) {
-        if (request.hasImages()) {
-            shop.validateSubscription();
-        }
     }
 
     private Theme validateThemeAndShop(Long themeId) {
