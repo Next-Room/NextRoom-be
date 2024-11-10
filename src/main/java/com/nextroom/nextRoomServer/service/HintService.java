@@ -98,9 +98,11 @@ public class HintService {
     @Transactional
     public void removeHint(HintDto.RemoveHintRequest request) {
         Hint hint = this.validateHintAndShop(request.getId());
+        Long shopId = hint.getTheme().getShop().getId();
+        Long themeId = hint.getTheme().getId();
 
-        deleteS3Images(TYPE_HINT, hint, hint.getHintImageList());
-        deleteS3Images(TYPE_ANSWER, hint, hint.getAnswerImageList());
+        s3Component.deleteObjects(shopId, themeId, TYPE_HINT, hint.getHintImageList());
+        s3Component.deleteObjects(shopId, themeId, TYPE_ANSWER, hint.getAnswerImageList());
 
         hintRepository.delete(hint);
     }
@@ -109,7 +111,11 @@ public class HintService {
         if (!Objects.equals(dbList, requestList)) {
             if (dbList != null) {
                 List<String> imagesToRemove = findImagesToRemove(dbList, requestList);
-                deleteS3Images(imageType, hint, imagesToRemove);
+
+                Long shopId = hint.getTheme().getShop().getId();
+                Long themeId = hint.getTheme().getId();
+
+                s3Component.deleteObjects(shopId, themeId, imageType, imagesToRemove);
             }
 
             updateImages(imageType, hint, requestList);
@@ -123,13 +129,6 @@ public class HintService {
         List<String> imagesToRemove = new ArrayList<>(dbList);
         imagesToRemove.removeAll(requestList);
         return imagesToRemove;
-    }
-
-    private void deleteS3Images(String imageType, Hint hint, List<String> images) {
-        Long shopId = hint.getTheme().getShop().getId();
-        Long themeId = hint.getTheme().getId();
-
-        s3Component.deleteObjects(shopId, themeId, imageType, images);
     }
 
     private void updateImages(String imageType, Hint hint, List<String> images) {
