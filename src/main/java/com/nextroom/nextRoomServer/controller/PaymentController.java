@@ -2,6 +2,7 @@ package com.nextroom.nextRoomServer.controller;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import com.nextroom.nextRoomServer.service.PaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class PaymentController {
 
     private final SubscriptionService subscriptionService;
+    private final PaymentService paymentService;
 
     @Operation(
             summary = "구독 결제",
@@ -51,13 +53,13 @@ public class PaymentController {
     @Operation(hidden = true)
     @GetMapping
     public ResponseEntity<BaseResponse> getPaymentList() {
-        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getShopPaymentList()));
+        return ResponseEntity.ok(new DataResponse<>(OK, paymentService.getShopPaymentList()));
     }
 
     @Operation(hidden = true)
     @GetMapping("/{orderId}")
     public ResponseEntity<BaseResponse> purchaseSubscription(@PathVariable String orderId) {
-        return ResponseEntity.ok(new DataResponse<>(OK, subscriptionService.getPaymentDetail(orderId)));
+        return ResponseEntity.ok(new DataResponse<>(OK, paymentService.getPaymentDetail(orderId)));
     }
 
     @Operation(hidden = true)
