@@ -5,8 +5,8 @@
 
   <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n" />
   <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %5level %logger - %msg%n" />
-  <property name="FILE_NAME" value="./log/application.log" />
-  <property name="LOG_NAME_PATTERN" value="./logs/application-%d{yyyy-MM-dd-HH-mm}.%i.log" />
+  <property name="LOG_NAME_PATTERN" value="./logs/application-%d{yyyy-MM-dd}.%i.log" />
+  <property name="MAX_HISTORY" value="30" />
   <property name="MAX_FILE_SIZE" value="10MB" />
   <property name="TOTAL_SIZE" value="30MB" />
 
@@ -18,8 +18,7 @@
   </appender>
 
   <!-- Rolling file appender 설정 -->
-  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>${FILE_NAME}</file>
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
     <encoder>
       <pattern>${FILE_LOG_PATTERN}</pattern>
     </encoder>
@@ -42,9 +41,26 @@
     <appender-ref ref="FILE"/>
   </logger>
 
+  <springProfile name="local">
+    <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE" />
+    </root>
+  </springProfile>
 
-  <root level="INFO">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
-  </root>
+  <springProfile name="dev">
+    <root level="DEBUG">
+      <appender-ref ref="CONSOLE" />
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+
+  <springProfile name="prod">
+    <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
+    <root level="INFO">
+      <appender-ref ref="CONSOLE" />
+      <appender-ref ref="FILE" />
+    </root>
+  </springProfile>
+
 </configuration>
