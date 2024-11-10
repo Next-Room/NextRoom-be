@@ -47,6 +47,13 @@ public class SubscriptionDto {
         public boolean isTestNotification() {
             return this.testNotification != null;
         }
+
+        @Override
+        public String toString() {
+            return String.format("PublishedMessage{version='%s', packageName='%s', testNotification=%s, subscriptionNotification=%s}",
+                version, packageName, Optional.ofNullable(testNotification).map(TestNotification::getVersion).orElse(null),
+                Optional.ofNullable(subscriptionNotification).map(SubscriptionNotification::toString).orElse(null));
+        }
     }
 
     @Getter
@@ -55,6 +62,12 @@ public class SubscriptionDto {
         private int notificationType;
         private String purchaseToken;
         private String subscriptionId;
+
+        @Override
+        public String toString() {
+            return String.format("SubscriptionNotification{version='%s', notificationType=%d, purchaseToken='%s', subscriptionId='%s'}",
+                version, notificationType, purchaseToken, subscriptionId);
+        }
     }
 
     @Getter
