@@ -2,7 +2,9 @@ package com.nextroom.nextRoomServer.service;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.util.aws.S3Component;
@@ -84,6 +86,8 @@ public class HintService {
         Hint hint = this.validateHintAndShop(request.getId());
 
         deleteHintAndAnswerImages(hint);
+        updateImageLists(TYPE_HINT, hint.getHintImageList(), request.getHintImageList(), hint);
+        updateImageLists(TYPE_ANSWER, hint.getAnswerImageList(), request.getAnswerImageList(), hint);
 
         hint.update(request);
     }
@@ -92,17 +96,45 @@ public class HintService {
     public void removeHint(HintDto.RemoveHintRequest request) {
         Hint hint = this.validateHintAndShop(request.getId());
 
-        deleteHintAndAnswerImages(hint);
+        deleteS3Images(TYPE_HINT, hint, hint.getHintImageList());
+        deleteS3Images(TYPE_ANSWER, hint, hint.getAnswerImageList());
 
         hintRepository.delete(hint);
     }
 
-    private void deleteHintAndAnswerImages(Hint hint) {
+    private void updateImageLists(String imageType, List<String> dbList, List<String> requestList, Hint hint) {
+        if (!Objects.equals(dbList, requestList)) {
+            if (dbList != null) {
+                List<String> imagesToRemove = findImagesToRemove(dbList, requestList);
+                deleteS3Images(imageType, hint, imagesToRemove);
+            }
+
+            updateImages(imageType, hint, requestList);
+        }
+    }
+
+    private List<String> findImagesToRemove(List<String> dbList, List<String> requestList) {
+        if (requestList == null) {
+            return dbList;
+        }
+        List<String> imagesToRemove = new ArrayList<>(dbList);
+        imagesToRemove.removeAll(requestList);
+        return imagesToRemove;
+    }
+
+    private void deleteS3Images(String imageType, Hint hint, List<String> images) {
         Long shopId = hint.getTheme().getShop().getId();
         Long themeId = hint.getTheme().getId();
 
-        s3Component.deleteObjects(shopId, themeId, TYPE_HINT, hint.getHintImageList());
-        s3Component.deleteObjects(shopId, themeId, TYPE_ANSWER, hint.getAnswerImageList());
+        s3Component.deleteObjects(shopId, themeId, imageType, images);
+    }
+
+    private void updateImages(String imageType, Hint hint, List<String> images) {
+        if (TYPE_HINT.equals(imageType)) {
+            hint.updateHintImageList(images);
+        } else if (TYPE_ANSWER.equals(imageType)) {
+            hint.updateAnswerImageList(images);
+        }
     }
 
     private void validateSubscriptionWithImageRequest(Shop shop, HintDto.AddHintRequest request) {
