@@ -84,6 +84,13 @@ public class HintDto {
         private final Integer progress;
         private final List<String> hintImageList;
         private final List<String> answerImageList;
+
+        public boolean hasImages() {
+            boolean hasHintImages = this.hintImageList != null && !this.hintImageList.isEmpty();
+            boolean hasAnswerImages = this.answerImageList != null && !this.answerImageList.isEmpty();
+
+            return hasHintImages || hasAnswerImages;
+        }
     }
 
     @Getter

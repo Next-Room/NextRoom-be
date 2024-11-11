@@ -36,7 +36,7 @@ public class S3Component {
 
         List<String> imageUrlList = new ArrayList<>();
         for (int i = 1; i <= imageCount; i++) {
-            String fileName = this.createFileNameForUpload(shopId, themeId, type, i);
+            String fileName = this.createFileNameForUpload(shopId, themeId, type, System.nanoTime());
             imageUrlList.add(this.createPresignedPutUrl(fileName));
         }
         return imageUrlList;
@@ -110,8 +110,8 @@ public class S3Component {
         }
     }
 
-    private String createFileNameForUpload(Long shopId, Long themeId, String type, int i) {
-        return String.format("%s/%s/%s/%s/%s_%s%s", profile, shopId, themeId, type, i, UUID.randomUUID(), EXTENSION);
+    private String createFileNameForUpload(Long shopId, Long themeId, String type, long timestamp) {
+        return String.format("%s/%s/%s/%s/%s_%s%s", profile, shopId, themeId, type, timestamp, UUID.randomUUID(), EXTENSION);
     }
 
     private String createFileNameForDownLoad(Long shopId, Long themeId, String type, String uuid) {

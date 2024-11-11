@@ -89,7 +89,8 @@ public class Shop extends Timestamped {
         }
     }
 
-    public void validateSubscription() {
+    public void validateSubscriptionInNeed(boolean needed) {
+        if (!needed) { return; }
         if (this.subscription == null || this.subscription.getStatus() != UserStatus.SUBSCRIPTION) {
             throw new CustomException(SUBSCRIPTION_NOT_PERMITTED);
         }
