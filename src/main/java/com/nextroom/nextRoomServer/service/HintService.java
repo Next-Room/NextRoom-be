@@ -88,7 +88,9 @@ public class HintService {
         Theme theme = hint.getTheme();
 
         theme.getShop().validateSubscriptionInNeed(request.hasImages());
-        this.validateHintCodeConflict(theme, request.getHintCode());
+        if (!request.isHintCodeEqual(hint.getHintCode())) {
+            this.validateHintCodeConflict(theme, request.getHintCode());
+        }
 
         deleteMismatchedImagesFromS3(TYPE_HINT, hint.getHintImageList(), request.getHintImageList(), hint);
         deleteMismatchedImagesFromS3(TYPE_ANSWER, hint.getAnswerImageList(), request.getAnswerImageList(), hint);
