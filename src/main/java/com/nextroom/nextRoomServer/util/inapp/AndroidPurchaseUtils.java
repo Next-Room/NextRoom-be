@@ -104,7 +104,7 @@ public class AndroidPurchaseUtils {
                 .acknowledge(packageName, subscriptionId, purchaseToken, request);
             acknowledge.setAccessToken(getAccessToken().getTokenValue());
             acknowledge.execute();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CustomException(IO_ERROR, e.getMessage());
         }
     }
@@ -112,14 +112,13 @@ public class AndroidPurchaseUtils {
     public SubscriptionDto.SubscriptionNotification getSubscriptionNotification(String data) {
         SubscriptionDto.PublishedMessage publishedMessage = CommonObjectMapper.getInstance()
             .readEncodedValue(data, SubscriptionDto.PublishedMessage.class);
-        SubscriptionDto.SubscriptionNotification subscriptionNotification = publishedMessage.getSubscriptionNotification();
 
-        log.info("PURCHASE TOKEN AT NOTIFICATION : {}", subscriptionNotification.getPurchaseToken());
+        log.info("PURCHASE TOKEN AT NOTIFICATION : {}", publishedMessage.toString());
 
         validateEnvironment(publishedMessage);
         validatePackageName(publishedMessage);
 
-        return subscriptionNotification;
+        return publishedMessage.getSubscriptionNotification();
     }
 
     private SubscriptionPurchaseV2 getSubscriptionPurchase(String purchaseToken) {
@@ -134,7 +133,7 @@ public class AndroidPurchaseUtils {
             validateEnvironment(subscriptionPurchaseV2);
 
             return subscriptionPurchaseV2;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CustomException(IO_ERROR, e.getMessage());
         }
     }
@@ -149,7 +148,7 @@ public class AndroidPurchaseUtils {
             log.info("SUBSCRIPTION AT PURCHASE(V1) : {}", subscriptionPurchase.toString());
 
             return subscriptionPurchase;
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CustomException(IO_ERROR, e.getMessage());
         }
     }
@@ -158,7 +157,7 @@ public class AndroidPurchaseUtils {
         try {
             credentials.refreshIfExpired();
             return credentials.getAccessToken();
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new CustomException(IO_ERROR, e.getMessage());
         }
     }

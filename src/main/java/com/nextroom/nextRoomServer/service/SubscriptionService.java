@@ -125,8 +125,8 @@ public class SubscriptionService {
     public void updateSubscription(SubscriptionDto.UpdateSubscription requestBody) {
         SubscriptionDto.SubscriptionNotification subscriptionNotification = androidPurchaseUtils.getSubscriptionNotification(requestBody.getData());
 
-        NotificationType notificationType = NotificationType.of(subscriptionNotification.getNotificationType());
         String purchaseToken = subscriptionNotification.getPurchaseToken();
+        NotificationType notificationType = NotificationType.of(subscriptionNotification.getNotificationType());
 
         switch (notificationType) {
             case SUBSCRIPTION_RENEWED -> renew(purchaseToken);
