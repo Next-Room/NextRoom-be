@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Objects;
 
 public class HintDto {
     private static final String HINT_CODE_REGEX = "[0-9]{4}";
@@ -90,6 +91,10 @@ public class HintDto {
             boolean hasAnswerImages = this.answerImageList != null && !this.answerImageList.isEmpty();
 
             return hasHintImages || hasAnswerImages;
+        }
+
+        public boolean isHintCodeEqual(String hintCode) {
+            return Objects.equals(this.hintCode, hintCode);
         }
     }
 
