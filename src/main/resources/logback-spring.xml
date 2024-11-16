@@ -50,7 +50,8 @@
 
   <springProfile name="dev">
     <property name="LOG_PATH" value="/home/ubuntu/app/logs"/>
-    <root level="DEBUG">
+    <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
+    <root level="INFO">
       <appender-ref ref="CONSOLE" />
       <appender-ref ref="FILE" />
     </root>
