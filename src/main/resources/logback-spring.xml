@@ -32,15 +32,6 @@
 
   <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
 
-  <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
-  </logger>
-  <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
-  </logger>
-
   <springProfile name="local">
     <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
     <root level="INFO">
