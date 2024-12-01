@@ -2,9 +2,11 @@ package com.nextroom.nextRoomServer.dto;
 
 import com.nextroom.nextRoomServer.domain.Theme;
 import com.nextroom.nextRoomServer.util.Timestamped;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import java.util.List;
+import java.util.Optional;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,6 +40,8 @@ public class ThemeDto {
         private final String title;
         private final Integer timeLimit;
         private final Integer hintLimit;
+        private final String timerUrl;
+        private final boolean useTimerUrl;
         private final String createdAt;
         private final String modifiedAt;
 
@@ -46,6 +50,8 @@ public class ThemeDto {
             this.title = theme.getTitle();
             this.timeLimit = theme.getTimeLimit();
             this.hintLimit = theme.getHintLimit();
+            this.timerUrl = theme.getTimerImageUrl();
+            this.useTimerUrl = Optional.ofNullable(theme.getUseTimerImage()).orElse(false);
             this.createdAt = Timestamped.dateTimeFormatter(theme.getCreatedAt());
             this.modifiedAt = Timestamped.dateTimeFormatter(theme.getModifiedAt());
         }
@@ -69,4 +75,20 @@ public class ThemeDto {
         @Positive(message = "THEME ID를 입력해 주세요.")
         private Long id;
     }
+
+    @Getter
+    public static class ThemeUrlRequest {
+        @Positive(message = "THEME ID를 입력해 주세요.")
+        private Long themeId;
+        @NotBlank(message = "이미지 url 을 입력해 주세요.")
+        private String imageUrl;
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class ThemeUrlResponse {
+        private final Long themeId;
+        private final String imageUrl;
+    }
+
 }

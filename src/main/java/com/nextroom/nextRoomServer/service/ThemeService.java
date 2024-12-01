@@ -7,10 +7,14 @@ import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_THEME_NOT
 import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Theme;
 import com.nextroom.nextRoomServer.dto.ThemeDto;
+import com.nextroom.nextRoomServer.dto.ThemeDto.ThemeUrlRequest;
+import com.nextroom.nextRoomServer.dto.ThemeDto.ThemeUrlResponse;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.ThemeRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
+import com.nextroom.nextRoomServer.util.aws.S3Component;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +24,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class ThemeService {
+
+    private final S3Component s3Component;
+
     private final ThemeRepository themeRepository;
     private final ShopRepository shopRepository;
+
+    private final static String TYPE_TIMER = "timer";
 
     private Shop getShop() {
         return shopRepository.findById(SecurityUtil.getCurrentShopId())
@@ -90,4 +99,36 @@ public class ThemeService {
         Theme theme = getThemeByThemeIdAndShop(request.getId());
         themeRepository.delete(theme);
     }
+
+    public ThemeUrlResponse getTimerUrl(Long themeId) {
+        Long shopId = this.validateThemeAndShop(themeId)
+            .getShop()
+            .getId();
+        String timerUrl = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_TIMER, 1)
+            .get(0);
+
+        return new ThemeUrlResponse(themeId, timerUrl);
+    }
+
+    @Transactional
+    public void addThemeTimerImage(final ThemeUrlRequest request) {
+        Theme theme = validateThemeAndShop(request.getThemeId());
+        theme.updateTimerImage(request.getImageUrl());
+    }
+
+    @Transactional
+    public void removeThemeTimerImage(Long themeId) {
+        Theme theme = validateThemeAndShop(themeId);
+        Long shopId = theme.getShop().getId();
+        s3Component.deleteObjects(shopId, themeId, TYPE_TIMER, List.of(theme.getTimerImageUrl()));
+        theme.removeTimerImage();
+    }
+
+    public Theme validateThemeAndShop(Long themeId) {
+        Theme theme = themeRepository.findById(themeId)
+            .orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
+        theme.getShop().checkAuthorized();
+        return theme;
+    }
+
 }
