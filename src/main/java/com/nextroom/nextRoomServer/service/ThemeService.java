@@ -131,4 +131,20 @@ public class ThemeService {
         return theme;
     }
 
+    @Transactional
+    public void activeThemeTimerUrl(@Valid ThemeDto.ThemeActiveUrlRequest request) {
+        if (request.getActive().size() > 1) {
+            this.getShop().validateSubscriptionInNeed(true);
+        }
+        request.getActive()
+            .forEach(themeId -> {
+                Theme theme = this.validateThemeAndShop(themeId);
+                theme.setUseTimerUrl(true);
+            });
+        request.getDeactive()
+            .forEach(themeId -> {
+                Theme theme = this.validateThemeAndShop(themeId);
+                theme.setUseTimerUrl(false);
+            });
+    }
 }

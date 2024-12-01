@@ -111,4 +111,9 @@ public class ThemeController {
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 
+    @PutMapping("/timer/active")
+    public ResponseEntity<BaseResponse> activeTimerUrl(@RequestBody @Valid ThemeDto.ThemeActiveUrlRequest request) {
+        themeService.activeThemeTimerUrl(request);
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
 }

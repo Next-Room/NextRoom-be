@@ -85,6 +85,12 @@ public class ThemeDto {
     }
 
     @Getter
+    public static class ThemeActiveUrlRequest {
+        List<Long> active;
+        List<Long> deactive;
+    }
+
+    @Getter
     @AllArgsConstructor
     public static class ThemeUrlResponse {
         private final Long themeId;
