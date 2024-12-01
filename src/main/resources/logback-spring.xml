@@ -30,19 +30,8 @@
     </rollingPolicy>
   </appender>
 
-  <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
-
-  <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
-  </logger>
-  <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="TRACE" additivity="false">
-    <appender-ref ref="CONSOLE"/>
-    <appender-ref ref="FILE"/>
-  </logger>
-
   <springProfile name="local">
-    <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
+    <logger name="com.nextroom.nextRoomServer.*" level="DEBUG"/>
     <root level="INFO">
       <appender-ref ref="CONSOLE" />
     </root>
@@ -50,7 +39,7 @@
 
   <springProfile name="dev">
     <property name="LOG_PATH" value="/home/ubuntu/app/logs"/>
-    <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
+    <logger name="com.nextroom.nextRoomServer.*" level="DEBUG"/>
     <root level="INFO">
       <appender-ref ref="CONSOLE" />
       <appender-ref ref="FILE" />
@@ -59,7 +48,7 @@
 
   <springProfile name="prod">
     <property name="LOG_PATH" value="/home/ubuntu/app/logs"/>
-    <logger name="com.nextroom.nextRoomServer.dto" level="DEBUG"/>
+    <logger name="com.nextroom.nextRoomServer.*" level="DEBUG"/>
     <root level="INFO">
       <appender-ref ref="CONSOLE" />
       <appender-ref ref="FILE" />
