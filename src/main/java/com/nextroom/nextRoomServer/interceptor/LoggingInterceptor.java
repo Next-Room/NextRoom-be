@@ -1,4 +1,4 @@
-package com.nextroom.nextRoomServer.config;
+package com.nextroom.nextRoomServer.interceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -24,16 +24,23 @@ public class LoggingInterceptor implements HandlerInterceptor {
         // 요청 ID 생성 및 MDC에 저장
         String requestId = UUID.randomUUID().toString().substring(0, 8);
         MDC.put(REQUEST_ID, requestId);
-
-        // Request 로깅
-        logRequest(new ContentCachingRequestWrapper(request));
         return true;
     }
 
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
+        ContentCachingRequestWrapper wrappedRequest = request instanceof ContentCachingRequestWrapper
+                ? (ContentCachingRequestWrapper) request
+                : new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper wrappedResponse = response instanceof ContentCachingResponseWrapper
+                ? (ContentCachingResponseWrapper) response
+                : new ContentCachingResponseWrapper(response);
+
+        // Request 로깅
+        logRequest(wrappedRequest);
         // Response 로깅
-        logResponse(new ContentCachingResponseWrapper(response), request);
+        logResponse(wrappedResponse, request);
+
         MDC.clear();
     }
 
@@ -54,7 +61,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
         if (contentType != null && !contentType.contains(MediaType.MULTIPART_FORM_DATA_VALUE)) {
             String payload = getPayload(request.getContentAsByteArray());
             if (!payload.isEmpty()) {
-                logMessage.append("\nBody: ").append(payload);
+                logMessage.append("\nRequest Body: ").append(payload);
             }
         }
 
@@ -73,7 +80,7 @@ public class LoggingInterceptor implements HandlerInterceptor {
         // Response Body
         String payload = getPayload(response.getContentAsByteArray());
         if (!payload.isEmpty()) {
-            logMessage.append("\nResponse: ").append(payload);
+            logMessage.append("\nResponse Body: ").append(payload);
         }
 
         log.info(logMessage.toString());
@@ -85,6 +92,10 @@ public class LoggingInterceptor implements HandlerInterceptor {
         }
         int length = Math.min(buf.length, MAX_PAYLOAD_LENGTH);
         String payload = new String(buf, 0, length);
+
+        payload = payload.replaceAll("[\\r\\n\\t]", "");
+        payload = payload.replaceAll("\\s{2,}", " ");
+
         if (buf.length > MAX_PAYLOAD_LENGTH) {
             payload += "... (truncated)";
         }
