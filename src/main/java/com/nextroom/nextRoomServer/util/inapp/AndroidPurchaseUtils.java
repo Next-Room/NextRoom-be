@@ -115,7 +115,7 @@ public class AndroidPurchaseUtils {
 
         log.info("PURCHASE TOKEN AT NOTIFICATION : {}", publishedMessage.toString());
 
-        validateEnvironment(publishedMessage);
+//        validateEnvironment(publishedMessage);
         validatePackageName(publishedMessage);
 
         return publishedMessage.getSubscriptionNotification();
