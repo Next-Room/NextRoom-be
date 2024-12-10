@@ -40,7 +40,7 @@ public class ThemeDto {
         private final String title;
         private final Integer timeLimit;
         private final Integer hintLimit;
-        private final String timerUrl;
+        private final String themeImageUrl;
         private final boolean useTimerUrl;
         private final String createdAt;
         private final String modifiedAt;
@@ -50,7 +50,7 @@ public class ThemeDto {
             this.title = theme.getTitle();
             this.timeLimit = theme.getTimeLimit();
             this.hintLimit = theme.getHintLimit();
-            this.timerUrl = theme.getTimerImageUrl();
+            this.themeImageUrl = theme.getTimerImageUrl();
             this.useTimerUrl = Optional.ofNullable(theme.getUseTimerImage()).orElse(false);
             this.createdAt = Timestamped.dateTimeFormatter(theme.getCreatedAt());
             this.modifiedAt = Timestamped.dateTimeFormatter(theme.getModifiedAt());
