@@ -14,7 +14,6 @@ import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.ThemeRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.util.aws.S3Component;
-import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -132,7 +131,7 @@ public class ThemeService {
     }
 
     @Transactional
-    public void activeThemeTimerUrl(@Valid ThemeDto.ThemeActiveUrlRequest request) {
+    public void activeThemeTimerUrl(ThemeDto.ThemeActiveUrlRequest request) {
         if (request.getActive().size() > 1) {
             this.getShop().validateSubscriptionInNeed(true);
         }
