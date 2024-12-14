@@ -36,16 +36,10 @@ public class ThemeService {
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
     }
 
-    private Theme getTheme(Long themeId) {
-        return themeRepository.findById(themeId)
+    public Theme validateThemeAndShop(Long themeId) {
+        Theme theme = themeRepository.findById(themeId)
             .orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
-    }
-
-    private Theme getThemeByThemeIdAndShop(Long themeId) {
-        Theme theme = getTheme(themeId);
-        if (!Objects.equals(theme.getShop().getId(), SecurityUtil.getCurrentShopId())) {
-            throw new CustomException(NOT_PERMITTED);
-        }
+        theme.getShop().checkAuthorized();
         return theme;
     }
 
@@ -93,12 +87,12 @@ public class ThemeService {
 
     @Transactional
     public void editTheme(ThemeDto.EditThemeRequest request) {
-        Theme theme = getThemeByThemeIdAndShop(request.getId());
+        Theme theme = validateThemeAndShop(request.getId());
         theme.update(request);
     }
 
     public void removeTheme(ThemeDto.RemoveThemeRequest request) {
-        Theme theme = getThemeByThemeIdAndShop(request.getId());
+        Theme theme = validateThemeAndShop(request.getId());
         themeRepository.delete(theme);
     }
 
