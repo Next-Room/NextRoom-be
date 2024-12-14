@@ -15,7 +15,10 @@ import com.nextroom.nextRoomServer.repository.ThemeRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.util.aws.S3Component;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +32,7 @@ public class ThemeService {
     private final ThemeRepository themeRepository;
     private final ShopRepository shopRepository;
 
-    private final static String TYPE_TIMER = "timer";
+    private static final String TYPE_TIMER = "timer";
 
     private Shop getShop() {
         return shopRepository.findById(SecurityUtil.getCurrentShopId())
@@ -122,27 +125,22 @@ public class ThemeService {
         theme.removeTimerImage();
     }
 
-    public Theme validateThemeAndShop(Long themeId) {
-        Theme theme = themeRepository.findById(themeId)
-            .orElseThrow(() -> new CustomException(TARGET_THEME_NOT_FOUND));
-        theme.getShop().checkAuthorized();
-        return theme;
-    }
-
     @Transactional
     public void activeThemeTimerUrl(ThemeDto.ThemeActiveUrlRequest request) {
         if (request.getActive().size() > 1) {
             this.getShop().validateSubscriptionInNeed(true);
         }
+
+        Map<Long, Theme> themes = themeRepository.findAllById(request.getAllThemeIds())
+            .stream()
+            .peek(it -> it.getShop().checkAuthorized())
+            .collect(Collectors.toMap(Theme::getId, it -> it));
+
         request.getActive()
-            .forEach(themeId -> {
-                Theme theme = this.validateThemeAndShop(themeId);
-                theme.setUseTimerUrl(true);
-            });
+            .forEach(themeId -> Optional.ofNullable(themes.get(themeId))
+                .ifPresent(it -> it.setUseTimerUrl(true)));
         request.getDeactive()
-            .forEach(themeId -> {
-                Theme theme = this.validateThemeAndShop(themeId);
-                theme.setUseTimerUrl(false);
-            });
+            .forEach(themeId -> Optional.ofNullable(themes.get(themeId))
+                .ifPresent(it -> it.setUseTimerUrl(false)));
     }
 }
