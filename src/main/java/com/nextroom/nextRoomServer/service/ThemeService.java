@@ -115,6 +115,9 @@ public class ThemeService {
     @Transactional
     public void removeThemeTimerImage(Long themeId) {
         Theme theme = validateThemeAndShop(themeId);
+        if (Objects.isNull(theme.getTimerImageUrl())) {
+            return;
+        }
         Long shopId = theme.getShop().getId();
         s3Component.deleteObjects(shopId, themeId, TYPE_TIMER, List.of(theme.getTimerImageUrl()));
         theme.removeTimerImage();
