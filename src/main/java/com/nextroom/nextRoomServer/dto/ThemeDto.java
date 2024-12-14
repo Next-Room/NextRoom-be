@@ -45,12 +45,12 @@ public class ThemeDto {
         private final String createdAt;
         private final String modifiedAt;
 
-        public ThemeListResponse(Theme theme) {
+        public ThemeListResponse(Theme theme, String presignedTimerUrl) {
             this.id = theme.getId();
             this.title = theme.getTitle();
             this.timeLimit = theme.getTimeLimit();
             this.hintLimit = theme.getHintLimit();
-            this.themeImageUrl = theme.getTimerImageUrl();
+            this.themeImageUrl = presignedTimerUrl;
             this.useTimerUrl = Optional.ofNullable(theme.getUseTimerImage()).orElse(false);
             this.createdAt = Timestamped.dateTimeFormatter(theme.getCreatedAt());
             this.modifiedAt = Timestamped.dateTimeFormatter(theme.getModifiedAt());
@@ -88,6 +88,12 @@ public class ThemeDto {
     public static class ThemeActiveUrlRequest {
         List<Long> active;
         List<Long> deactive;
+
+        public List<Long> getAllThemeIds() {
+            List<Long> allThemeIds = active;
+            allThemeIds.addAll(deactive);
+            return allThemeIds;
+        }
     }
 
     @Getter

@@ -84,7 +84,10 @@ public class ThemeService {
     public List<ThemeDto.ThemeListResponse> getThemeList() {
         List<Theme> themeList = themeRepository.findAllByShopId(SecurityUtil.getCurrentShopId());
         return themeList.stream()
-            .map(ThemeDto.ThemeListResponse::new)
+            .map(it -> {
+                String timerImage = s3Component.generatePresignedUrlsForUpload(it.getShop().getId(), it.getId(), TYPE_TIMER);
+                return new ThemeDto.ThemeListResponse(it, timerImage);
+            })
             .toList();
     }
 
