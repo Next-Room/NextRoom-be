@@ -100,8 +100,7 @@ public class ThemeService {
         Long shopId = this.validateThemeAndShop(themeId)
             .getShop()
             .getId();
-        String timerUrl = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_TIMER, 1)
-            .get(0);
+        String timerUrl = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_TIMER);
 
         return new ThemeUrlResponse(themeId, timerUrl);
     }
