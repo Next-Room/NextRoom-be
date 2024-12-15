@@ -41,12 +41,12 @@ public class S3Component {
 
         List<String> imageUrlList = new ArrayList<>();
         for (int i = 1; i <= imageCount; i++) {
-            imageUrlList.add(generatePresignedUrlsForUpload(shopId, themeId, type));
+            imageUrlList.add(this.generatePresignedUrlForUpload(shopId, themeId, type));
         }
         return imageUrlList;
     }
 
-    public String generatePresignedUrlsForUpload(Long shopId, Long themeId, String type) {
+    public String generatePresignedUrlForUpload(Long shopId, Long themeId, String type) {
         String fileName = this.createFileNameForUpload(shopId, themeId, type, System.nanoTime());
         return this.createPresignedPutUrl(fileName);
     }
@@ -58,10 +58,17 @@ public class S3Component {
 
         List<String> imageUrlList = new ArrayList<>();
         for (String s : uuidList) {
-            String fileName = this.createFileNameForDownLoad(shopId, themeId, type, s);
-            imageUrlList.add(this.createPresignedGetUrl(fileName));
+            imageUrlList.add(this.generatePresignedUrlForDownLoad(shopId, themeId, type, s));
         }
         return imageUrlList;
+    }
+
+    public String generatePresignedUrlForDownLoad(Long shopId, Long themeId, String type, String timerImageUrl) {
+        if (timerImageUrl == null || timerImageUrl.isEmpty()) {
+            return null;
+        }
+        String fileName = this.createFileNameForDownLoad(shopId, themeId, type, timerImageUrl);
+        return this.createPresignedGetUrl(fileName);
     }
 
     public void deleteObjects(Long shopId, Long themeId, String type, List<String> imageList) {

@@ -87,11 +87,11 @@ public class HintController {
     }
 
     @Operation(
-            summary = "PreSigned Url 요청",
+            summary = "힌트 or 정답 이미지 PreSigned Url 요청",
             description = """
                     s3 url /{profile}/{shopId}/{themeId}/{type}/{num}_uuid.png
 
-                    ex) "/dev/1/3/hint/1_2e20b6a9-e24b-45a8-a974-005c14f9f44f.png/"
+                    ex) "/dev/1/3/hint/1_2e20b6a9-e24b-45a8-a974-005c14f9f44f.png"
                     """,
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
