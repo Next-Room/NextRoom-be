@@ -2,10 +2,12 @@ package com.nextroom.nextRoomServer.controller;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
+import com.nextroom.nextRoomServer.dto.ThemeDto.ThemeUrlResponse;
 import io.swagger.v3.oas.annotations.media.Content;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -89,6 +91,29 @@ public class ThemeController {
     @DeleteMapping
     public ResponseEntity<BaseResponse> removeTheme(@RequestBody @Valid ThemeDto.RemoveThemeRequest request) {
         themeService.removeTheme(request);
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
+
+    @GetMapping("/timer/url/{themeId}")
+    public ResponseEntity<DataResponse<ThemeUrlResponse>> getUrl(@PathVariable Long themeId) {
+        return ResponseEntity.ok(new DataResponse<>(OK, themeService.getTimerUrl(themeId)));
+    }
+
+    @PostMapping("/timer")
+    public ResponseEntity<BaseResponse> addThemeTimerImage(@RequestBody @Valid ThemeDto.ThemeUrlRequest request) {
+        themeService.addThemeTimerImage(request);
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
+
+    @DeleteMapping("/timer/{themeId}")
+    public ResponseEntity<BaseResponse> removeTheme(@PathVariable Long themeId) {
+        themeService.removeThemeTimerImage(themeId);
+        return ResponseEntity.ok(new BaseResponse(OK));
+    }
+
+    @PutMapping("/timer/active")
+    public ResponseEntity<BaseResponse> activeTimerUrl(@RequestBody @Valid ThemeDto.ThemeActiveUrlRequest request) {
+        themeService.activeThemeTimerUrl(request);
         return ResponseEntity.ok(new BaseResponse(OK));
     }
 }

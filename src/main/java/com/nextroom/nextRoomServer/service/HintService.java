@@ -1,24 +1,21 @@
 package com.nextroom.nextRoomServer.service;
 
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-
-import com.nextroom.nextRoomServer.domain.Shop;
-import com.nextroom.nextRoomServer.util.aws.S3Component;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.HINT_CODE_CONFLICT;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.HINT_NOT_FOUND;
 
 import com.nextroom.nextRoomServer.domain.Hint;
+import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Theme;
 import com.nextroom.nextRoomServer.dto.HintDto;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.repository.HintRepository;
-import com.nextroom.nextRoomServer.repository.ThemeRepository;
-
+import com.nextroom.nextRoomServer.util.aws.S3Component;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,14 +23,14 @@ public class HintService {
     private final S3Component s3Component;
 
     private final HintRepository hintRepository;
-    private final ThemeRepository themeRepository;
+    private final ThemeService themeService;
 
     private final static String TYPE_HINT = "hint";
     private final static String TYPE_ANSWER = "answer";
 
     @Transactional
     public HintDto.UrlResponse getPresignedUrl(HintDto.UrlRequest request) {
-        Theme theme = this.validateThemeAndShop(request.getThemeId());
+        Theme theme = themeService.validateThemeAndShop(request.getThemeId());
         Shop shop = theme.getShop();
 
         shop.validateSubscriptionInNeed(true);
@@ -48,7 +45,7 @@ public class HintService {
 
     @Transactional
     public void addHint(HintDto.AddHintRequest request) {
-        Theme theme = this.validateThemeAndShop(request.getThemeId());
+        Theme theme = themeService.validateThemeAndShop(request.getThemeId());
 
         theme.getShop().validateSubscriptionInNeed(request.hasImages());
         this.validateHintCodeConflict(theme, request.getHintCode());
@@ -68,7 +65,7 @@ public class HintService {
 
     @Transactional(readOnly = true)
     public List<HintDto.HintListResponse> getHintList(Long themeId) {
-        Theme theme = this.validateThemeAndShop(themeId);
+        Theme theme = themeService.validateThemeAndShop(themeId);
 
         List<Hint> hints = hintRepository.findAllByThemeIdOrderByProgress(themeId);
 
@@ -128,15 +125,6 @@ public class HintService {
         List<String> imagesToRemove = new ArrayList<>(dbList);
         imagesToRemove.removeAll(requestList);
         return imagesToRemove;
-    }
-
-    private Theme validateThemeAndShop(Long themeId) {
-        Theme theme = themeRepository.findById(themeId)
-                .orElseThrow(() -> new CustomException(THEME_NOT_FOUND));
-
-        theme.getShop().checkAuthorized();
-
-        return theme;
     }
 
     private Hint validateHintAndShop(Long hintId) {
