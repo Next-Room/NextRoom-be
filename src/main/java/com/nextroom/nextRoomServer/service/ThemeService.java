@@ -1,6 +1,5 @@
 package com.nextroom.nextRoomServer.service;
 
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.NOT_PERMITTED;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_SHOP_NOT_FOUND;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.TARGET_THEME_NOT_FOUND;
 
@@ -103,7 +102,7 @@ public class ThemeService {
         Long shopId = this.validateThemeAndShop(themeId)
             .getShop()
             .getId();
-        String timerUrl = s3Component.generatePresignedUrlsForUpload(shopId, themeId, TYPE_TIMER);
+        String timerUrl = s3Component.generatePresignedUrlForUpload(shopId, themeId, TYPE_TIMER);
 
         return new ThemeUrlResponse(themeId, timerUrl);
     }

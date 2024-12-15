@@ -41,12 +41,12 @@ public class S3Component {
 
         List<String> imageUrlList = new ArrayList<>();
         for (int i = 1; i <= imageCount; i++) {
-            imageUrlList.add(generatePresignedUrlsForUpload(shopId, themeId, type));
+            imageUrlList.add(this.generatePresignedUrlForUpload(shopId, themeId, type));
         }
         return imageUrlList;
     }
 
-    public String generatePresignedUrlsForUpload(Long shopId, Long themeId, String type) {
+    public String generatePresignedUrlForUpload(Long shopId, Long themeId, String type) {
         String fileName = this.createFileNameForUpload(shopId, themeId, type, System.nanoTime());
         return this.createPresignedPutUrl(fileName);
     }
