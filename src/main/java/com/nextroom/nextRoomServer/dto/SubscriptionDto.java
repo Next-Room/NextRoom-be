@@ -8,6 +8,8 @@ import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.util.Timestamped;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
+import java.util.Optional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +20,12 @@ public class SubscriptionDto {
     public static class UpdateSubscription {
         private MessageData message;
         private String subscription;
+
+        public String getData() {
+            return Optional.ofNullable(message)
+                .map(MessageData::getData)
+                .orElse(null);
+        }
     }
 
     @Getter
@@ -34,6 +42,18 @@ public class SubscriptionDto {
         private String packageName;
         private String eventTimeMillis;
         private SubscriptionNotification subscriptionNotification;
+        private TestNotification testNotification;
+
+        public boolean isTestNotification() {
+            return this.testNotification != null;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("PublishedMessage{version='%s', packageName='%s', testNotification=%s, subscriptionNotification=%s}",
+                version, packageName, Optional.ofNullable(testNotification).map(TestNotification::getVersion).orElse(null),
+                Optional.ofNullable(subscriptionNotification).map(SubscriptionNotification::toString).orElse(null));
+        }
     }
 
     @Getter
@@ -42,6 +62,17 @@ public class SubscriptionDto {
         private int notificationType;
         private String purchaseToken;
         private String subscriptionId;
+
+        @Override
+        public String toString() {
+            return String.format("SubscriptionNotification{version='%s', notificationType=%d, purchaseToken='%s', subscriptionId='%s'}",
+                version, notificationType, purchaseToken, subscriptionId);
+        }
+    }
+
+    @Getter
+    public static class TestNotification {
+        private String version;
     }
 
     @Getter
@@ -56,8 +87,7 @@ public class SubscriptionDto {
         public SubscriptionInfoResponse(Subscription subscription) {
             this.id = subscription.getId();
             this.name = subscription.getShop().getName();
-            this.status = UserStatus.SUBSCRIPTION_EXPIRATION.equals(subscription.getStatus()) ?
-                UserStatus.FREE : subscription.getStatus();
+            this.status = subscription.getStatus();
             this.startDate = subscription.getStartDate();
             this.expiryDate = subscription.getExpiryDate();
             this.createdAt = Timestamped.dateTimeFormatter(subscription.getCreatedAt());
@@ -71,13 +101,19 @@ public class SubscriptionDto {
 
         public UserStatusResponse(Subscription subscription) {
             this.id = subscription.getId();
-            this.status = UserStatus.SUBSCRIPTION_EXPIRATION.equals(subscription.getStatus()) ?
-                UserStatus.FREE : subscription.getStatus();
+            this.status = subscription.getStatus();
         }
     }
 
     @Getter
+    @Builder
     public static class SubscriptionPlanResponse {
+        private final String url;
+        private final List<SubscriptionPlan> plans;
+    }
+
+    @Getter
+    public static class SubscriptionPlan {
         private final Long id;
         private final String subscriptionProductId;
         private final String planId;
@@ -88,7 +124,7 @@ public class SubscriptionDto {
         private final Integer sellPrice;
         private final Integer discountRate;
 
-        public SubscriptionPlanResponse(Product product) {
+        public SubscriptionPlan(Product product) {
             this.id = product.getId();
             this.subscriptionProductId = product.getSubscriptionProductId();
             this.planId = product.getPlanId();

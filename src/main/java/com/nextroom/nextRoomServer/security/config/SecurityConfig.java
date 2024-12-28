@@ -1,5 +1,6 @@
 package com.nextroom.nextRoomServer.security.config;
 
+import com.nextroom.nextRoomServer.filter.ContentCachingLoggingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -46,6 +48,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .addFilterBefore(new ContentCachingLoggingFilter(), SecurityContextHolderAwareRequestFilter.class)
             .addFilterBefore(new ExceptionHandlerFilter(), UsernamePasswordAuthenticationFilter.class)
 
             .csrf(AbstractHttpConfigurer::disable)
@@ -68,7 +71,7 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/**",
                         "/api/v1/email/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**", "/api/v1/subscription/**")
+                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**", "/api/v1/subscription/**", "/api/v1/banner/**")
                     .permitAll() // TODO 구독 상태에 다른 권한 설정 필요
                     .requestMatchers("/api/v1/theme/**")
                     .hasAnyAuthority("ROLE_USER")

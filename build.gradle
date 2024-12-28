@@ -31,8 +31,13 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.10.1'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-validation'
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '3.0.5'
+
     implementation 'com.google.apis:google-api-services-androidpublisher:v3-rev20231030-2.0.0'
     implementation 'com.google.auth:google-auth-library-oauth2-http:1.19.0'
+
+    implementation group: 'software.amazon.awssdk', name: 'bom', version: '2.28.4'
+    implementation group: 'software.amazon.awssdk', name: 's3', version: '2.28.4'
+
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'

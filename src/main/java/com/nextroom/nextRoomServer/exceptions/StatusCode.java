@@ -16,6 +16,9 @@ public enum StatusCode {
     LOGIN_BAD_REQUEST(HttpStatus.BAD_REQUEST, "이메일 또는 패스워드가 일치하지 않습니다."),
     THEME_COUNT_EXCEEDED(HttpStatus.BAD_REQUEST, "테마 생성 최대 개수를 초과하였습니다."),
     UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "이메일이 전송되지 않았습니다."),
+    INVALID_FILE_NAME(HttpStatus.BAD_REQUEST, "파일 이름이 유효하지 않습니다."),
+    ENVIRONMENT_DOES_NOT_MATCH(HttpStatus.BAD_REQUEST, "운영 환경이 일치하지 않습니다."),
+    PACKAGE_NAME_DOES_NOT_MATCH(HttpStatus.BAD_REQUEST, "패키지명이 일치하지 않습니다."),
 
     /**
      * 401 Unauthorized
@@ -33,6 +36,8 @@ public enum StatusCode {
      * 403 FORBIDDEN
      */
     NOT_PERMITTED(HttpStatus.FORBIDDEN, "접근 권한이 없습니다."),
+    SUBSCRIPTION_NOT_PERMITTED(HttpStatus.FORBIDDEN, "구독 권한이 없습니다."),
+
 
     /**
      * 404 Not Found
@@ -57,6 +62,8 @@ public enum StatusCode {
      * 500 Internal Server Error
      */
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "오류가 발생했습니다."),
+    IO_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "외부 API에 오류가 발생했습니다."),
+    SERIALIZE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "직렬화/역직렬화에 실패했습니다."),
 
     /**
      * 2xx OK
