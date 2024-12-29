@@ -110,7 +110,12 @@ public class ThemeService {
     @Transactional
     public void addThemeTimerImage(final ThemeUrlRequest request) {
         Theme theme = validateThemeAndShop(request.getThemeId());
-        theme.updateTimerImage(request.getImageUrl());
+        Shop shop = theme.getShop();
+
+        if (!shop.isSubscription()) {
+            shop.setAllUseTimerUrl(false);
+        }
+        theme.updateTimerImageActive(request.getImageUrl());
     }
 
     @Transactional

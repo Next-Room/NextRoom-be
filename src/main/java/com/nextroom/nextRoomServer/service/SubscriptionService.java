@@ -119,6 +119,9 @@ public class SubscriptionService {
 
         // confirm Google API payment
         androidPurchaseUtils.acknowledge(purchaseToken, product.getSubscriptionProductId());
+
+        // update theme timer image active all
+        shop.setAllUseTimerUrl(true);
     }
 
     @Transactional
@@ -182,6 +185,9 @@ public class SubscriptionService {
 
         // update subscription
         subscription.expire();
+
+        // update theme timer image deactive all
+        subscription.getShop().setAllUseTimerUrl(false);
     }
 
     private Shop getShop(Long shopId) {

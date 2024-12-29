@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
@@ -89,10 +90,19 @@ public class Shop extends Timestamped {
         }
     }
 
+    public boolean isSubscription() {
+        return this.subscription.getStatus() == UserStatus.SUBSCRIPTION;
+    }
+
     public void validateSubscriptionInNeed(boolean needed) {
         if (!needed) { return; }
-        if (this.subscription == null || this.subscription.getStatus() != UserStatus.SUBSCRIPTION) {
+        if (this.subscription == null || !this.isSubscription()) {
             throw new CustomException(SUBSCRIPTION_NOT_PERMITTED);
         }
+    }
+
+    public void setAllUseTimerUrl(boolean active) {
+        this.themes.forEach(theme -> Optional.ofNullable(theme.getTimerImageUrl())
+                .ifPresent(it -> theme.setUseTimerUrl(active)));
     }
 }
