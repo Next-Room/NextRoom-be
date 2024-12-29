@@ -14,7 +14,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -64,8 +64,8 @@ public class Theme extends Timestamped {
         this.hintLimit = request.getHintLimit();
     }
 
-    public void updateTimerImage(String timerImageUrl) {
-        this.useTimerImage = Optional.ofNullable(useTimerImage).orElse(false);
+    public void updateTimerImageActive(String timerImageUrl) {
+        this.useTimerImage = true;
         this.timerImageUrl = timerImageUrl;
     }
 
