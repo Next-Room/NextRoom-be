@@ -27,6 +27,7 @@ import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 @Component
 public class AndroidPurchaseUtils {
 
+    private static final String ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED = "ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED";
     private final String profile;
     private final String packageName;
     private final GoogleCredentials credentials;
@@ -73,7 +74,7 @@ public class AndroidPurchaseUtils {
         SubscriptionPurchaseV2 subscriptionPurchaseV2 = getSubscriptionPurchase(purchaseToken);
 
         // 이미 상품 승인이 된 경우
-        if (subscriptionPurchaseV2.getAcknowledgementState().equals("ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED")) {
+        if (subscriptionPurchaseV2.getAcknowledgementState().equals(ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED)) {
             throw new CustomException(ALREADY_ACKNOWLEDGED);
         }
 
