@@ -1,10 +1,5 @@
 package com.nextroom.nextRoomServer.util.inapp;
 
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.ENVIRONMENT_DOES_NOT_MATCH;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.INTERNAL_SERVER_ERROR;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.IO_ERROR;
-import static com.nextroom.nextRoomServer.exceptions.StatusCode.PACKAGE_NAME_DOES_NOT_MATCH;
-
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.androidpublisher.AndroidPublisher;
@@ -25,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 
 @Slf4j
 @Component
@@ -75,11 +72,10 @@ public class AndroidPurchaseUtils {
     public SubscriptionPurchaseV2 verifyPurchase(String purchaseToken) {
         SubscriptionPurchaseV2 subscriptionPurchaseV2 = getSubscriptionPurchase(purchaseToken);
 
-        // TODO 구매 상황 검증 필요
-        // 상품 승인이 되지 않은 경우
-        // if (subscriptionPurchaseV2.getAcknowledgementState().equals("ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED")) {
-        //     throw new CustomException(BAD_REQUEST);
-        // }
+        // 이미 상품 승인이 된 경우
+        if (subscriptionPurchaseV2.getAcknowledgementState().equals("ACKNOWLEDGEMENT_STATE_ACKNOWLEDGED")) {
+            throw new CustomException(ALREADY_ACKNOWLEDGED);
+        }
 
         log.info("SUBSCRIPTION AT PURCHASE(V2) : {}", subscriptionPurchaseV2.toString());
 
