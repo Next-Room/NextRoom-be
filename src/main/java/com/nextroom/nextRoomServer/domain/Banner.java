@@ -30,6 +30,9 @@ public class Banner extends Timestamped {
     @Column(name = "url")
     private String url;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(name = "active", nullable = false)
     private boolean active;
 }
