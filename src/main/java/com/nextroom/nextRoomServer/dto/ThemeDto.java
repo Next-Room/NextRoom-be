@@ -2,6 +2,7 @@ package com.nextroom.nextRoomServer.dto;
 
 import com.nextroom.nextRoomServer.domain.Theme;
 import com.nextroom.nextRoomServer.util.Timestamped;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import java.util.List;
@@ -89,6 +90,7 @@ public class ThemeDto {
         List<Long> active;
         List<Long> deactive;
 
+        @Schema(hidden = true)
         public List<Long> getAllThemeIds() {
             List<Long> allThemeIds = active;
             allThemeIds.addAll(deactive);

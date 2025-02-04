@@ -25,6 +25,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.util.List;
+
 @Tag(name = "Theme")
 @RestController
 @RequestMapping("/api/v1/theme")
@@ -51,14 +53,14 @@ public class ThemeController {
         summary = "테마 조회",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED"),
-            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED"),
-            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND"),
-            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND")
+            @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED", content = @Content),
+            @ApiResponse(responseCode = "403", description = "NOT_PERMITTED", content = @Content),
+            @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND", content = @Content),
+            @ApiResponse(responseCode = "404", description = "TARGET_THEME_NOT_FOUND", content = @Content)
         }
     )
     @GetMapping
-    public ResponseEntity<BaseResponse> getThemeList() {
+    public ResponseEntity<DataResponse<List<ThemeDto.ThemeListResponse>>> getThemeList() {
         return ResponseEntity.ok(new DataResponse<>(OK, themeService.getThemeList()));
     }
 
