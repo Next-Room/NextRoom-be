@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface BannerRepository extends JpaRepository<Banner, Long> {
 
-    List<Banner> findAllByActiveTrue();
+    List<Banner> findAllByActiveTrueOrderByIdDesc();
 
 }

@@ -23,7 +23,7 @@ public class BannerService {
     }
 
     private List<Banner> getActiveBannerList() {
-        return bannerRepository.findAllByActiveTrue();
+        return bannerRepository.findAllByActiveTrueOrderByIdDesc();
     }
 
 }
