@@ -2,6 +2,8 @@ package com.nextroom.nextRoomServer.dto;
 
 import java.util.Collections;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -106,16 +108,83 @@ public class AuthDto {
         private long accessTokenExpiresIn;
         private String refreshToken;
 
-        public static AuthDto.LogInResponseDto toLogInResponseDto(String shopName, String adminCode,
-            TokenDto tokenDto) {
+        private String email;
+        private String googleSub;
+
+        private Boolean isComplete;
+
+        public static AuthDto.LogInResponseDto toLogInResponseDto(Shop shop, TokenDto tokenDto) {
             return new LogInResponseDtoBuilder()
-                .shopName(shopName)
-                .adminCode(adminCode)
-                .grantType(tokenDto.getGrantType())
-                .accessToken(tokenDto.getAccessToken())
-                .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
-                .refreshToken(tokenDto.getRefreshToken())
-                .build();
+                    .isComplete(true)
+                    .email(shop.getEmail())
+                    .googleSub(shop.getGoogleSub())
+                    .shopName(shop.getName())
+                    .adminCode(shop.getAdminCode())
+                    .grantType(tokenDto.getGrantType())
+                    .accessToken(tokenDto.getAccessToken())
+                    .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
+                    .refreshToken(tokenDto.getRefreshToken())
+                    .build();
+        }
+
+        public static AuthDto.LogInResponseDto toShopInfoResponseDto(Shop shop) {
+            return new LogInResponseDtoBuilder()
+                    .isComplete(false)
+                    .email(shop.getEmail())
+                    .googleSub(shop.getGoogleSub())
+                    .build();
+        }
+    }
+
+    @Getter
+    @Setter
+    public static class GoogleLogInRequestDto {
+        private String code;
+        private String idToken;
+        public boolean isCode() {
+            return this.code != null;
+        }
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor(force = true)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class GoogleTokenResponseDto {
+        @JsonProperty("access_token")
+        private String accessToken;
+
+        @JsonProperty("id_token")
+        private String idToken;
+
+        @JsonProperty("token_type")
+        private String tokenType;
+
+        @JsonProperty("expires_in")
+        private String expiresIn;
+
+        @JsonProperty("scope")
+        private String scope;
+    }
+
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor(force = true)
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    public static class GoogleInfoResponseDto {
+        @JsonProperty("id")
+        private String id;
+
+        @JsonProperty("email")
+        private String email;
+
+        public static AuthDto.GoogleInfoResponseDto toGoogleInfoResponseDto(String id, String email) {
+            return new GoogleInfoResponseDtoBuilder()
+                    .id(id)
+                    .email(email)
+                    .build();
         }
     }
 

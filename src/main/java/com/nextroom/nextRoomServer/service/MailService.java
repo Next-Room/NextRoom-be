@@ -44,7 +44,7 @@ public class MailService {
     }
 
     private void checkDuplicatedEmail(String email) {
-        Optional<Shop> member = shopRepository.findByEmail(email);
+        Optional<Shop> member = shopRepository.findByEmailAndGoogleSubIsNull(email);
         if (member.isPresent()) {
             throw new CustomException(SHOP_ALREADY_EXIST);
         }

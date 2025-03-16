@@ -5,11 +5,15 @@ import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
 import static com.nextroom.nextRoomServer.util.Timestamped.*;
 
 import java.time.Duration;
+import java.util.stream.Collectors;
 
+import com.nextroom.nextRoomServer.domain.Authority;
+import com.nextroom.nextRoomServer.util.oauth2.GoogleClient;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,10 +40,12 @@ public class AuthService {
     private final ShopRepository shopRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final RedisRepository redisRepository;
+
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
     private final RandomCodeGenerator randomCodeGenerator;
+    private final GoogleClient googleClient;
 
     @Value("${jwt.refresh-token-expiration-millis}")
     private long refreshTokenExpirationMillis;
@@ -47,12 +53,9 @@ public class AuthService {
 
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
-        if (shopRepository.existsByEmail(request.getEmail())) {
-            throw new CustomException(SHOP_ALREADY_EXIST);
-        }
-
-        String adminCode = createAdminCode();
-        Shop shop = shopRepository.save(request.toShop(passwordEncoder, adminCode));
+        shopRepository.findByEmailAndGoogleSubIsNull(request.getEmail())
+                .orElseThrow(() -> new CustomException(SHOP_ALREADY_EXIST));
+        Shop shop = shopRepository.save(request.toShop(passwordEncoder, createAdminCode()));
         createSubscription(shop);
 
         return AuthDto.SignUpResponseDto.builder()
@@ -83,13 +86,15 @@ public class AuthService {
     public AuthDto.LogInResponseDto login(@RequestBody AuthDto.LogInRequestDto request) {
 
         UsernamePasswordAuthenticationToken authenticationToken = request.toAuthentication();
-
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
-        TokenDto token = tokenProvider.generateTokenDto(authentication).toTokenResponseDto();
-        Shop shop = shopRepository.findByEmail(request.getEmail())
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+        TokenDto token = tokenProvider.generateTokenDto(authentication.getName(), authorities).toTokenResponseDto();
+
+        Shop shop = shopRepository.findByEmailAndGoogleSubIsNull(request.getEmail())
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
-        AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shop.getName(),
-            shop.getAdminCode(), token);
+        AuthDto.LogInResponseDto response = AuthDto.LogInResponseDto.toLogInResponseDto(shop, token);
 
         redisRepository.setValues(REFRESH_TOKEN_PREFIX + authentication.getName() + " " + response.getRefreshToken(),
             response.getRefreshToken(),
@@ -98,6 +103,24 @@ public class AuthService {
         shop.updateLastLoginAt();
 
         return response;
+    }
+
+    @Transactional
+    public AuthDto.LogInResponseDto googleLogin(AuthDto.GoogleLogInRequestDto request) {
+        AuthDto.GoogleInfoResponseDto userInfo = googleClient.getUserInfo(request);
+        Shop shop = this.save(userInfo);
+        if (shop.getName() == null || shop.getName().isEmpty()) {
+            return AuthDto.LogInResponseDto.toShopInfoResponseDto(shop);
+        }
+
+        String stringShopId = shop.getId().toString();
+        TokenDto token = tokenProvider.generateTokenDto(stringShopId, shop.getAuthority().toString());
+        redisRepository.setValues(REFRESH_TOKEN_PREFIX + stringShopId + " " + token.getRefreshToken(),
+                token.getRefreshToken(),
+                Duration.ofMillis(refreshTokenExpirationMillis));
+        shop.updateLastLoginAt();
+
+        return AuthDto.LogInResponseDto.toLogInResponseDto(shop, token);
     }
 
     @Transactional
@@ -115,7 +138,10 @@ public class AuthService {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
 
-        AuthDto.ReissueResponseDto response = tokenProvider.generateTokenDto(authentication).toReissueResponseDto();
+        String authorities = authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+        AuthDto.ReissueResponseDto response = tokenProvider.generateTokenDto(authentication.getName(), authorities).toReissueResponseDto();
 
         redisRepository.deleteValues(redisKey);
         redisRepository.setValues(REFRESH_TOKEN_PREFIX + authentication.getName() + " " + response.getRefreshToken(),
@@ -128,5 +154,23 @@ public class AuthService {
     @Transactional
     public void unregister() {
         shopRepository.deleteById(SecurityUtil.getCurrentShopId());
+    }
+
+    private Shop save(AuthDto.GoogleInfoResponseDto userInfo) {
+        String email = userInfo.getEmail();
+        String sub = userInfo.getId();
+
+        return shopRepository.findByEmailAndGoogleSub(email, sub)
+                .orElseGet(() -> {
+                    Shop newShop = Shop.builder()
+                            .email(email)
+                            .googleSub(sub)
+                            .authority(Authority.ROLE_USER)
+                            .adminCode(createAdminCode())
+                            .build();
+                    newShop = shopRepository.save(newShop);
+                    createSubscription(newShop);
+                    return newShop;
+                });
     }
 }

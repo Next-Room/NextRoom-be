@@ -46,13 +46,16 @@ public class Shop extends Timestamped {
     @Column
     private String email;
 
+    @Column
+    private String googleSub;
+
     @Column(nullable = false, length = 5)
     private String adminCode;
 
-    @Column(nullable = false)
+    @Column
     private String password;
 
-    @Column(nullable = false)
+    @Column
     private String name;
 
     @Comment(value = "1: 웹(홈페이지)에서 PC로 들어온 유저, 2: 웹(홈페이지)에서 모바일로 들어온 유저, 3: 앱에서 들어온 유저")

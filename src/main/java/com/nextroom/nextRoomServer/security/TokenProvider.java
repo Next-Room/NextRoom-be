@@ -45,17 +45,13 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDto generateTokenDto(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.joining(","));
-
+    public TokenDto generateTokenDto(String subject, String authorities) {
         long now = (new Date()).getTime();
 
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + accessTokenExpirationMillis);
         String accessToken = Jwts.builder()
-            .setSubject(authentication.getName())
+            .setSubject(subject)
             .claim(AUTHORITIES_KEY, authorities)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS512)
