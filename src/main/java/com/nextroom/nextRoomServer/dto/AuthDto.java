@@ -22,6 +22,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import static com.nextroom.nextRoomServer.util.Timestamped.dateTimeFormatter;
+
 public class AuthDto {
     private static final String ADMIN_CODE_REGEX = "[0-9]{5}";
     private static final String PASSWORD_CONDITION_MIN_LENGTH_REGEX = ".{8,}";
@@ -77,6 +79,15 @@ public class AuthDto {
         private String adminCode;
         private String createdAt;
         private String modifiedAt;
+
+        public static AuthDto.SignUpResponseDto toSignUpResponseDto(Shop shop) {
+            return SignUpResponseDto.builder()
+                    .email(shop.getEmail())
+                    .name(shop.getName())
+                    .adminCode(shop.getAdminCode())
+                    .createdAt(dateTimeFormatter(shop.getCreatedAt()))
+                    .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
+        }
     }
 
     @Getter
@@ -108,16 +119,13 @@ public class AuthDto {
         private long accessTokenExpiresIn;
         private String refreshToken;
 
-        private String email;
-        private String googleSub;
-
+        private Long shopId;
         private Boolean isComplete;
 
         public static AuthDto.LogInResponseDto toLogInResponseDto(Shop shop, TokenDto tokenDto) {
-            return new LogInResponseDtoBuilder()
+            return LogInResponseDto.builder()
                     .isComplete(true)
-                    .email(shop.getEmail())
-                    .googleSub(shop.getGoogleSub())
+                    .shopId(shop.getId())
                     .shopName(shop.getName())
                     .adminCode(shop.getAdminCode())
                     .grantType(tokenDto.getGrantType())
@@ -128,10 +136,9 @@ public class AuthDto {
         }
 
         public static AuthDto.LogInResponseDto toShopInfoResponseDto(Shop shop) {
-            return new LogInResponseDtoBuilder()
+            return LogInResponseDto.builder()
                     .isComplete(false)
-                    .email(shop.getEmail())
-                    .googleSub(shop.getGoogleSub())
+                    .shopId(shop.getId())
                     .build();
         }
     }
@@ -181,7 +188,7 @@ public class AuthDto {
         private String email;
 
         public static AuthDto.GoogleInfoResponseDto toGoogleInfoResponseDto(String id, String email) {
-            return new GoogleInfoResponseDtoBuilder()
+            return GoogleInfoResponseDto.builder()
                     .id(id)
                     .email(email)
                     .build();

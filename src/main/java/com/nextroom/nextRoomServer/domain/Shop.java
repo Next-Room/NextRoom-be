@@ -108,4 +108,8 @@ public class Shop extends Timestamped {
         this.themes.forEach(theme -> Optional.ofNullable(theme.getTimerImageUrl())
                 .ifPresent(it -> theme.setUseTimerUrl(active)));
     }
+
+    public boolean isNotCompleteSignUp() {
+        return this.name == null || this.name.isEmpty();
+    }
 }

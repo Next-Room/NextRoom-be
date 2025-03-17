@@ -2,7 +2,6 @@ package com.nextroom.nextRoomServer.service;
 
 import static com.nextroom.nextRoomServer.enums.UserStatus.*;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
-import static com.nextroom.nextRoomServer.util.Timestamped.*;
 
 import java.time.Duration;
 import java.util.stream.Collectors;
@@ -58,12 +57,7 @@ public class AuthService {
         Shop shop = shopRepository.save(request.toShop(passwordEncoder, createAdminCode()));
         createSubscription(shop);
 
-        return AuthDto.SignUpResponseDto.builder()
-            .email(shop.getEmail())
-            .name(shop.getName())
-            .adminCode(shop.getAdminCode())
-            .createdAt(dateTimeFormatter(shop.getCreatedAt()))
-            .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
+        return AuthDto.SignUpResponseDto.toSignUpResponseDto(shop);
     }
 
     private String createAdminCode() {
@@ -109,7 +103,7 @@ public class AuthService {
     public AuthDto.LogInResponseDto googleLogin(AuthDto.GoogleLogInRequestDto request) {
         AuthDto.GoogleInfoResponseDto userInfo = googleClient.getUserInfo(request);
         Shop shop = this.save(userInfo);
-        if (shop.getName() == null || shop.getName().isEmpty()) {
+        if (shop.isNotCompleteSignUp()) {
             return AuthDto.LogInResponseDto.toShopInfoResponseDto(shop);
         }
 
