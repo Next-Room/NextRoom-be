@@ -6,7 +6,6 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -57,6 +56,7 @@ public class TokenProvider {
             .signWith(key, SignatureAlgorithm.HS512)
             .compact();
 
+        // Refresh Token 생성
         String refreshToken = Jwts.builder()
             .setExpiration(new Date(now + refreshTokenExpirationMillis))
             .signWith(key, SignatureAlgorithm.HS512)

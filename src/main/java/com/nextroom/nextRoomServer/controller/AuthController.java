@@ -74,6 +74,19 @@ public class AuthController {
     }
 
     @Operation(
+            summary = "넥스트룸 가입 절차",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND", content = @Content)
+            }
+    )
+    @PutMapping("/shop")
+    public ResponseEntity<DataResponse<AuthDto.ShopUpdateResponseDto>> updateShopInfo(@RequestBody @Valid AuthDto.ShopUpdateRequestDto request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.updateShopInfo(request)));
+    }
+
+    @Operation(
         summary = "토큰 재발급",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),

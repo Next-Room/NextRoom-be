@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,11 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.nextroom.nextRoomServer.domain.Authority;
 import com.nextroom.nextRoomServer.domain.Shop;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -119,13 +115,11 @@ public class AuthDto {
         private long accessTokenExpiresIn;
         private String refreshToken;
 
-        private Long shopId;
         private Boolean isComplete;
 
         public static AuthDto.LogInResponseDto toLogInResponseDto(Shop shop, TokenDto tokenDto) {
             return LogInResponseDto.builder()
-                    .isComplete(true)
-                    .shopId(shop.getId())
+                    .isComplete(shop.isCompleteSignUp())
                     .shopName(shop.getName())
                     .adminCode(shop.getAdminCode())
                     .grantType(tokenDto.getGrantType())
@@ -134,11 +128,33 @@ public class AuthDto {
                     .refreshToken(tokenDto.getRefreshToken())
                     .build();
         }
+    }
 
-        public static AuthDto.LogInResponseDto toShopInfoResponseDto(Shop shop) {
-            return LogInResponseDto.builder()
-                    .isComplete(false)
-                    .shopId(shop.getId())
+    @Getter
+    @Builder
+    @AllArgsConstructor
+    @NoArgsConstructor(force = true)
+    public static class ShopUpdateRequestDto {
+        @NotBlank(message = "매장명을 입력해 주세요.")
+        private String name;
+        @NotBlank(message = "가입 경로를 입력해 주세요.")
+        private String signupSource;
+        private String comment;
+        private Integer type;
+    }
+
+    @Getter
+    @Builder
+    public static class ShopUpdateResponseDto {
+        private Boolean isComplete;
+        private String shopName;
+        private String adminCode;
+
+        public static AuthDto.ShopUpdateResponseDto toShopUpdateResponseDto(Shop shop) {
+            return ShopUpdateResponseDto.builder()
+                    .isComplete(shop.isCompleteSignUp())
+                    .shopName(shop.getName())
+                    .adminCode(shop.getAdminCode())
                     .build();
         }
     }
@@ -211,5 +227,14 @@ public class AuthDto {
         private String accessToken;
         private long accessTokenExpiresIn;
         private String refreshToken;
+
+        public static AuthDto.ReissueResponseDto toReissueResponseDto(TokenDto tokenDto) {
+            return ReissueResponseDto.builder()
+                    .grantType(tokenDto.getGrantType())
+                    .accessToken(tokenDto.getAccessToken())
+                    .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
+                    .refreshToken(tokenDto.getRefreshToken())
+                    .build();
+        }
     }
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import com.nextroom.nextRoomServer.dto.AuthDto;
 import com.nextroom.nextRoomServer.enums.UserStatus;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
@@ -63,6 +64,9 @@ public class Shop extends Timestamped {
     private Integer type;
 
     @Column
+    private String signupSource;
+
+    @Column
     private String comment;
 
     @Column(nullable = false)
@@ -109,7 +113,15 @@ public class Shop extends Timestamped {
                 .ifPresent(it -> theme.setUseTimerUrl(active)));
     }
 
-    public boolean isNotCompleteSignUp() {
-        return this.name == null || this.name.isEmpty();
+    public boolean isCompleteSignUp() {
+        return this.name != null && !this.name.isEmpty();
+    }
+
+    public void updateShopInfo(AuthDto.ShopUpdateRequestDto request) {
+        this.name = request.getName();
+        this.signupSource = request.getSignupSource();
+        this.comment = request.getComment();
+        this.type = request.getType();
+        this.lastLoginAt = LocalDateTime.now();
     }
 }
