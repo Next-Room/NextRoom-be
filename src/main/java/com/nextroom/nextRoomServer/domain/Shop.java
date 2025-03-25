@@ -69,6 +69,9 @@ public class Shop extends Timestamped {
     @Column
     private String comment;
 
+    @Column
+    private Boolean adsConsent;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Authority authority;
@@ -122,6 +125,7 @@ public class Shop extends Timestamped {
         this.signupSource = request.getSignupSource();
         this.comment = request.getComment();
         this.type = request.getType();
+        this.adsConsent = request.getAdsConsent();
         this.lastLoginAt = LocalDateTime.now();
     }
 }
