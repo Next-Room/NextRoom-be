@@ -141,6 +141,7 @@ public class AuthDto {
         private String signupSource;
         private String comment;
         private Integer type;
+        private Boolean adsConsent;
     }
 
     @Getter
