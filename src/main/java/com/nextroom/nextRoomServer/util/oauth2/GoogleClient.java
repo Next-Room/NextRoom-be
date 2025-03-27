@@ -32,7 +32,7 @@ public class GoogleClient {
     private String tokenUrl;
     @Value("${oauth2.google.profile-url}")
     private String profileUrl;
-    @Value("${oauth2.google.web-client-id}")
+    @Value("${oauth2.google.client-id}")
     private String clientId;
     @Value("${oauth2.google.client-secret}")
     private String clientSecret;

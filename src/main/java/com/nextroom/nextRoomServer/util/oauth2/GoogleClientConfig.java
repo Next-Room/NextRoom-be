@@ -20,7 +20,7 @@ import static com.nextroom.nextRoomServer.exceptions.StatusCode.IO_ERROR;
 @Configuration
 public class GoogleClientConfig {
 
-    @Value("${oauth2.google.android-client-id}")
+    @Value("${oauth2.google.client-id}")
     private String clientId;
 
     @Bean
