@@ -132,9 +132,9 @@ public class SubscriptionService {
         NotificationType notificationType = NotificationType.of(subscriptionNotification.getNotificationType());
 
         switch (notificationType) {
-            case SUBSCRIPTION_RENEWED -> renew(purchaseToken);
-            case SUBSCRIPTION_EXPIRED -> expire(purchaseToken);
-            default -> log.debug("Unsupported notification type: {}", subscriptionNotification.getNotificationType());
+            case SUBSCRIPTION_RENEWED, SUBSCRIPTION_RECOVERED -> renew(purchaseToken);
+            case SUBSCRIPTION_EXPIRED, SUBSCRIPTION_ON_HOLD -> expire(purchaseToken);
+            default -> log.info("Unsupported notification type: {}", subscriptionNotification.getNotificationType());
         }
     }
 
