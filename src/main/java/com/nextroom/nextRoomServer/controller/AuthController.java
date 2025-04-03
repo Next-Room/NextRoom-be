@@ -49,27 +49,29 @@ public class AuthController {
 
     @Operation(
             summary = "구글 로그인(웹용)",
-            description = "request: code / isComplete(넥룸 가입 절차 완료 여부)",
+            description = "request: code",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token", content = @Content)
             }
     )
     @GetMapping("/login/google/callback")
-    public ResponseEntity<DataResponse<AuthDto.LogInResponseDto>> googleLogIn(AuthDto.GoogleLogInRequestDto request) {
+    public ResponseEntity<DataResponse<AuthDto.LogInResponseDto>> googleLogIn(@RequestParam String code) {
+        AuthDto.GoogleLogInRequestDto request = new AuthDto.GoogleLogInRequestDto();
+        request.setCode(code);
         return ResponseEntity.ok(new DataResponse<>(OK, authService.googleLogin(request)));
     }
 
     @Operation(
             summary = "구글 로그인(앱용)",
-            description = "request: idToken / isComplete(넥룸 가입 절차 완료 여부)",
+            description = "request: idToken",
             responses = {
                     @ApiResponse(responseCode = "200", description = "OK"),
                     @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token", content = @Content)
             }
     )
     @PostMapping("/login/google/app")
-    public ResponseEntity<DataResponse<AuthDto.LogInResponseDto>> googleLogInApp(@RequestBody AuthDto.GoogleLogInRequestDto request) {
+    public ResponseEntity<DataResponse<AuthDto.LogInResponseDto>> googleLogInApp(@RequestBody @Valid AuthDto.GoogleLogInRequestDto request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.googleLogin(request)));
     }
 
