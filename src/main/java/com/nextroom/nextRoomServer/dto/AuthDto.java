@@ -4,6 +4,7 @@ import java.util.Collections;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -108,13 +109,21 @@ public class AuthDto {
     @Getter
     @Builder
     public static class LogInResponseDto {
+        @NotBlank
         private String shopName;
+        @NotBlank
         private String adminCode;
+        @NotBlank
         private String grantType;
+        @NotBlank
         private String accessToken;
+        @NotNull
         private long accessTokenExpiresIn;
+        @NotBlank
         private String refreshToken;
 
+        @NotNull
+        @Schema(description = "넥스트룸 가입 절차 완료 여부")
         private Boolean isComplete;
 
         public static AuthDto.LogInResponseDto toLogInResponseDto(Shop shop, TokenDto tokenDto) {
@@ -136,19 +145,32 @@ public class AuthDto {
     @NoArgsConstructor(force = true)
     public static class ShopUpdateRequestDto {
         @NotBlank(message = "매장명을 입력해 주세요.")
+        @Schema(description = "매장명")
         private String name;
         @NotBlank(message = "가입 경로를 입력해 주세요.")
+        @Schema(description = "가입 경로(ex. 네이버 검색)")
         private String signupSource;
+        @Schema(description = "가입 이유(ex. 운영 중 매장 도입)")
         private String comment;
+        @Schema(description = "가입 경로 타입 (1: 웹(홈페이지)에서 PC로 들어온 유저\n" +
+                "2: 웹(홈페이지)에서 모바일로 들어온 유저\n" +
+                "3: 앱에서 들어온 유저)")
         private Integer type;
+        @Schema(description = "업데이트 소식 수신 동의 여부")
         private Boolean adsConsent;
     }
 
     @Getter
     @Builder
     public static class ShopUpdateResponseDto {
+        @NotNull
+        @Schema(description = "넥스트룸 가입 절차 완료 여부")
         private Boolean isComplete;
+        @NotBlank
+        @Schema(description = "매장명")
         private String shopName;
+        @NotBlank
+        @Schema(description = "관리자 코드")
         private String adminCode;
 
         public static AuthDto.ShopUpdateResponseDto toShopUpdateResponseDto(Shop shop) {
@@ -164,6 +186,7 @@ public class AuthDto {
     @Setter
     public static class GoogleLogInRequestDto {
         private String code;
+        @NotBlank(message = "ID TOKEN IS NOT NULL")
         private String idToken;
         public boolean isCode() {
             return this.code != null;
