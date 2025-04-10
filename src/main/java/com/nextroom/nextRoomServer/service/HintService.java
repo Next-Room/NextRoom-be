@@ -82,11 +82,9 @@ public class HintService {
     @Transactional
     public void editHint(HintDto.EditHintRequest request) {
         Hint hint = this.validateHintAndShop(request.getId());
-        Theme theme = hint.getTheme();
 
-        theme.getShop().validateSubscriptionInNeed(request.hasImages());
         if (!request.isHintCodeEqual(hint.getHintCode())) {
-            this.validateHintCodeConflict(theme, request.getHintCode());
+            this.validateHintCodeConflict(hint.getTheme(), request.getHintCode());
         }
 
         deleteMismatchedImagesFromS3(TYPE_HINT, hint.getHintImageList(), request.getHintImageList(), hint);
