@@ -28,6 +28,8 @@ public class AuthDto {
     private static final String PASSWORD_CONDITION_UPPER_CASE_REGEX = ".*[A-Z].*";
     private static final String PASSWORD_CONDITION_NUMBER_REGEX = ".*[0-9].*";
     private static final String PASSWORD_CONDITION_SPECIAL_CHARACTER_REGEX = ".*[!@#$%^&*()].*";
+    private static final String PASSWORD_CONDITION_NUMBER_OR_SPECIAL_CHAR_REGEX = ".*[0-9!@#$%^&*()+=?-].*";
+
     private static final String NO_NAME = "오픈 예정 매장";
 
     @Getter
@@ -41,10 +43,7 @@ public class AuthDto {
         @Setter
         @NotEmpty(message = "비밀번호를 입력해 주세요.")
         @Pattern(regexp = PASSWORD_CONDITION_MIN_LENGTH_REGEX, message = "비밀번호는 최소 8자리 이상이어야 합니다.")
-        @Pattern(regexp = PASSWORD_CONDITION_LOWER_CASE_REGEX, message = "비밀번호에 영문 소문자를 최소 1개 이상 포함해야 합니다.")
-        @Pattern(regexp = PASSWORD_CONDITION_UPPER_CASE_REGEX, message = "비밀번호에 영문 대문자를 최소 1개 이상 포함해야 합니다.")
-        @Pattern(regexp = PASSWORD_CONDITION_NUMBER_REGEX, message = "비밀번호에 숫자(0-9)를 최소 1개 이상 포함해야 합니다.")
-        @Pattern(regexp = PASSWORD_CONDITION_SPECIAL_CHARACTER_REGEX, message = "비밀번호에 특수문자(!, @, #, $, %, ^, &, *, (, ))를 최소 1개 이상 포함해야 합니다.")
+        @Pattern(regexp = PASSWORD_CONDITION_NUMBER_OR_SPECIAL_CHAR_REGEX, message = "비밀번호에 숫자(0-9) 혹은 특수문자(!, @, #, $, %, ^, &, *, (, ), +, =, ?, -)를 최소 1개 이상 포함해야 합니다.")
         private String password;
         @NotBlank(message = "업체명을 입력해 주세요.")
         private String name;
