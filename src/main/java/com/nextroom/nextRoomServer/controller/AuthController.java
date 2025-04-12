@@ -7,16 +7,13 @@ import com.nextroom.nextRoomServer.dto.BaseResponse;
 import com.nextroom.nextRoomServer.dto.DataResponse;
 import com.nextroom.nextRoomServer.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Auth")
 @RestController
@@ -30,11 +27,11 @@ public class AuthController {
         summary = "회원가입",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token")
+            @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token", content = @Content)
         }
     )
     @PostMapping("/signup")
-    public ResponseEntity<BaseResponse> signUp(@RequestBody @Valid AuthDto.SignUpRequestDto request) {
+    public ResponseEntity<DataResponse<AuthDto.SignUpResponseDto>> signUp(@RequestBody @Valid AuthDto.SignUpRequestDto request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.signUp(request)));
     }
 
@@ -42,12 +39,53 @@ public class AuthController {
         summary = "로그인",
         responses = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token")
+            @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token", content = @Content)
         }
     )
     @PostMapping("/login")
-    public ResponseEntity<BaseResponse> logIn(@RequestBody @Valid AuthDto.LogInRequestDto request) {
+    public ResponseEntity<DataResponse<AuthDto.LogInResponseDto>> logIn(@RequestBody @Valid AuthDto.LogInRequestDto request) {
         return ResponseEntity.ok(new DataResponse<>(OK, authService.login(request)));
+    }
+
+    @Operation(
+            summary = "구글 로그인(웹용)",
+            description = "request: code",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token", content = @Content)
+            }
+    )
+    @GetMapping("/login/google/callback")
+    public ResponseEntity<DataResponse<AuthDto.LogInResponseDto>> googleLogIn(@RequestParam String code) {
+        AuthDto.GoogleLogInRequestDto request = new AuthDto.GoogleLogInRequestDto();
+        request.setCode(code);
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.googleLogin(request)));
+    }
+
+    @Operation(
+            summary = "구글 로그인(앱용)",
+            description = "request: idToken",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "403", description = "Unauthorized / Invalid Token", content = @Content)
+            }
+    )
+    @PostMapping("/login/google/app")
+    public ResponseEntity<DataResponse<AuthDto.LogInResponseDto>> googleLogInApp(@RequestBody @Valid AuthDto.GoogleLogInRequestDto request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.googleLogin(request)));
+    }
+
+    @Operation(
+            summary = "넥스트룸 가입 절차",
+            responses = {
+                    @ApiResponse(responseCode = "200", description = "OK"),
+                    @ApiResponse(responseCode = "401", description = "TOKEN_UNAUTHORIZED", content = @Content),
+                    @ApiResponse(responseCode = "404", description = "TARGET_SHOP_NOT_FOUND", content = @Content)
+            }
+    )
+    @PutMapping("/shop")
+    public ResponseEntity<DataResponse<AuthDto.ShopUpdateResponseDto>> updateShopInfo(@RequestBody @Valid AuthDto.ShopUpdateRequestDto request) {
+        return ResponseEntity.ok(new DataResponse<>(OK, authService.updateShopInfo(request)));
     }
 
     @Operation(

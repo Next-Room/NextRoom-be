@@ -6,7 +6,6 @@ import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -45,22 +44,19 @@ public class TokenProvider {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDto generateTokenDto(Authentication authentication) {
-        String authorities = authentication.getAuthorities().stream()
-            .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.joining(","));
-
+    public TokenDto generateTokenDto(String subject, String authorities) {
         long now = (new Date()).getTime();
 
         // Access Token 생성
         Date accessTokenExpiresIn = new Date(now + accessTokenExpirationMillis);
         String accessToken = Jwts.builder()
-            .setSubject(authentication.getName())
+            .setSubject(subject)
             .claim(AUTHORITIES_KEY, authorities)
             .setExpiration(accessTokenExpiresIn)
             .signWith(key, SignatureAlgorithm.HS512)
             .compact();
 
+        // Refresh Token 생성
         String refreshToken = Jwts.builder()
             .setExpiration(new Date(now + refreshTokenExpirationMillis))
             .signWith(key, SignatureAlgorithm.HS512)

@@ -3,7 +3,6 @@ package com.nextroom.nextRoomServer.security.config;
 import com.nextroom.nextRoomServer.filter.ContentCachingLoggingFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -68,13 +67,11 @@ public class SecurityConfig {
 
             .authorizeHttpRequests(
                 authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/**",
+                    .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/rtdn",
                         "/api/v1/email/**")
                     .permitAll()
-                    .requestMatchers(HttpMethod.GET, "/api/v1/theme/**", "/api/v1/hint/**", "/api/v1/subscription/**", "/api/v1/banner/**")
-                    .permitAll() // TODO 구독 상태에 다른 권한 설정 필요
-                    .requestMatchers("/api/v1/theme/**")
-                    .hasAnyAuthority("ROLE_USER")
+                    .requestMatchers("/api/v1/auth/shop", "/api/v1/auth/unregister")
+                    .authenticated()
                     .anyRequest()
                     .authenticated()
             )
