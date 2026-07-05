@@ -61,6 +61,7 @@ public class Subscription extends Timestamped {
     }
 
     public void renew(LocalDate startDate, LocalDate expiryDate) {
+        this.status = UserStatus.SUBSCRIPTION;
         this.startDate = startDate;
         this.expiryDate = expiryDate;
     }
