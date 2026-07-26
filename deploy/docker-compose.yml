@@ -1,0 +1,116 @@
+# NextRoom 운영 스택 (VM 1대에 전체 통합)
+#
+# 실행:  cd deploy && docker compose pull && docker compose up -d
+# 필요 파일(서버에만 존재, git 커밋 금지):
+#   deploy/.env                 (compose 인터폴레이션: 이미지 태그, MySQL root/계정 비밀번호)
+#   deploy/.env.live            (spring-live 앱 환경변수, prod 프로필)
+#   deploy/.env.dev             (spring-dev  앱 환경변수, dev  프로필)
+#   deploy/secrets/iap-google-credentials.json  (Google IAP 크레덴셜)
+#   deploy/nginx/certs/         (acme.sh 가 발급한 ZeroSSL 인증서)
+
+name: nextroom
+
+services:
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nextroom-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      - acme-webroot:/var/www/acme:ro
+    depends_on:
+      - spring-live
+      - spring-dev
+    networks:
+      - nextroom
+
+  spring-live:
+    image: ghcr.io/next-room/nextroom-be:${LIVE_TAG:-live}
+    container_name: nextroom-spring-live
+    restart: unless-stopped
+    env_file:
+      - ./.env.live
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    volumes:
+      - ./secrets/iap-google-credentials.json:/app/config/iap-google-credentials.json:ro
+    expose:
+      - "8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nextroom
+
+  spring-dev:
+    image: ghcr.io/next-room/nextroom-be:${DEV_TAG:-dev}
+    container_name: nextroom-spring-dev
+    restart: unless-stopped
+    env_file:
+      - ./.env.dev
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+    volumes:
+      - ./secrets/iap-google-credentials.json:/app/config/iap-google-credentials.json:ro
+    expose:
+      - "8080"
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - nextroom
+
+  mysql:
+    image: mysql:8.0
+    container_name: nextroom-mysql
+    restart: unless-stopped
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?set in deploy/.env}
+      # 앱 계정/스키마는 ./mysql/init 스크립트에서 생성 (아래 변수 사용)
+      APP_DB_USER: ${APP_DB_USER:?set in deploy/.env}
+      APP_DB_PASSWORD: ${APP_DB_PASSWORD:?set in deploy/.env}
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    # 컨테이너 외부(호스트)에서 mysqldump/복원할 때만 임시로 포트를 열 것. 평시엔 미노출.
+    networks:
+      - nextroom
+
+  redis:
+    image: redis:7-alpine
+    container_name: nextroom-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - nextroom
+
+volumes:
+  mysql-data:
+  redis-data:
+  acme-webroot:
+
+networks:
+  nextroom:
+    driver: bridge

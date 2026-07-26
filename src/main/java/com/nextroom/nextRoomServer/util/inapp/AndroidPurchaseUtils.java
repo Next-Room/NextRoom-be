@@ -19,6 +19,7 @@ import java.security.GeneralSecurityException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.stereotype.Component;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.*;
@@ -41,7 +42,10 @@ public class AndroidPurchaseUtils {
         this.profile = profile;
         this.packageName = packageName;
 
-        InputStream inputStream = new ClassPathResource(accountFilePath).getInputStream();
+        // 절대경로(/로 시작)면 파일시스템에서 로드(Docker 런타임 마운트), 아니면 기존처럼 클래스패스에서 로드
+        InputStream inputStream = accountFilePath.startsWith("/")
+            ? new FileSystemResource(accountFilePath).getInputStream()
+            : new ClassPathResource(accountFilePath).getInputStream();
         this.credentials = GoogleCredentials.fromStream(inputStream)
             .createScoped(AndroidPublisherScopes.ANDROIDPUBLISHER);
 

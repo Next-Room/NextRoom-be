@@ -1,17 +1,125 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration-millis: 10800000 # 1000 * 60 * 60 * 3 == 3시간
+  refresh-token-expiration-millis: 604800000 # 1000 * 60 * 60 * 24 * 7 == 7일
+
 spring:
-  h2:
-    console:
-      enabled: true
-      path: /h2-console
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:nextroom.official@gmail.com}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+    auth-code-expiration-millis: 300000  # 1000 * 60 * 5 == 5분
+
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      database: ${REDIS_DATABASE:0}  # live/dev 가 같은 redis 를 공유하되 DB index 로 분리
+
+  cloud:
+    aws:
+      s3:
+        credentials:
+          accessKey: ${AWS_S3_ACCESS_KEY}
+          secretKey: ${AWS_S3_SECRET_KEY}
+        bucket: ${AWS_S3_BUCKET:nextroom-image}
+      region:
+        static: ap-northeast-2
+      stack:
+        auto: false
+
+iap:
+  google:
+    packageName: com.nextroom.nextroom
+    credentials: ${IAP_GOOGLE_CREDENTIALS_PATH}
+
+oauth2:
+  google:
+    token-url: https://oauth2.googleapis.com/token
+    profile-url: https://www.googleapis.com/userinfo/v2/me
+    client-id: ${OAUTH2_GOOGLE_CLIENT_ID}
+    client-secret: ${OAUTH2_GOOGLE_CLIENT_SECRET}
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: local
   datasource:
-    url: jdbc:h2:mem:testdb
-    username: sa
-    driver-class-name: org.h2.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
-    show-sql: true
     hibernate:
-      hbm2ddl:
-        auto: update
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
+    show-sql: true
+nextroom:
+  plan-document-url: https://nextroom-official.notion.site/38c311947d1d80ffa8d2e13f6c31f8d5
+oauth2:
+  google:
+    redirect-uri: http://localhost:3000/signup
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+nextroom:
+  plan-document-url: https://nextroom-official.notion.site/38c311947d1d80ffa8d2e13f6c31f8d5
+oauth2:
+  google:
+    redirect-uri: http://localhost:3000/signup
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        format_sql: true
+nextroom:
+  plan-document-url: https://nextroom-official.notion.site/38c311947d1d80ffa8d2e13f6c31f8d5
+oauth2:
+  google:
+    redirect-uri: https://nextroom.co.kr/signup

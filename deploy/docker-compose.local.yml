@@ -1,0 +1,35 @@
+# 로컬 테스트 전용 오버라이드 (프로덕션 compose 와 함께 -f 로 겹쳐 사용)
+#
+# 사용:
+#   cd deploy
+#   docker compose -f docker-compose.yml -f docker-compose.local.yml up -d --build \
+#       mysql redis spring-live spring-dev
+#
+# 프로덕션과 다른 점:
+#   - GHCR pull 대신 로컬에서 직접 이미지 빌드 (build)
+#   - nginx/SSL 없이 스프링 포트를 호스트로 직접 노출 (live=8080, dev=8081)
+#   - mysql 3306 도 호스트로 노출(선택, DB 툴로 접속/덤프 확인용)
+#
+# 주의: 이 파일은 자동 적용되는 docker-compose.override.yml 이 아니라, -f 로 명시할 때만 적용됨.
+#       (서버 프로덕션 실행에는 절대 섞이지 않게)
+
+services:
+  spring-live:
+    image: nextroom-be:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  spring-dev:
+    image: nextroom-be:local
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8080"
+
+  mysql:
+    ports:
+      - "3306:3306"

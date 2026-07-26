@@ -236,3 +236,23 @@ $RECYCLE.BIN/
 !gradle/wrapper/gradle-wrapper.jar
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,intellij,macos,java
+
+.env
+.env.*
+!.env.example
+!.env.*.example
+**/src/main/resources/nextroom-*.json
+*credentials*.json
+nextroom-*.json
+
+deploy/.env
+deploy/.env.live
+deploy/.env.dev
+deploy/secrets/
+deploy/nginx/certs/
+
+# 운영 문서(대외비) — 저장소에 커밋하지 않음
+docs/
+
+# 로컬 에이전트 설정 — 커밋하지 않음
+.claude/
