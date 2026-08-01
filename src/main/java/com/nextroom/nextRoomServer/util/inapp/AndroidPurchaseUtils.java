@@ -131,7 +131,7 @@ public class AndroidPurchaseUtils {
 
             SubscriptionPurchaseV2 subscriptionPurchaseV2 = get.execute();
 
-            validateEnvironment(subscriptionPurchaseV2);
+//            validateEnvironment(subscriptionPurchaseV2);
 
             return subscriptionPurchaseV2;
         } catch (Exception e) {
