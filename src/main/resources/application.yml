@@ -99,7 +99,7 @@ nextroom:
   plan-document-url: https://nextroom-official.notion.site/38c311947d1d80ffa8d2e13f6c31f8d5
 oauth2:
   google:
-    redirect-uri: http://localhost:3000/signup
+    redirect-uri: ${OAUTH2_GOOGLE_REDIRECT_URI}
 
 ---
 
