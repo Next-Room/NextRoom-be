@@ -251,6 +251,10 @@ deploy/.env.dev
 deploy/secrets/
 deploy/nginx/certs/
 
+# acme HTTP-01 챌린지 임시 파일 (디렉터리는 .gitkeep 로 유지)
+deploy/nginx/acme-webroot/*
+!deploy/nginx/acme-webroot/.gitkeep
+
 # 운영 문서(대외비) — 저장소에 커밋하지 않음
 docs/
 

@@ -21,7 +21,9 @@ services:
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
       - ./nginx/certs:/etc/nginx/certs:ro
-      - acme-webroot:/var/www/acme:ro
+      # acme.sh(host)가 쓰는 webroot 와 동일 경로를 서빙해야 HTTP-01 갱신이 동작한다.
+      # (named volume 이 아니라 host bind mount 로 일치시킴)
+      - ./nginx/acme-webroot:/var/www/acme:ro
     depends_on:
       - spring-live
       - spring-dev
@@ -109,7 +111,6 @@ services:
 volumes:
   mysql-data:
   redis-data:
-  acme-webroot:
 
 networks:
   nextroom:
