@@ -21,7 +21,9 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
     @Override
@@ -61,7 +63,9 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         if (e instanceof CustomException customException) {
             return customException.getStatusCode();
         }
-        return BAD_REQUEST;
+        // 토큰 문제가 아닌 예외(Redis 연결 장애 등)는 5xx 로 응답해 클라이언트가 세션 만료로 오인하지 않게 한다
+        log.error("Unhandled exception in filter chain", e);
+        return INTERNAL_SERVER_ERROR;
     }
 
     private void setErrorResponse(HttpServletResponse response, StatusCode statusCode) {
