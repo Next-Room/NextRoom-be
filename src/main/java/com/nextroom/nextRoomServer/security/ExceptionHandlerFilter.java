@@ -31,19 +31,37 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
         try {
             filterChain.doFilter(request, response);
-        } catch (io.jsonwebtoken.security.SecurityException | MalformedJwtException e) {
-            setErrorResponse(response, INVALID_TOKEN_SIGNATURE);
-        } catch (ExpiredJwtException e) {
-            setErrorResponse(response, TOKEN_EXPIRED);
-        } catch (UnsupportedJwtException e) {
-            setErrorResponse(response, UNSUPPORTED_TOKEN);
-        } catch (IllegalArgumentException | JwtException e) {
-            setErrorResponse(response, INVALID_TOKEN);
-        } catch (CustomException e) {
-            setErrorResponse(response, e.getStatusCode());
         } catch (Exception e) {
-            setErrorResponse(response, BAD_REQUEST);
+            Throwable unwrappedThrowable = unwrap(e);
+            setErrorResponse(response, resolveStatusCode(unwrappedThrowable));
         }
+    }
+
+    // 컨트롤러/서비스에서 던진 예외는 DispatcherServlet 이 ServletException 으로 감싸서 올라오므로 원인 예외를 꺼낸다
+    private Throwable unwrap(Throwable e) {
+        while (e instanceof ServletException && e.getCause() != null) {
+            e = e.getCause();
+        }
+        return e;
+    }
+
+    private StatusCode resolveStatusCode(Throwable e) {
+        if (e instanceof io.jsonwebtoken.security.SecurityException || e instanceof MalformedJwtException) {
+            return INVALID_TOKEN_SIGNATURE;
+        }
+        if (e instanceof ExpiredJwtException) {
+            return TOKEN_EXPIRED;
+        }
+        if (e instanceof UnsupportedJwtException) {
+            return UNSUPPORTED_TOKEN;
+        }
+        if (e instanceof IllegalArgumentException || e instanceof JwtException) {
+            return INVALID_TOKEN;
+        }
+        if (e instanceof CustomException customException) {
+            return customException.getStatusCode();
+        }
+        return BAD_REQUEST;
     }
 
     private void setErrorResponse(HttpServletResponse response, StatusCode statusCode) {
