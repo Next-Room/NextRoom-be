@@ -37,6 +37,9 @@ spring:
           accessKey: ${AWS_S3_ACCESS_KEY}
           secretKey: ${AWS_S3_SECRET_KEY}
         bucket: ${AWS_S3_BUCKET:nextroom-image}
+        presign:
+          get-ttl-minutes: ${AWS_S3_PRESIGN_GET_TTL_MINUTES:90}  # 이미지 조회용 서명 유효 시간
+          put-ttl-minutes: ${AWS_S3_PRESIGN_PUT_TTL_MINUTES:10}  # 이미지 업로드용 서명 유효 시간 (쓰기 권한이라 짧게 유지)
       region:
         static: ap-northeast-2
       stack:
