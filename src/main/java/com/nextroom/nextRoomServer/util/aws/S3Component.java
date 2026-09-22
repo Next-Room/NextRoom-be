@@ -28,6 +28,10 @@ public class S3Component {
     private String profile;
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucketName;
+    @Value("${spring.cloud.aws.s3.presign.get-ttl-minutes:90}")
+    private long getUrlTtlMinutes;
+    @Value("${spring.cloud.aws.s3.presign.put-ttl-minutes:10}")
+    private long putUrlTtlMinutes;
 
     private final S3Client s3Client;
     private final S3Presigner presigner;
@@ -92,7 +96,7 @@ public class S3Component {
             .build();
 
         PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofMinutes(10))
+            .signatureDuration(Duration.ofMinutes(putUrlTtlMinutes))
             .putObjectRequest(objectRequest)
             .build();
 
@@ -108,7 +112,7 @@ public class S3Component {
             .build();
 
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofMinutes(10))
+            .signatureDuration(Duration.ofMinutes(getUrlTtlMinutes))
             .getObjectRequest(objectRequest)
             .build();
 
