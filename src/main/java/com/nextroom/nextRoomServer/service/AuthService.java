@@ -31,6 +31,7 @@ import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -93,6 +94,9 @@ public class AuthService {
 
     @Transactional
     public AuthDto.ReissueResponseDto reissue(AuthDto.ReissueRequestDto request) {
+        if (!StringUtils.hasText(request.getAccessToken()) || !StringUtils.hasText(request.getRefreshToken())) {
+            throw new CustomException(INVALID_REFRESH_TOKEN);
+        }
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }

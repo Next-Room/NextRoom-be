@@ -57,7 +57,7 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         if (e instanceof UnsupportedJwtException) {
             return UNSUPPORTED_TOKEN;
         }
-        if (e instanceof IllegalArgumentException || e instanceof JwtException) {
+        if (e instanceof JwtException) {
             return INVALID_TOKEN;
         }
         if (e instanceof CustomException customException) {
