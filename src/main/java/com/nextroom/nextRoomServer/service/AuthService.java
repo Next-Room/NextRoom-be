@@ -31,6 +31,7 @@ import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.util.StringUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +50,7 @@ public class AuthService {
     @Value("${jwt.refresh-token-expiration-millis}")
     private long refreshTokenExpirationMillis;
     private static final String REFRESH_TOKEN_PREFIX = "RefreshToken ";
+    private static final int REFRESH_TOKEN_ROTATION_GRACE_MILLIS = 5_000;
 
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
@@ -92,6 +94,9 @@ public class AuthService {
 
     @Transactional
     public AuthDto.ReissueResponseDto reissue(AuthDto.ReissueRequestDto request) {
+        if (!StringUtils.hasText(request.getAccessToken()) || !StringUtils.hasText(request.getRefreshToken())) {
+            throw new CustomException(INVALID_REFRESH_TOKEN);
+        }
         if (!tokenProvider.validateToken(request.getRefreshToken())) {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
@@ -105,7 +110,8 @@ public class AuthService {
         }
 
         TokenDto token = this.generateAndSaveToken(authentication.getName(), getAuthorities(authentication));
-        redisRepository.deleteValues(redisKey);
+        // 동시에 들어온 재발급 요청이 실패하지 않도록 이전 refresh token 을 즉시 삭제하지 않고 유예 기간 후 만료시킨다
+        redisRepository.expireValues(redisKey, REFRESH_TOKEN_ROTATION_GRACE_MILLIS);
 
         return AuthDto.ReissueResponseDto.toReissueResponseDto(token);
     }
