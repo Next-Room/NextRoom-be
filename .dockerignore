@@ -1,0 +1,19 @@
+.git
+.gradle
+.idea
+out
+build
+.claude
+docs
+deploy
+images
+scripts
+appspec.yml
+README.md
+# 시크릿류는 이미지에 절대 포함하지 않는다 (런타임 마운트)
+.env
+.env.*
+!.env.example
+**/src/main/resources/nextroom-*.json
+*credentials*.json
+nextroom-*.json
