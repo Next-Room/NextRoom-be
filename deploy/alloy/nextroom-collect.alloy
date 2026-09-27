@@ -1,0 +1,106 @@
+// NextRoom 수집 설정 — /etc/alloy/config.alloy 의 기본 블록(remote_write / loki.write)에 이어 붙인다.
+// 기본 블록에는 Grafana Cloud 토큰이 있어 저장소에 두지 않는다.
+// 참조하는 리시버(기본 블록에서 정의됨):
+//   prometheus.remote_write.metrics_service.receiver
+//   loki.write.grafana_cloud_loki.receiver
+
+// ───────────── 호스트 메트릭 (node_exporter 내장) ─────────────
+prometheus.exporter.unix "node" { }
+
+discovery.relabel "node" {
+  targets = prometheus.exporter.unix.node.targets
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+  // Linux Server 통합 대시보드가 이 job 라벨을 기대한다
+  rule {
+    target_label = "job"
+    replacement  = "integrations/node_exporter"
+  }
+}
+
+prometheus.scrape "node" {
+  targets         = discovery.relabel.node.output
+  forward_to      = [prometheus.remote_write.metrics_service.receiver]
+  scrape_interval = "60s"
+}
+
+// ───────────── 시스템 로그 1: journald ─────────────
+// unit 라벨을 붙여야 통합 대시보드에서 서비스별 필터가 동작한다
+loki.relabel "journal" {
+  forward_to = []
+
+  rule {
+    source_labels = ["__journal__systemd_unit"]
+    target_label  = "unit"
+  }
+  rule {
+    source_labels = ["__journal__hostname"]
+    target_label  = "hostname"
+  }
+}
+
+loki.source.journal "journal" {
+  // max_age 로 과거 백로그를 제한 → Loki "timestamp too old" 대량 거부 방지
+  max_age       = "24h"
+  relabel_rules = loki.relabel.journal.rules
+  forward_to    = [loki.write.grafana_cloud_loki.receiver]
+  labels        = {
+    job      = "integrations/node_exporter",
+    instance = constants.hostname,
+  }
+}
+
+// ───────────── 시스템 로그 2: /var/log 파일 ─────────────
+// Linux Server 통합의 "application logs" 검사가 이 스트림을 본다
+local.file_match "system_logs" {
+  path_targets = [{
+    __address__ = "localhost",
+    __path__    = "/var/log/{syslog,messages,*.log}",
+    instance    = constants.hostname,
+    job         = "integrations/node_exporter",
+  }]
+}
+
+loki.source.file "system_logs" {
+  targets    = local.file_match.system_logs.targets
+  forward_to = [loki.write.grafana_cloud_loki.receiver]
+}
+
+// ───────────── 컨테이너 로그 (spring-live/dev, nginx, mysql, redis) ─────────────
+// 요구사항: alloy 사용자가 docker 그룹에 속해야 /var/run/docker.sock 읽기 가능
+discovery.docker "containers" {
+  host             = "unix:///var/run/docker.sock"
+  refresh_interval = "15s"
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+
+  // "/nextroom-spring-live" → "nextroom-spring-live"
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_log_stream"]
+    target_label  = "stream"
+  }
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+  rule {
+    target_label = "job"
+    replacement  = "docker"
+  }
+}
+
+loki.source.docker "containers" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.containers.output
+  forward_to = [loki.write.grafana_cloud_loki.receiver]
+}
