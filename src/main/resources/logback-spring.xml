@@ -4,30 +4,15 @@
   <conversionRule conversionWord="clr" converterClass="org.springframework.boot.logging.logback.ColorConverter" />
 
   <property name="CONSOLE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %clr(%5level) %cyan(%logger) - %msg%n" />
-  <property name="FILE_LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %5level %logger - %msg%n" />
-  <property name="LOG_PATH" value="./logs"/>
-  <property name="MAX_HISTORY" value="30" />
-  <property name="MAX_FILE_SIZE" value="10MB" />
-  <property name="TOTAL_SIZE" value="30MB" />
 
-  <!-- Console appender 설정 -->
+  <!-- 컨테이너 환경에서는 stdout 으로만 출력한다(12-factor).
+       수집/보존은 플랫폼이 담당: Docker json-file 로테이션(10m×3) → Alloy → Grafana Cloud Loki.
+       (이전의 RollingFileAppender 는 /home/ubuntu/app/logs 라는 옛 EC2 경로에 기록해
+        컨테이너 임시 레이어에 쌓였다가 배포 때마다 사라졌고, stdout 과 완전 중복이라 제거함) -->
   <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
     <encoder>
       <pattern>${CONSOLE_LOG_PATTERN}</pattern>
     </encoder>
-  </appender>
-
-  <!-- Rolling file appender 설정 -->
-  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-    <encoder>
-      <pattern>${FILE_LOG_PATTERN}</pattern>
-    </encoder>
-    <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-      <fileNamePattern>${LOG_PATH}/application-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
-      <maxHistory>${MAX_HISTORY}</maxHistory>
-      <maxFileSize>${MAX_FILE_SIZE}</maxFileSize>
-      <totalSizeCap>${TOTAL_SIZE}</totalSizeCap>
-    </rollingPolicy>
   </appender>
 
   <springProfile name="local">
@@ -38,20 +23,16 @@
   </springProfile>
 
   <springProfile name="dev">
-    <property name="LOG_PATH" value="/home/ubuntu/app/logs"/>
     <logger name="com.nextroom.nextRoomServer.*" level="DEBUG"/>
     <root level="INFO">
       <appender-ref ref="CONSOLE" />
-      <appender-ref ref="FILE" />
     </root>
   </springProfile>
 
   <springProfile name="prod">
-    <property name="LOG_PATH" value="/home/ubuntu/app/logs"/>
     <logger name="com.nextroom.nextRoomServer.*" level="DEBUG"/>
     <root level="INFO">
       <appender-ref ref="CONSOLE" />
-      <appender-ref ref="FILE" />
     </root>
   </springProfile>
 
