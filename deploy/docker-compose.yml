@@ -10,10 +10,18 @@
 
 name: nextroom
 
+# 컨테이너 로그 로테이션 (미설정 시 json 로그가 무한히 커져 디스크를 잠식)
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 services:
   nginx:
     image: nginx:1.27-alpine
     container_name: nextroom-nginx
+    logging: *default-logging
     restart: unless-stopped
     ports:
       - "80:80"
@@ -33,6 +41,7 @@ services:
   spring-live:
     image: ghcr.io/next-room/nextroom-be:${LIVE_TAG:-live}
     container_name: nextroom-spring-live
+    logging: *default-logging
     restart: unless-stopped
     env_file:
       - ./.env.live
@@ -53,6 +62,7 @@ services:
   spring-dev:
     image: ghcr.io/next-room/nextroom-be:${DEV_TAG:-dev}
     container_name: nextroom-spring-dev
+    logging: *default-logging
     restart: unless-stopped
     env_file:
       - ./.env.dev
@@ -73,6 +83,7 @@ services:
   mysql:
     image: mysql:8.0
     container_name: nextroom-mysql
+    logging: *default-logging
     restart: unless-stopped
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
@@ -96,6 +107,7 @@ services:
   redis:
     image: redis:7-alpine
     container_name: nextroom-redis
+    logging: *default-logging
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
