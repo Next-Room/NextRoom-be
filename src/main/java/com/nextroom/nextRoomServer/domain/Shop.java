@@ -79,11 +79,16 @@ public class Shop extends Timestamped {
     @Column
     private LocalDateTime lastLoginAt;
 
+    @Column
+    private LocalDateTime deletedAt;
+
     @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Theme> themes = new ArrayList<>();
 
-    @OneToMany(mappedBy = "shop", cascade = CascadeType.ALL, orphanRemoval = true)
+    // 전자상거래법 제6조 / 시행령 제6조에 따라 결제 기록은 탈퇴 후에도 5년간 보존한다.
+    // 따라서 shop 삭제가 payment로 전파되면 안 된다.
+    @OneToMany(mappedBy = "shop")
     @Builder.Default
     private List<Payment> payments = new ArrayList<>();
 
@@ -127,5 +132,9 @@ public class Shop extends Timestamped {
         this.type = request.getType();
         this.adsConsent = request.getAdsConsent();
         this.lastLoginAt = LocalDateTime.now();
+    }
+
+    public void withdraw() {
+        this.deletedAt = LocalDateTime.now();
     }
 }
