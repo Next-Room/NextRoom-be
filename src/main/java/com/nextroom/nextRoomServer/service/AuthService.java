@@ -108,6 +108,14 @@ public class AuthService {
         if (!refreshToken.equals(request.getRefreshToken())) {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
+        // 탈퇴 시 refresh token 을 지우지만, 삭제와 동시에 들어온 재발급이나 삭제 누락이 있으면
+        // 탈퇴 회원이 토큰을 계속 갱신할 수 있으므로 재발급 시점에 탈퇴 여부를 한 번 더 확인한다.
+        boolean withdrawn = shopRepository.findById(Long.parseLong(authentication.getName()))
+            .map(Shop::isWithdrawn)
+            .orElse(true);
+        if (withdrawn) {
+            throw new CustomException(INVALID_REFRESH_TOKEN);
+        }
 
         TokenDto token = this.generateAndSaveToken(authentication.getName(), getAuthorities(authentication));
         // 동시에 들어온 재발급 요청이 실패하지 않도록 이전 refresh token 을 즉시 삭제하지 않고 유예 기간 후 만료시킨다
