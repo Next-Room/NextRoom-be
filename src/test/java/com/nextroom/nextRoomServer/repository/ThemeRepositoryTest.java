@@ -6,7 +6,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
+import com.nextroom.nextRoomServer.domain.Authority;
 import com.nextroom.nextRoomServer.domain.Shop;
 import com.nextroom.nextRoomServer.domain.Theme;
 import com.nextroom.nextRoomServer.exceptions.CustomException;
@@ -18,11 +20,23 @@ public class ThemeRepositoryTest {
     @Autowired
     private ThemeRepository themeRepository;
 
+    @Autowired
+    private TestEntityManager entityManager;
+
+    private Shop persistedShop() {
+        Shop shop = Shop.builder()
+            .email("owner@nextroom.com")
+            .adminCode("AAAAA")
+            .authority(Authority.ROLE_USER)
+            .build();
+        return entityManager.persistAndFlush(shop);
+    }
+
     @Test
     @DisplayName("테마 생성")
     void save() {
         //given
-        Shop shop = new Shop();
+        Shop shop = persistedShop();
 
         Theme theme = Theme.builder()
             .shop(shop)
@@ -44,7 +58,7 @@ public class ThemeRepositoryTest {
     @DisplayName("테마 제목으로 조회")
     void findByTitle() {
         //given
-        Shop shop = new Shop();
+        Shop shop = persistedShop();
 
         Theme theme = Theme.builder()
             .shop(shop)
