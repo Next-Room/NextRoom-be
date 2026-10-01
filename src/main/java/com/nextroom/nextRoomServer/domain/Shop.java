@@ -30,6 +30,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.NOT_PERMITTED;
+import static com.nextroom.nextRoomServer.exceptions.StatusCode.SHOP_ALREADY_WITHDRAWN;
 import static com.nextroom.nextRoomServer.exceptions.StatusCode.SUBSCRIPTION_NOT_PERMITTED;
 
 @Entity
@@ -38,6 +39,9 @@ import static com.nextroom.nextRoomServer.exceptions.StatusCode.SUBSCRIPTION_NOT
 @NoArgsConstructor
 @AllArgsConstructor
 public class Shop extends Timestamped {
+
+    private static final int EMAIL_MAX_LENGTH = 255;
+    private static final String WITHDRAWN_EMAIL_PREFIX = "withdrawn_";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -134,7 +138,31 @@ public class Shop extends Timestamped {
         this.lastLoginAt = LocalDateTime.now();
     }
 
+    public boolean isWithdrawn() {
+        return this.deletedAt != null;
+    }
+
+    /**
+     * 회원 탈퇴 처리. 행을 지우지 않고 탈퇴 표시만 남긴다.
+     * 결제 기록 보존 의무 때문에 하드 딜리트를 쓰지 않는다.
+     * 같은 이메일로 재가입할 수 있도록 이메일을 변형해 원본 값을 비워 준다.
+     */
     public void withdraw() {
+        if (this.isWithdrawn()) {
+            throw new CustomException(SHOP_ALREADY_WITHDRAWN);
+        }
         this.deletedAt = LocalDateTime.now();
+        this.email = toWithdrawnEmail(this.email, this.id);
+        this.password = null;
+    }
+
+    private static String toWithdrawnEmail(String email, Long shopId) {
+        if (email == null) {
+            return null;
+        }
+        String withdrawn = WITHDRAWN_EMAIL_PREFIX + shopId + "_" + email;
+        return withdrawn.length() > EMAIL_MAX_LENGTH
+            ? withdrawn.substring(0, EMAIL_MAX_LENGTH)
+            : withdrawn;
     }
 }
