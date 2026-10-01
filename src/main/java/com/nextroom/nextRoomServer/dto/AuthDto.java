@@ -72,7 +72,6 @@ public class AuthDto {
     public static class SignUpResponseDto {
         private String email;
         private String name;
-        private String adminCode;
         private String createdAt;
         private String modifiedAt;
 
@@ -80,7 +79,6 @@ public class AuthDto {
             return SignUpResponseDto.builder()
                     .email(shop.getEmail())
                     .name(shop.getName())
-                    .adminCode(shop.getAdminCode())
                     .createdAt(dateTimeFormatter(shop.getCreatedAt()))
                     .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
         }
@@ -111,8 +109,6 @@ public class AuthDto {
         @NotBlank
         private String shopName;
         @NotBlank
-        private String adminCode;
-        @NotBlank
         private String grantType;
         @NotBlank
         private String accessToken;
@@ -129,7 +125,6 @@ public class AuthDto {
             return LogInResponseDto.builder()
                     .isComplete(shop.isCompleteSignUp())
                     .shopName(shop.getName())
-                    .adminCode(shop.getAdminCode())
                     .grantType(tokenDto.getGrantType())
                     .accessToken(tokenDto.getAccessToken())
                     .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
@@ -168,15 +163,11 @@ public class AuthDto {
         @NotBlank
         @Schema(description = "매장명")
         private String shopName;
-        @NotBlank
-        @Schema(description = "관리자 코드")
-        private String adminCode;
 
         public static AuthDto.ShopUpdateResponseDto toShopUpdateResponseDto(Shop shop) {
             return ShopUpdateResponseDto.builder()
                     .isComplete(shop.isCompleteSignUp())
                     .shopName(shop.getName())
-                    .adminCode(shop.getAdminCode())
                     .build();
         }
     }
