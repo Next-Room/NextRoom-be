@@ -118,7 +118,10 @@ public class AuthService {
 
     @Transactional
     public void unregister() {
-        shopRepository.deleteById(SecurityUtil.getCurrentShopId());
+        Long shopId = SecurityUtil.getCurrentShopId();
+        Shop shop = getShop(shopId);
+        shop.withdraw();
+        redisRepository.deleteValuesByPattern(REFRESH_TOKEN_PREFIX + shopId + " *");
     }
 
     private void checkDuplicatedEmail(String email) {
