@@ -67,7 +67,7 @@ public class AuthService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         TokenDto token = this.generateAndSaveToken(authentication.getName(), getAuthorities(authentication));
 
-        Shop shop = shopRepository.findByEmailAndGoogleSubIsNull(request.getEmail())
+        Shop shop = shopRepository.findByEmailAndGoogleSubIsNullAndDeletedAtIsNull(request.getEmail())
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
         shop.updateLastLoginAt();
 
@@ -122,7 +122,7 @@ public class AuthService {
     }
 
     private void checkDuplicatedEmail(String email) {
-        Optional<Shop> shop = shopRepository.findByEmailAndGoogleSubIsNull(email);
+        Optional<Shop> shop = shopRepository.findByEmailAndGoogleSubIsNullAndDeletedAtIsNull(email);
         if (shop.isPresent()) {
             throw new CustomException(SHOP_ALREADY_EXIST);
         }
@@ -159,7 +159,7 @@ public class AuthService {
         String email = userInfo.getEmail();
         String sub = userInfo.getId();
 
-        return shopRepository.findByEmailAndGoogleSub(email, sub)
+        return shopRepository.findByEmailAndGoogleSubAndDeletedAtIsNull(email, sub)
                 .orElseGet(() -> {
                     Shop newShop = Shop.builder()
                             .email(email)
