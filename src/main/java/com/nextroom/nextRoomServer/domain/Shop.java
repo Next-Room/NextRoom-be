@@ -54,9 +54,6 @@ public class Shop extends Timestamped {
     @Column
     private String googleSub;
 
-    @Column(nullable = false, length = 5)
-    private String adminCode;
-
     @Column
     private String password;
 

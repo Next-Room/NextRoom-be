@@ -62,7 +62,6 @@ class AuthServiceReissueTest {
         return Shop.builder()
             .id(42L)
             .email("owner@nextroom.com")
-            .adminCode("AAAAA")
             .authority(Authority.ROLE_USER)
             .build();
     }

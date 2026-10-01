@@ -15,7 +15,6 @@ class CommonObjectMapperTest {
     void readValue() throws JsonProcessingException {
         Shop shop = Shop.builder()
             .email("test")
-            .adminCode("test")
             .password("test")
             .name("test")
             .type(1)

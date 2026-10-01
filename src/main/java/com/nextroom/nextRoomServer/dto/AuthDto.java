@@ -22,7 +22,6 @@ import lombok.Setter;
 import static com.nextroom.nextRoomServer.util.Timestamped.dateTimeFormatter;
 
 public class AuthDto {
-    private static final String ADMIN_CODE_REGEX = "[0-9]{5}";
     private static final String PASSWORD_CONDITION_MIN_LENGTH_REGEX = ".{8,}";
     private static final String PASSWORD_CONDITION_LOWER_CASE_REGEX = ".*[a-z].*";
     private static final String PASSWORD_CONDITION_UPPER_CASE_REGEX = ".*[A-Z].*";
@@ -51,13 +50,12 @@ public class AuthDto {
         @NotNull(message = "매장 오픈 여부를 입력해 주세요.")
         private Boolean isNotOpened;
 
-        public Shop toShop(PasswordEncoder passwordEncoder, String adminCode) {
+        public Shop toShop(PasswordEncoder passwordEncoder) {
             String name = this.isNotOpened ? NO_NAME : this.name;
             String comment = this.isNotOpened ? this.name : null;
 
             return Shop.builder()
                 .email(this.email)
-                .adminCode(adminCode)
                 .password(passwordEncoder.encode(this.password))
                 .name(name)
                 .type(this.type)

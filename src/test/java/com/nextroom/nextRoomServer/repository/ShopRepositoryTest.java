@@ -25,12 +25,11 @@ class ShopRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    private Shop persistShop(String email, String googleSub, String adminCode) {
+    private Shop persistShop(String email, String googleSub) {
         return entityManager.persistAndFlush(Shop.builder()
             .email(email)
             .googleSub(googleSub)
             .password("encoded-password")
-            .adminCode(adminCode)
             .authority(Authority.ROLE_USER)
             .build());
     }
@@ -45,7 +44,7 @@ class ShopRepositoryTest {
     @DisplayName("탈퇴한 회원은 이메일 로그인 조회에서 제외된다")
     void emailLookupExcludesWithdrawn() {
         //given
-        Shop shop = persistShop(EMAIL, null, "AAAAA");
+        Shop shop = persistShop(EMAIL, null);
         withdraw(shop);
 
         //when
@@ -59,7 +58,7 @@ class ShopRepositoryTest {
     @DisplayName("탈퇴한 회원은 구글 로그인 조회에서 제외된다")
     void googleLookupExcludesWithdrawn() {
         //given
-        Shop shop = persistShop(EMAIL, GOOGLE_SUB, "AAAAA");
+        Shop shop = persistShop(EMAIL, GOOGLE_SUB);
         withdraw(shop);
 
         //when
@@ -82,7 +81,7 @@ class ShopRepositoryTest {
     @DisplayName("이메일이 변형되지 않았어도 deleted_at이 있으면 이메일 로그인 조회에서 제외된다")
     void emailLookupExcludesDeletedRowWithOriginalEmail() {
         //given
-        Shop shop = persistShop(EMAIL, null, "AAAAA");
+        Shop shop = persistShop(EMAIL, null);
         markDeletedWithoutMasking(shop);
 
         //when
@@ -96,7 +95,7 @@ class ShopRepositoryTest {
     @DisplayName("이메일이 변형되지 않았어도 deleted_at이 있으면 구글 로그인 조회에서 제외된다")
     void googleLookupExcludesDeletedRowWithOriginalEmail() {
         //given
-        Shop shop = persistShop(EMAIL, GOOGLE_SUB, "AAAAA");
+        Shop shop = persistShop(EMAIL, GOOGLE_SUB);
         markDeletedWithoutMasking(shop);
 
         //when
@@ -110,7 +109,7 @@ class ShopRepositoryTest {
     @DisplayName("탈퇴하지 않은 회원은 정상 조회된다")
     void activeShopIsFound() {
         //given
-        persistShop(EMAIL, null, "AAAAA");
+        persistShop(EMAIL, null);
 
         //when
         Optional<Shop> found = shopRepository.findByEmailAndGoogleSubIsNullAndDeletedAtIsNull(EMAIL);
@@ -124,11 +123,11 @@ class ShopRepositoryTest {
     @DisplayName("탈퇴 후 같은 이메일로 재가입할 수 있다")
     void canRejoinWithSameEmail() {
         //given
-        Shop withdrawn = persistShop(EMAIL, null, "AAAAA");
+        Shop withdrawn = persistShop(EMAIL, null);
         withdraw(withdrawn);
 
         //when
-        Shop rejoined = persistShop(EMAIL, null, "BBBBB");
+        Shop rejoined = persistShop(EMAIL, null);
         entityManager.clear();
 
         //then
@@ -138,16 +137,38 @@ class ShopRepositoryTest {
     }
 
     @Test
-    @DisplayName("adminCode 중복 검사는 탈퇴한 회원의 코드도 포함한다")
-    void adminCodeCheckIncludesWithdrawn() {
+    @DisplayName("adminCode 없이 이메일 가입 shop을 저장할 수 있다")
+    void persistEmailSignupShopWithoutAdminCode() {
         //given
-        Shop shop = persistShop(EMAIL, null, "AAAAA");
-        withdraw(shop);
+        Shop shop = Shop.builder()
+            .email(EMAIL)
+            .password("encoded-password")
+            .name("넥스트룸 강남점")
+            .authority(Authority.ROLE_USER)
+            .build();
 
         //when
-        boolean exists = shopRepository.existsByAdminCode("AAAAA");
+        Shop saved = entityManager.persistAndFlush(shop);
 
         //then
-        assertThat(exists).isTrue();
+        assertThat(saved.getId()).isNotNull();
+    }
+
+    @Test
+    @DisplayName("adminCode 없이 구글 첫 로그인 shop을 저장할 수 있다")
+    void persistGoogleSignupShopWithoutAdminCode() {
+        //given
+        // AuthService.saveOrGet 이 신규 구글 회원을 만들 때와 같은 필드 구성이다.
+        Shop shop = Shop.builder()
+            .email(EMAIL)
+            .googleSub(GOOGLE_SUB)
+            .authority(Authority.ROLE_USER)
+            .build();
+
+        //when
+        Shop saved = entityManager.persistAndFlush(shop);
+
+        //then
+        assertThat(saved.getId()).isNotNull();
     }
 }

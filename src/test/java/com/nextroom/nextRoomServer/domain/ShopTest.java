@@ -16,7 +16,7 @@ class ShopTest {
             .email(email)
             .googleSub(googleSub)
             .password("encoded-password")
-            .adminCode("AAAAA")
+            .name("넥스트룸 강남점")
             .authority(Authority.ROLE_USER)
             .build();
     }
@@ -48,7 +48,7 @@ class ShopTest {
 
         //then
         assertThat(shop.getGoogleSub()).isEqualTo("google-sub-1");
-        assertThat(shop.getAdminCode()).isEqualTo("AAAAA");
+        assertThat(shop.getName()).isEqualTo("넥스트룸 강남점");
     }
 
     @Test

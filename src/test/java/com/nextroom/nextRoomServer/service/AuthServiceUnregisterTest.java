@@ -53,7 +53,6 @@ class AuthServiceUnregisterTest {
             .id(42L)
             .email("owner@nextroom.com")
             .password("encoded-password")
-            .adminCode("AAAAA")
             .authority(Authority.ROLE_USER)
             .build();
     }
