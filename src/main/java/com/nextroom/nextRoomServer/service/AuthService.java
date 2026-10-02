@@ -27,7 +27,6 @@ import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.security.TokenProvider;
-import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +43,6 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final RandomCodeGenerator randomCodeGenerator;
     private final GoogleClient googleClient;
 
     @Value("${jwt.refresh-token-expiration-millis}")
@@ -55,7 +53,7 @@ public class AuthService {
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
         checkDuplicatedEmail(request.getEmail());
-        Shop shop = shopRepository.save(request.toShop(passwordEncoder, createAdminCode()));
+        Shop shop = shopRepository.save(request.toShop(passwordEncoder));
         createSubscription(shop);
 
         return AuthDto.SignUpResponseDto.toSignUpResponseDto(shop);
@@ -139,14 +137,6 @@ public class AuthService {
         }
     }
 
-    private String createAdminCode() {
-        String adminCode;
-        do {
-            adminCode = randomCodeGenerator.createCode(5);
-        } while (shopRepository.existsByAdminCode(adminCode));
-        return adminCode;
-    }
-
     private void createSubscription(Shop shop) {
         Subscription subscription = Subscription.builder()
                 .shop(shop)
@@ -176,7 +166,6 @@ public class AuthService {
                             .email(email)
                             .googleSub(sub)
                             .authority(Authority.ROLE_USER)
-                            .adminCode(createAdminCode())
                             .build();
                     newShop = shopRepository.save(newShop);
                     createSubscription(newShop);

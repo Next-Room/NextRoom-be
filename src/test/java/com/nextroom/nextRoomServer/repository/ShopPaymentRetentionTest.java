@@ -29,7 +29,6 @@ class ShopPaymentRetentionTest {
     private Shop persistShopWithPayment() {
         Shop shop = entityManager.persistAndFlush(Shop.builder()
             .email("owner@nextroom.com")
-            .adminCode("AAAAA")
             .authority(Authority.ROLE_USER)
             .build());
 

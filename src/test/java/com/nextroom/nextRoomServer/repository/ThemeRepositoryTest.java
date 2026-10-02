@@ -26,7 +26,6 @@ public class ThemeRepositoryTest {
     private Shop persistedShop() {
         Shop shop = Shop.builder()
             .email("owner@nextroom.com")
-            .adminCode("AAAAA")
             .authority(Authority.ROLE_USER)
             .build();
         return entityManager.persistAndFlush(shop);

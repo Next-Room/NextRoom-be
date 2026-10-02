@@ -22,7 +22,6 @@ import lombok.Setter;
 import static com.nextroom.nextRoomServer.util.Timestamped.dateTimeFormatter;
 
 public class AuthDto {
-    private static final String ADMIN_CODE_REGEX = "[0-9]{5}";
     private static final String PASSWORD_CONDITION_MIN_LENGTH_REGEX = ".{8,}";
     private static final String PASSWORD_CONDITION_LOWER_CASE_REGEX = ".*[a-z].*";
     private static final String PASSWORD_CONDITION_UPPER_CASE_REGEX = ".*[A-Z].*";
@@ -51,13 +50,12 @@ public class AuthDto {
         @NotNull(message = "매장 오픈 여부를 입력해 주세요.")
         private Boolean isNotOpened;
 
-        public Shop toShop(PasswordEncoder passwordEncoder, String adminCode) {
+        public Shop toShop(PasswordEncoder passwordEncoder) {
             String name = this.isNotOpened ? NO_NAME : this.name;
             String comment = this.isNotOpened ? this.name : null;
 
             return Shop.builder()
                 .email(this.email)
-                .adminCode(adminCode)
                 .password(passwordEncoder.encode(this.password))
                 .name(name)
                 .type(this.type)
@@ -72,7 +70,6 @@ public class AuthDto {
     public static class SignUpResponseDto {
         private String email;
         private String name;
-        private String adminCode;
         private String createdAt;
         private String modifiedAt;
 
@@ -80,7 +77,6 @@ public class AuthDto {
             return SignUpResponseDto.builder()
                     .email(shop.getEmail())
                     .name(shop.getName())
-                    .adminCode(shop.getAdminCode())
                     .createdAt(dateTimeFormatter(shop.getCreatedAt()))
                     .modifiedAt(dateTimeFormatter(shop.getModifiedAt())).build();
         }
@@ -111,8 +107,6 @@ public class AuthDto {
         @NotBlank
         private String shopName;
         @NotBlank
-        private String adminCode;
-        @NotBlank
         private String grantType;
         @NotBlank
         private String accessToken;
@@ -129,7 +123,6 @@ public class AuthDto {
             return LogInResponseDto.builder()
                     .isComplete(shop.isCompleteSignUp())
                     .shopName(shop.getName())
-                    .adminCode(shop.getAdminCode())
                     .grantType(tokenDto.getGrantType())
                     .accessToken(tokenDto.getAccessToken())
                     .accessTokenExpiresIn(tokenDto.getAccessTokenExpiresIn())
@@ -168,15 +161,11 @@ public class AuthDto {
         @NotBlank
         @Schema(description = "매장명")
         private String shopName;
-        @NotBlank
-        @Schema(description = "관리자 코드")
-        private String adminCode;
 
         public static AuthDto.ShopUpdateResponseDto toShopUpdateResponseDto(Shop shop) {
             return ShopUpdateResponseDto.builder()
                     .isComplete(shop.isCompleteSignUp())
                     .shopName(shop.getName())
-                    .adminCode(shop.getAdminCode())
                     .build();
         }
     }
