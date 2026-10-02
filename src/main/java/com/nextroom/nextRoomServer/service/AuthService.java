@@ -27,7 +27,6 @@ import com.nextroom.nextRoomServer.repository.ShopRepository;
 import com.nextroom.nextRoomServer.repository.SubscriptionRepository;
 import com.nextroom.nextRoomServer.security.SecurityUtil;
 import com.nextroom.nextRoomServer.security.TokenProvider;
-import com.nextroom.nextRoomServer.util.RandomCodeGenerator;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +43,6 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
-    private final RandomCodeGenerator randomCodeGenerator;
     private final GoogleClient googleClient;
 
     @Value("${jwt.refresh-token-expiration-millis}")
@@ -55,7 +53,7 @@ public class AuthService {
     @Transactional
     public AuthDto.SignUpResponseDto signUp(AuthDto.SignUpRequestDto request) {
         checkDuplicatedEmail(request.getEmail());
-        Shop shop = shopRepository.save(request.toShop(passwordEncoder, createAdminCode()));
+        Shop shop = shopRepository.save(request.toShop(passwordEncoder));
         createSubscription(shop);
 
         return AuthDto.SignUpResponseDto.toSignUpResponseDto(shop);
@@ -67,7 +65,7 @@ public class AuthService {
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         TokenDto token = this.generateAndSaveToken(authentication.getName(), getAuthorities(authentication));
 
-        Shop shop = shopRepository.findByEmailAndGoogleSubIsNull(request.getEmail())
+        Shop shop = shopRepository.findByEmailAndGoogleSubIsNullAndDeletedAtIsNull(request.getEmail())
             .orElseThrow(() -> new CustomException(TARGET_SHOP_NOT_FOUND));
         shop.updateLastLoginAt();
 
@@ -108,6 +106,14 @@ public class AuthService {
         if (!refreshToken.equals(request.getRefreshToken())) {
             throw new CustomException(INVALID_REFRESH_TOKEN);
         }
+        // 탈퇴 시 refresh token 을 지우지만, 삭제와 동시에 들어온 재발급이나 삭제 누락이 있으면
+        // 탈퇴 회원이 토큰을 계속 갱신할 수 있으므로 재발급 시점에 탈퇴 여부를 한 번 더 확인한다.
+        boolean withdrawn = shopRepository.findById(Long.parseLong(authentication.getName()))
+            .map(Shop::isWithdrawn)
+            .orElse(true);
+        if (withdrawn) {
+            throw new CustomException(INVALID_REFRESH_TOKEN);
+        }
 
         TokenDto token = this.generateAndSaveToken(authentication.getName(), getAuthorities(authentication));
         // 동시에 들어온 재발급 요청이 실패하지 않도록 이전 refresh token 을 즉시 삭제하지 않고 유예 기간 후 만료시킨다
@@ -118,22 +124,17 @@ public class AuthService {
 
     @Transactional
     public void unregister() {
-        shopRepository.deleteById(SecurityUtil.getCurrentShopId());
+        Long shopId = SecurityUtil.getCurrentShopId();
+        Shop shop = getShop(shopId);
+        shop.withdraw();
+        redisRepository.deleteValuesByPattern(REFRESH_TOKEN_PREFIX + shopId + " *");
     }
 
     private void checkDuplicatedEmail(String email) {
-        Optional<Shop> shop = shopRepository.findByEmailAndGoogleSubIsNull(email);
+        Optional<Shop> shop = shopRepository.findByEmailAndGoogleSubIsNullAndDeletedAtIsNull(email);
         if (shop.isPresent()) {
             throw new CustomException(SHOP_ALREADY_EXIST);
         }
-    }
-
-    private String createAdminCode() {
-        String adminCode;
-        do {
-            adminCode = randomCodeGenerator.createCode(5);
-        } while (shopRepository.existsByAdminCode(adminCode));
-        return adminCode;
     }
 
     private void createSubscription(Shop shop) {
@@ -159,13 +160,12 @@ public class AuthService {
         String email = userInfo.getEmail();
         String sub = userInfo.getId();
 
-        return shopRepository.findByEmailAndGoogleSub(email, sub)
+        return shopRepository.findByEmailAndGoogleSubAndDeletedAtIsNull(email, sub)
                 .orElseGet(() -> {
                     Shop newShop = Shop.builder()
                             .email(email)
                             .googleSub(sub)
                             .authority(Authority.ROLE_USER)
-                            .adminCode(createAdminCode())
                             .build();
                     newShop = shopRepository.save(newShop);
                     createSubscription(newShop);

@@ -20,6 +20,7 @@ public enum StatusCode {
     ENVIRONMENT_DOES_NOT_MATCH(HttpStatus.BAD_REQUEST, "운영 환경이 일치하지 않습니다."),
     PACKAGE_NAME_DOES_NOT_MATCH(HttpStatus.BAD_REQUEST, "패키지명이 일치하지 않습니다."),
     ALREADY_ACKNOWLEDGED(HttpStatus.BAD_REQUEST, "이미 승인된 결제 입니다."),
+    SHOP_ALREADY_WITHDRAWN(HttpStatus.BAD_REQUEST, "이미 탈퇴한 업체입니다."),
 
     /**
      * 401 Unauthorized
