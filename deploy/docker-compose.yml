@@ -22,6 +22,8 @@ services:
     image: nginx:1.27-alpine
     container_name: nextroom-nginx
     logging: *default-logging
+    # OOM 시 피해를 이 컨테이너로 한정 (미설정 시 호스트 OOM killer가 MySQL을 죽일 수 있음)
+    mem_limit: 128m
     restart: unless-stopped
     ports:
       - "80:80"
@@ -42,11 +44,16 @@ services:
     image: ghcr.io/next-room/nextroom-be:${LIVE_TAG:-live}
     container_name: nextroom-spring-live
     logging: *default-logging
+    # OOM 시 피해를 이 컨테이너로 한정 (미설정 시 호스트 OOM killer가 MySQL을 죽일 수 있음)
+    mem_limit: 1g
     restart: unless-stopped
     env_file:
       - ./.env.live
     environment:
       SPRING_PROFILES_ACTIVE: prod
+      # 힙 캡. 미설정 시 960m 까지 늘어남. 컨테이너 제한(1g)보다 낮게 둬
+      # cgroup SIGKILL 대신 Java OutOfMemoryError 로 로그에 남게 한다.
+      JAVA_OPTS: "-Xmx512m"
     volumes:
       - ./secrets/iap-google-credentials.json:/app/config/iap-google-credentials.json:ro
     expose:
@@ -63,11 +70,14 @@ services:
     image: ghcr.io/next-room/nextroom-be:${DEV_TAG:-dev}
     container_name: nextroom-spring-dev
     logging: *default-logging
+    # OOM 시 피해를 이 컨테이너로 한정 (미설정 시 호스트 OOM killer가 MySQL을 죽일 수 있음)
+    mem_limit: 768m
     restart: unless-stopped
     env_file:
       - ./.env.dev
     environment:
       SPRING_PROFILES_ACTIVE: dev
+      JAVA_OPTS: "-Xmx384m"
     volumes:
       - ./secrets/iap-google-credentials.json:/app/config/iap-google-credentials.json:ro
     expose:
@@ -84,6 +94,8 @@ services:
     image: mysql:8.0
     container_name: nextroom-mysql
     logging: *default-logging
+    # OOM 시 피해를 이 컨테이너로 한정 (미설정 시 호스트 OOM killer가 MySQL을 죽일 수 있음)
+    mem_limit: 1g
     restart: unless-stopped
     command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
     environment:
@@ -108,6 +120,8 @@ services:
     image: redis:7-alpine
     container_name: nextroom-redis
     logging: *default-logging
+    # OOM 시 피해를 이 컨테이너로 한정 (미설정 시 호스트 OOM killer가 MySQL을 죽일 수 있음)
+    mem_limit: 256m
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
