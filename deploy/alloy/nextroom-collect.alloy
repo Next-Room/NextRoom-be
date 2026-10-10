@@ -104,3 +104,81 @@ loki.source.docker "containers" {
   targets    = discovery.relabel.containers.output
   forward_to = [loki.write.grafana_cloud_loki.receiver]
 }
+
+// ───────────── 앱 메트릭 (Spring Actuator) ─────────────
+// nginx 를 거치지 않고 docker 네트워크로 컨테이너를 직접 스크랩한다.
+// (nginx 는 /actuator/prometheus 를 외부에 404 로 막아두었다)
+discovery.relabel "spring_apps" {
+  targets = discovery.docker.containers.targets
+
+  // spring-live / spring-dev 만 대상
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/nextroom-spring-(live|dev)"
+    action        = "keep"
+  }
+  // 컨테이너 IP:8080 으로 주소 지정 (재생성 시 IP 가 바뀌어도 자동 추적)
+  rule {
+    source_labels = ["__meta_docker_network_ip"]
+    regex         = "(.+)"
+    replacement   = "$1:8080"
+    target_label  = "__address__"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+  rule {
+    target_label = "job"
+    replacement  = "nextroom-spring"
+  }
+}
+
+prometheus.scrape "spring_apps" {
+  targets         = discovery.relabel.spring_apps.output
+  forward_to      = [prometheus.remote_write.metrics_service.receiver]
+  metrics_path    = "/actuator/prometheus"
+  scrape_interval = "60s"
+}
+
+// ───────────── 컨테이너 리소스 메트릭 (cAdvisor) ─────────────
+prometheus.exporter.cadvisor "containers" {
+  docker_host      = "unix:///var/run/docker.sock"
+  storage_duration = "5m"
+}
+
+discovery.relabel "cadvisor" {
+  targets = prometheus.exporter.cadvisor.containers.targets
+
+  rule {
+    target_label = "instance"
+    replacement  = constants.hostname
+  }
+  rule {
+    target_label = "job"
+    replacement  = "integrations/docker"
+  }
+}
+
+prometheus.scrape "cadvisor" {
+  targets         = discovery.relabel.cadvisor.output
+  forward_to      = [prometheus.relabel.cadvisor_filter.receiver]
+  scrape_interval = "60s"
+}
+
+// cAdvisor 는 메트릭이 매우 많다. 무료 티어(10k active series) 보호를 위해
+// 컨테이너 운영에 실제로 쓰는 지표만 남긴다.
+prometheus.relabel "cadvisor_filter" {
+  forward_to = [prometheus.remote_write.metrics_service.receiver]
+
+  rule {
+    source_labels = ["__name__"]
+    regex         = "container_(cpu_usage_seconds_total|memory_working_set_bytes|memory_usage_bytes|network_(receive|transmit)_bytes_total|fs_usage_bytes|last_seen)"
+    action        = "keep"
+  }
+}

@@ -1,6 +1,21 @@
 server:
   port: ${SERVER_PORT:8080}
 
+# ── Actuator (모니터링용)
+#  health     : 공개. DB/Redis 상태가 집계되어 UptimeRobot 이 "UP" 키워드로 감시
+#  prometheus : 내부 지표. nginx 에서 외부 차단하고, 같은 docker 네트워크의 Alloy 만 수집
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  endpoint:
+    health:
+      show-details: never   # 공개 엔드포인트이므로 내부 구성 노출 금지(집계 status 는 그대로 반영)
+  metrics:
+    tags:
+      application: nextroom
+
 jwt:
   secret: ${JWT_SECRET}
   access-token-expiration-millis: 10800000 # 1000 * 60 * 60 * 3 == 3시간
