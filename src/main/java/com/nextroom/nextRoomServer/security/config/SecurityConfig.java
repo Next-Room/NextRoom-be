@@ -68,7 +68,10 @@ public class SecurityConfig {
             .authorizeHttpRequests(
                 authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/v1/auth/**", "/swagger-ui/**", "/v3/**", "/api/v1/payment/rtdn",
-                        "/api/v1/email/**")
+                        "/api/v1/email/**",
+                        // 모니터링: health 는 외부 감시(UptimeRobot)용, prometheus 는 Alloy 수집용.
+                        // prometheus 는 nginx 에서 외부 접근을 차단하므로 공개되지 않는다.
+                        "/actuator/health", "/actuator/prometheus")
                     .permitAll()
                     .requestMatchers("/api/v1/auth/shop", "/api/v1/auth/unregister")
                     .authenticated()
